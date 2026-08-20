@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Temple of Ash</title>
+
+<style>
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #090b0f;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+
+  canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    background: #12151b;
+    touch-action: none;
+  }
+
+  #hud {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .top {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .panel {
+    background: rgba(0,0,0,.6);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 10px;
+    padding: 8px 10px;
+    min-width: 180px;
+  }
+
+  .bar {
+    height: 10px;
+    background: #2a2d33;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-top: 5px;
+  }
+
+  #hp {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg,#b51f1f,#ff543a);
+  }
+
+  #energy {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg,#236be8,#78e8ff);
+  }
+
+  #message {
+    position: fixed;
+    top: 16%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: clamp(22px, 5vw, 42px);
+    font-weight: 900;
+    text-shadow: 0 3px 10px black;
+    text-align: center;
+    opacity: 1;
+  }
+
+  #controls {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .pad, .actions {
+    position: absolute;
+    bottom: 20px;
+    display: grid;
+    gap: 8px;
+    pointer-events: auto;
+  }
+
+  .pad {
+    left: 16px;
+    grid-template-columns: 58px 58px 58px;
+    grid-template-rows: 58px 58px 58px;
+  }
+
+  .actions {
+    right: 16px;
+    grid-template-columns: 68px 68px;
+    grid-template-rows: 68px 68px;
+  }
+
+  button {
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.3);
+    background: rgba(20,20,24,.78);
+    color: white;
+    font-size: 18px;
+    font-weight: 900;
+    touch-action: none;
+  }
+
+  .blank {
+    visibility: hidden;
+  }
+
+  #tip {
+    position: fixed;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    opacity: .5;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+</style>
+</head>
+
+<body>
+
+<canvas id="game"></canvas>
+
+<div id="hud">
+  <div class="top">
+    <div class="panel">
+      <b>CHOSEN</b>
+      <div class="bar"><div id="hp"></div></div>
+      <div class="bar"><div id="energy"></div></div>
+    </div>
+
+    <div class="panel" style="text-align:right;">
+      Wave <span id="wave">1</span><br>
+      Score <span id="score">0</span><br>
+      Combo <span id="combo">0</span>x
+    </div>
+  </div>
+
+  <div id="message">TEMPLE OF ASH</div>
+</div>
+
+<div id="controls">
+  <div class="pad">
+    <button class="blank"></button>
+    <button data-k="up">▲</button>
+    <button class="blank"></button>
+
+    <button data-k="left">◀</button>
+    <button class="blank"></button>
+    <button data-k="right">▶</button>
+
+    <button class="blank"></button>
+    <button data-k="down">▼</button>
+    <button class="blank"></button>
+  </div>
+
+  <div class="actions">
+    <button data-k="light">A</button>
+    <button data-k="heavy">H</button>
+    <button data-k="dodge">⚡</button>
+    <button data-k="special">S</button>
+  </div>
+</div>
+
+<div id="tip">
+  A = attack · H = heavy · S = thunder burst · ⚡ = lightning dash
+</div>
+
+<script>
+(() => {
+
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
+
+  let W = 0;
+  let H = 0;
+  let DPR = 1;
+
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+    W = window.innerWidth;
+    H = window.innerHeight;
+
+    canvas.width = Math.floor(W * DPR);
+    canvas.height = Math.floor(H * DPR);
+
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
+
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+
+  resize();
+  window.addEventListener("resize", resize);
+
+  const input = {
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+    light: false,
+    heavy: false,
+    special: false,
+    dodge: false
+  };
+
+  document.querySelectorAll("[data-k]").forEach(btn => {
+
+    const key = btn.dataset.k;
+
+    const down = e => {
+      e.preventDefault();
+      input[key] = true;
+    };
+
+    const up = e => {
+      e.preventDefault();
+      input[key] = false;
+    };
+
+    btn.addEventListener("pointerdown", down);
+    btn.addEventListener("pointerup", up);
+    btn.addEventListener("pointercancel", up);
+    btn.addEventListener("pointerleave", up);
+
+  });
+
+  window.addEventListener("keydown", e => {
+
+    const map = {
+      w: "up",
+      s: "down",
+      a: "left",
+      d: "right",
+      j: "light",
+      k: "heavy",
+      l: "special",
+      " ": "dodge"
+    };
+
+    const key = e.key.toLowerCase();
+
+    if (map[key]) {
+      input[map[key]] = true;
+      e.preventDefault();
+    }
+
+  });
+
+  window.addEventListener("keyup", e => {
+
+    const map = {
+      w: "up",
+      s: "down",
+      a: "left",
+      d: "right",
+      j: "light",
+      k: "heavy",
+      l: "special",
+      " ": "dodge"
+    };
+
+    const key = e.key.toLowerCase();
+
+    if (map[key]) {
+      input[map[key]] = false;
+      e.preventDefault();
+    }
+
+  });
+
+  const player = {
+
+    name: "Chosen",
+
+    x: 0,
+    y: 0,
+
+    r: 22,
+
+    hp: 100,
+    maxHp: 100,
+
+    energy: 100,
+    maxEnergy: 100,
+
+    speed: 4.2,
+
+    facing: 1,
+
+    attackCd: 0,
+    heavyCd: 0,
+    specialCd: 0,
+    dodgeCd: 0,
+
+    inv: 0,
+
+    electricity: 0
+
+  };
+
+  let enemies = [];
+  let particles = [];
+  let lightningBolts = [];
+
+  let wave = 1;
+  let score = 0;
+  let combo = 0;
+
+  let comboTimer = 0;
+  let messageTimer = 120;
+
+  const clamp = (v, a, b) =>
+    Math.max(a, Math.min(b, v));
+
+  const rand = (a, b) =>
+    a + Math.random() * (b - a);
+
+  function distance(a, b) {
+    return Math.hypot(
+      a.x - b.x,
+      a.y - b.y
+    );
+  }
+
+  function say(text) {
+
+    const el =
+      document.getElementById("message");
+
+    el.textContent = text;
+    el.style.opacity = 1;
+
+    messageTimer = 90;
+  }
+
+  function burst(x, y, color, count) {
+
+    for (let i = 0; i < count; i++) {
+
+      particles.push({
+
+        x,
+        y,
+
+        vx: rand(-5, 5),
+        vy: rand(-5, 5),
+
+        life: rand(14, 30),
+
+        size: rand(2, 6),
+
+        color
+
+      });
+
+    }
+
+  }
+
+  function electricBurst(x, y, count = 30) {
+
+    for (let i = 0; i < count; i++) {
+
+      particles.push({
+
+        x,
+        y,
+
+        vx: rand(-8, 8),
+        vy: rand(-8, 8),
+
+        life: rand(10, 26),
+
+        size: rand(2, 5),
+
+        color:
+          Math.random() < .5
+          ? "#4fc3ff"
+          : "#ffffff"
+
+      });
+
+    }
+
+  }
+
+  function lightningBolt(x1, y1, x2, y2) {
+
+    lightningBolts.push({
+
+      x1,
+      y1,
+      x2,
+      y2,
+
+      life: 8
+
+    });
+
+  }
+
+  function createEnemy(type = "grunt") {
+
+    const leftSide =
+      Math.random() < .5;
+
+    const enemy = {
+
+      x:
+        leftSide
+          ? 30
+          : W - 30,
+
+      y:
+        rand(
+          Math.max(H * .42, 220),
+          H - 70
+        ),
+
+      vx: 0,
+      vy: 0,
+
+      dead: false,
+
+      stun: 0,
+      hit: 0,
+
+      attackCd:
+        rand(25, 60),
+
+      type
+
+    };
+
+    if (type === "brute") {
+
+      Object.assign(enemy, {
+
+        r: 30,
+
+        hp: 120,
+        maxHp: 120,
+
+        speed: 1,
+
+        dmg: 15,
+
+        color: "#704520"
+
+      });
+
+    } else {
+
+      Object.assign(enemy, {
+
+        r: 21,
+
+        hp: 55,
+        maxHp: 55,
+
+        speed: 1.45,
+
+        dmg: 8,
+
+        color: "#852529"
+
+      });
+
+    }
+
+    return enemy;
+  }
+
+  function spawnWave() {
+
+    enemies = [];
+
+    const count =
+      3 + wave * 2;
+
+    for (let i = 0; i < count; i++) {
+
+      const type =
+        wave >= 3 &&
+        i % 4 === 0
+          ? "brute"
+          : "grunt";
+
+      enemies.push(
+        createEnemy(type)
+      );
+
+    }
+
+    say("WAVE " + wave);
+
+  }
+
+  function hitEnemies(
+    range,
+    damage,
+    knockback,
+    electric = false
+  ) {
+
+    let hits = 0;
+
+    enemies.forEach(enemy => {
+
+      if (enemy.dead)
+        return;
+
+      const d =
+        distance(player, enemy);
+
+      if (
+        d <
+        range + enemy.r
+      ) {
+
+        const dx =
+          (enemy.x - player.x)
+          / (d || 1);
+
+        const dy =
+          (enemy.y - player.y)
+          / (d || 1);
+
+        enemy.hp -= damage;
+
+        enemy.vx +=
+          dx * knockback;
+
+        enemy.vy +=
+          dy * knockback;
+
+        enemy.stun =
+          electric ? 22 : 12;
+
+        enemy.hit = 6;
+
+        if (electric) {
+
+          electricBurst(
+            enemy.x,
+            enemy.y,
+            15
+          );
+
+          lightningBolt(
+            player.x,
+            player.y,
+            enemy.x,
+            enemy.y
+          );
+
+        } else {
+
+          burst(
+            enemy.x,
+            enemy.y,
+            "#ff8358",
+            8
+          );
+
+        }
+
+        hits++;
+
+        if (enemy.hp <= 0) {
+
+          enemy.dead = true;
+
+          score +=
+            enemy.type === "brute"
+              ? 180
+              : 100;
+
+        }
+
+      }
+
+    });
+
+    if (hits > 0) {
+
+      combo += hits;
+
+      comboTimer = 100;
+
+      score +=
+        10 * combo;
+
+    }
+
+  }
+
+  function chainLightning() {
+
+    let living =
+      enemies.filter(e => !e.dead);
+
+    living.sort(
+      (a, b) =>
+        distance(player, a)
+        -
+        distance(player, b)
+    );
+
+    const targets =
+      living.slice(0, 4);
+
+    let previous = player;
+
+    targets.forEach((enemy, index) => {
+
+      if (
+        distance(previous, enemy)
+        < 260
+      ) {
+
+        lightningBolt(
+          previous.x,
+          previous.y,
+          enemy.x,
+          enemy.y
+        );
+
+        enemy.hp -=
+          20 + index * 3;
+
+        enemy.stun = 30;
+
+        enemy.hit = 10;
+
+        electricBurst(
+          enemy.x,
+          enemy.y,
+          20
+        );
+
+        if (enemy.hp <= 0) {
+
+          enemy.dead = true;
+
+          score += 120;
+
+        }
+
+        previous = enemy;
+
+      }
+
+    });
+
+  }
+
+  function updatePlayer() {
+
+    let dx =
+      (input.right ? 1 : 0)
+      -
+      (input.left ? 1 : 0);
+
+    let dy =
+      (input.down ? 1 : 0)
+      -
+      (input.up ? 1 : 0);
+
+    const mag =
+      Math.hypot(dx, dy) || 1;
+
+    dx /= mag;
+    dy /= mag;
+
+    player.x +=
+      dx * player.speed;
+
+    player.y +=
+      dy * player.speed;
+
+    if (dx !== 0)
+      player.facing =
+        Math.sign(dx);
+
+    player.x =
+      clamp(
+        player.x,
+        30,
+        W - 30
+      );
+
+    player.y =
+      clamp(
+        player.y,
+        Math.max(
+          H * .38,
+          190
+        ),
+        H - 40
+      );
+
+    if (
+      input.light &&
+      player.attackCd <= 0
+    ) {
+
+      player.attackCd = 18;
+
+      hitEnemies(
+        62,
+        16,
+        6,
+        false
+      );
+
+      electricBurst(
+        player.x
+        +
+        player.facing * 25,
+        player.y,
+        8
+      );
+
+    }
+
+    if (
+      input.heavy &&
+      player.heavyCd <= 0
+    ) {
+
+      player.heavyCd = 42;
+
+      hitEnemies(
+        85,
+        32,
+        14,
+        true
+      );
+
+      say(
+        "THUNDER STRIKE"
+      );
+
+    }
+
+    if (
+      input.special &&
+      player.specialCd <= 0 &&
+      player.energy >= 35
+    ) {
+
+      player.energy -= 35;
+
+      player.specialCd = 80;
+
+      player.electricity = 20;
+
+      hitEnemies(
+        165,
+        48,
+        20,
+        true
+      );
+
+      chainLightning();
+
+      electricBurst(
+        player.x,
+        player.y,
+        60
+      );
+
+      say(
+        "THUNDER BURST"
+      );
+
+    }
+
+    if (
+      input.dodge &&
+      player.dodgeCd <= 0
+    ) {
+
+      player.dodgeCd = 50;
+
+      player.inv = 20;
+
+      player.electricity = 18;
+
+      let mx = dx;
+      let my = dy;
+
+      if (
+        mx === 0 &&
+        my === 0
+      ) {
+
+        mx =
+          player.facing;
+
+      }
+
+      const oldX =
+        player.x;
+
+      const oldY =
+        player.y;
+
+      player.x =
+        clamp(
+          player.x
+          +
+          mx * 100,
+          30,
+          W - 30
+        );
+
+      player.y =
+        clamp(
+          player.y
+          +
+          my * 100,
+          Math.max(
+            H * .38,
+            190
+          ),
+          H - 40
+        );
+
+      lightningBolt(
+        oldX,
+        oldY,
+        player.x,
+        player.y
+      );
+
+      electricBurst(
+        oldX,
+        oldY,
+        15
+      );
+
+      electricBurst(
+        player.x,
+        player.y,
+        20
+      );
+
+      enemies.forEach(enemy => {
+
+        const d =
+          distance(
+            player,
+            enemy
+          );
+
+        if (
+          !enemy.dead &&
+          d < 70
+        ) {
+
+          enemy.hp -= 22;
+
+          enemy.stun = 20;
+
+          electricBurst(
+            enemy.x,
+            enemy.y,
+            12
+          );
+
+          if (
+            enemy.hp <= 0
+          ) {
+
+            enemy.dead = true;
+            score += 100;
+
+          }
+
+        }
+
+      });
+
+      say(
+        "LIGHTNING DASH"
+      );
+
+    }
+
+    if (player.attackCd > 0)
+      player.attackCd--;
+
+    if (player.heavyCd > 0)
+      player.heavyCd--;
+
+    if (player.specialCd > 0)
+      player.specialCd--;
+
+    if (player.dodgeCd > 0)
+      player.dodgeCd--;
+
+    if (player.inv > 0)
+      player.inv--;
+
+    if (player.electricity > 0)
+      player.electricity--;
+
+    player.energy =
+      Math.min(
+        player.maxEnergy,
+        player.energy + .16
+      );
+
+  }
+
+  function updateEnemies() {
+
+    enemies.forEach(enemy => {
+
+      if (enemy.dead)
+        return;
+
+      if (enemy.attackCd > 0)
+        enemy.attackCd--;
+
+      if (enemy.stun > 0)
+        enemy.stun--;
+
+      if (enemy.hit > 0)
+        enemy.hit--;
+
+      if (
+        enemy.stun <= 0
+      ) {
+
+        const d =
+          distance(
+            player,
+            enemy
+          );
+
+        const dx =
+          (player.x - enemy.x)
+          /
+          (d || 1);
+
+        const dy =
+          (player.y - enemy.y)
+          /
+          (d || 1);
+
+        if (
+          d >
+          player.r
+          +
+          enemy.r
+          +
+          8
+        ) {
+
+          enemy.vx +=
+            dx
+            *
+            enemy.speed
+            *
+            .3;
+
+          enemy.vy +=
+            dy
+            *
+            enemy.speed
+            *
+            .3;
+
+        } else if (
+          enemy.attackCd <= 0
+        ) {
+
+          enemy.attackCd = 55;
+
+          if (
+            player.inv <= 0
+          ) {
+
+            player.hp -=
+              enemy.dmg;
+
+            player.inv = 20;
+
+            burst(
+              player.x,
+              player.y,
+              "#ff4242",
+              10
+            );
+
+          }
+
+        }
+
+      }
+
+      enemy.vx *= .85;
+      enemy.vy *= .85;
+
+      enemy.x += enemy.vx;
+      enemy.y += enemy.vy;
+
+      enemy.x =
+        clamp(
+          enemy.x,
+          20,
+          W - 20
+        );
+
+      enemy.y =
+        clamp(
+          enemy.y,
+          Math.max(
+            H * .38,
+            190
+          ),
+          H - 35
+        );
+
+    });
+
+    enemies =
+      enemies.filter(
+        e => !e.dead
+      );
+
+    if (
+      enemies.length === 0
+    ) {
+
+      wave++;
+
+      if (
+        wave > 5
+      ) {
+
+        wave = 1;
+
+        player.hp =
+          Math.min(
+            player.maxHp,
+            player.hp + 40
+          );
+
+        say(
+          "TEMPLE CLEARED"
+        );
+
+      }
+
+      spawnWave();
+
+    }
+
+    if (
+      player.hp <= 0
+    ) {
+
+      player.hp = 100;
+
+      player.energy = 100;
+
+      player.x =
+        W * .5;
+
+      player.y =
+        H * .72;
+
+      wave = 1;
+      score = 0;
+      combo = 0;
+
+      spawnWave();
+
+      say(
+        "CHOSEN RISES"
+      );
+
+    }
+
+  }
+
+  function updateParticles() {
+
+    particles.forEach(p => {
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      p.vx *= .94;
+      p.vy *= .94;
+
+      p.life--;
+
+    });
+
+    particles =
+      particles.filter(
+        p => p.life > 0
+      );
+
+    lightningBolts.forEach(bolt => {
+      bolt.life--;
+    });
+
+    lightningBolts =
+      lightningBolts.filter(
+        bolt => bolt.life > 0
+      );
+
+  }
+
+  function drawArena() {
+
+    const g =
+      ctx.createLinearGradient(
+        0,
+        0,
+        0,
+        H
+      );
+
+    g.addColorStop(
+      0,
+      "#20293b"
+    );
+
+    g.addColorStop(
+      .45,
+      "#11161f"
+    );
+
+    g.addColorStop(
+      1,
+      "#171d27"
+    );
+
+    ctx.fillStyle = g;
+
+    ctx.fillRect(
+      0,
+      0,
+      W,
+      H
+    );
+
+    const wallY =
+      Math.max(
+        H * .22,
+        100
+      );
+
+    ctx.fillStyle =
+      "#090d14";
+
+    ctx.fillRect(
+      0,
+      wallY,
+      W,
+      Math.max(
+        H * .18,
+        90
+      )
+    );
+
+    for (
+      let i = 0;
+      i < 7;
+      i++
+    ) {
+
+      const x =
+        (i + .5)
+        *
+        W / 7;
+
+      ctx.fillStyle =
+        "#080b11";
+
+      ctx.fillRect(
+        x - 18,
+        Math.max(
+          H * .12,
+          50
+        ),
+        36,
+        Math.max(
+          H * .34,
+          150
+        )
+      );
+
+      ctx.fillStyle =
+        "#1d69b5";
+
+      ctx.beginPath();
+
+      ctx.arc(
+        x,
+        Math.max(
+          H * .37,
+          180
+        ),
+        8,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fill();
+
+    }
+
+    ctx.strokeStyle =
+      "rgba(80,190,255,.08)";
+
+    ctx.lineWidth = 1;
+
+    for (
+      let y =
+        Math.max(
+          H * .4,
+          210
+        );
+      y < H;
+      y += 42
+    ) {
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        0,
+        y
+      );
+
+      ctx.lineTo(
+        W,
+        y
+      );
+
+      ctx.stroke();
+
+    }
+
+    for (
+      let i = -5;
+      i <= 5;
+      i++
+    ) {
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        W / 2,
+        Math.max(
+          H * .4,
+          210
+        )
+      );
+
+      ctx.lineTo(
+        W / 2
+        +
+        i * W * .18,
+        H
+      );
+
+      ctx.stroke();
+
+    }
+
+    [
+      W * .15,
+      W * .85
+    ].forEach(x => {
+
+      const y =
+        Math.max(
+          H * .45,
+          240
+        );
+
+      ctx.fillStyle =
+        "#24425c";
+
+      ctx.fillRect(
+        x - 15,
+        y,
+        30,
+        55
+      );
+
+      ctx.fillStyle =
+        "#38a8ff";
+
+      ctx.beginPath();
+
+      ctx.arc(
+        x,
+        y - 5,
+        15,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fill();
+
+      ctx.fillStyle =
+        "#dff8ff";
+
+      ctx.beginPath();
+
+      ctx.arc(
+        x,
+        y - 9,
+        7,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fill();
+
+    });
+
+  }
+
+  function drawLightningBolt(bolt) {
+
+    ctx.save();
+
+    ctx.strokeStyle =
+      "#73dcff";
+
+    ctx.shadowColor =
+      "#4fc3ff";
+
+    ctx.shadowBlur = 12;
+
+    ctx.lineWidth =
+      rand(2, 4);
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      bolt.x1,
+      bolt.y1
+    );
+
+    const segments = 8;
+
+    for (
+      let i = 1;
+      i < segments;
+      i++
+    ) {
+
+      const t =
+        i / segments;
+
+      const x =
+        bolt.x1
+        +
+        (bolt.x2 - bolt.x1)
+        *
+        t
+        +
+        rand(-8, 8);
+
+      const y =
+        bolt.y1
+        +
+        (bolt.y2 - bolt.y1)
+        *
+        t
+        +
+        rand(-8, 8);
+
+      ctx.lineTo(
+        x,
+        y
+      );
+
+    }
+
+    ctx.lineTo(
+      bolt.x2,
+      bolt.y2
+    );
+
+    ctx.stroke();
+
+    ctx.restore();
+
+  }
+
+  function drawPlayer() {
+
+    ctx.save();
+
+    ctx.translate(
+      player.x,
+      player.y
+    );
+
+    if (
+      player.inv > 0 &&
+      Math.floor(
+        player.inv / 3
+      ) % 2
+    ) {
+
+      ctx.globalAlpha =
+        .45;
+
+    }
+
+    ctx.fillStyle =
+      "rgba(0,0,0,.42)";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+      0,
+      22,
+      28,
+      10,
+      0,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+    if (
+      player.electricity > 0
+    ) {
+
+      ctx.strokeStyle =
+        "#6bdcff";
+
+      ctx.shadowColor =
+        "#4fc3ff";
+
+      ctx.shadowBlur = 20;
+
+      ctx.lineWidth = 4;
+
+      ctx.beginPath();
+
+      ctx.arc(
+        0,
+        0,
+        player.r + 7,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.stroke();
+
+    }
+
+    ctx.shadowColor =
+      "#318dff";
+
+    ctx.shadowBlur = 10;
+
+    ctx.fillStyle =
+      "#2679e8";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      0,
+      player.r,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle =
+      "#10131a";
+
+    ctx.fillRect(
+      -13,
+      -22,
+      26,
+      20
+    );
+
+    ctx.strokeStyle =
+      "#dff8ff";
+
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      player.facing * 4,
+      -4
+    );
+
+    ctx.lineTo(
+      player.facing * 17,
+      -4
+    );
+
+    ctx.stroke();
+
+    ctx.restore();
+
+  }
+
+  function drawEnemy(enemy) {
+
+    ctx.save();
+
+    ctx.translate(
+      enemy.x,
+      enemy.y
+    );
+
+    ctx.fillStyle =
+      "rgba(0,0,0,.4)";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+      0,
+      enemy.r * .85,
+      enemy.r * 1.15,
+      enemy.r * .4,
+      0,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+    ctx.fillStyle =
+      enemy.hit > 0
+        ? "#fff"
+        : enemy.color;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      0,
+      enemy.r,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+    ctx.fillStyle =
+      "#0a0a0d";
+
+    ctx.fillRect(
+      -enemy.r * .55,
+      -enemy.r * .7,
+      enemy.r * 1.1,
+      enemy.r * .42
+    );
+
+    ctx.fillStyle =
+      "#ff5050";
+
+    ctx.fillRect(
+      -9,
+      -4,
+      5,
+      4
+    );
+
+    ctx.fillRect(
+      4,
+      -4,
+      5,
+      4
+    );
+
+    ctx.restore();
+
+    const bw =
+      enemy.r * 2;
+
+    ctx.fillStyle =
+      "#222";
+
+    ctx.fillRect(
+      enemy.x - bw / 2,
+      enemy.y
+      -
+      enemy.r
+      -
+      12,
+      bw,
+      5
+    );
+
+    ctx.fillStyle =
+      "#d63838";
+
+    ctx.fillRect(
+      enemy.x - bw / 2,
+      enemy.y
+      -
+      enemy.r
+      -
+      12,
+      bw
+      *
+      (
+        enemy.hp
+        /
+        enemy.maxHp
+      ),
+      5
+    );
+
+  }
+
+  function drawParticles() {
+
+    particles.forEach(p => {
+
+      ctx.globalAlpha =
+        Math.max(
+          0,
+          p.life / 30
+        );
+
+      ctx.fillStyle =
+        p.color;
+
+      ctx.fillRect(
+        p.x,
+        p.y,
+        p.size,
+        p.size
+      );
+
+    });
+
+    ctx.globalAlpha = 1;
+
+  }
+
+  function updateHUD() {
+
+    document.getElementById("hp")
+      .style.width =
+      (
+        player.hp
+        /
+        player.maxHp
+        *
+        100
+      )
+      +
+      "%";
+
+    document.getElementById("energy")
+      .style.width =
+      (
+        player.energy
+        /
+        player.maxEnergy
+        *
+        100
+      )
+      +
+      "%";
+
+    document.getElementById("wave")
+      .textContent =
+      wave;
+
+    document.getElementById("score")
+      .textContent =
+      score;
+
+    document.getElementById("combo")
+      .textContent =
+      combo;
+
+  }
+
+  function gameLoop() {
+
+    updatePlayer();
+    updateEnemies();
+    updateParticles();
+
+    if (
+      comboTimer > 0
+    ) {
+
+      comboTimer--;
+
+    } else {
+
+      combo = 0;
+
+    }
+
+    if (
+      messageTimer > 0
+    ) {
+
+      messageTimer--;
+
+    } else {
+
+      document.getElementById(
+        "message"
+      ).style.opacity = 0;
+
+    }
+
+    drawArena();
+
+    enemies
+      .slice()
+      .sort(
+        (a, b) =>
+          a.y - b.y
+      )
+      .forEach(
+        drawEnemy
+      );
+
+    lightningBolts
+      .forEach(
+        drawLightningBolt
+      );
+
+    drawPlayer();
+
+    drawParticles();
+
+    updateHUD();
+
+    requestAnimationFrame(
+      gameLoop
+    );
+
+  }
+
+  player.x =
+    W * .5;
+
+  player.y =
+    H * .72;
+
+  spawnWave();
+
+  gameLoop();
+
+})();
+</script>
+
+</body>
+</html>
