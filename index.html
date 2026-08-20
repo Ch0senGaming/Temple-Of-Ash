@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -959,10 +960,6 @@ GAME OVER
 
 </div>
 
-<!-- =====================================================
-UPGRADE SHOP
-===================================================== -->
-
 <div id="shop">
 
   <div id="shopCard">
@@ -1123,10 +1120,6 @@ UPGRADE SHOP
   </div>
 
 </div>
-
-<!-- =====================================================
-PAUSE MENU
-===================================================== -->
 
 <div id="pauseMenu">
 
@@ -1449,10 +1442,6 @@ PAUSE MENU
 
 </div>
 
-<!-- =====================================================
-GAME OVER
-===================================================== -->
-
 <div id="gameOver">
 
   <div id="gameOverCard">
@@ -1516,10 +1505,6 @@ GAME OVER
 <script>
 "use strict";
 
-/* =====================================================
-MOBILE LOCK + ZOOM PROTECTION
-===================================================== */
-
 document.addEventListener(
   "touchmove",
   event=>{
@@ -1559,10 +1544,6 @@ document.addEventListener(
   "contextmenu",
   event=>event.preventDefault()
 );
-
-/* =====================================================
-GAME
-===================================================== */
 
 (()=>{
 
@@ -1620,10 +1601,6 @@ window.addEventListener(
   resize
 );
 
-/* =====================================================
-HELPERS
-===================================================== */
-
 const clamp=
 (value,min,max)=>
 Math.max(
@@ -1647,10 +1624,6 @@ Math.hypot(
 function lerp(a,b,t){
   return a+(b-a)*t;
 }
-
-/* =====================================================
-BOSS HUD POSITION
-===================================================== */
 
 function positionBossHud(){
 
@@ -1681,10 +1654,6 @@ function positionBossHud(){
     "px";
 
 }
-
-/* =====================================================
-LOCAL STORAGE
-===================================================== */
 
 function readNumber(
 key,
@@ -1730,10 +1699,6 @@ value
   }catch(error){}
 
 }
-
-/* =====================================================
-AUDIO
-===================================================== */
 
 const musicTrack=
   document.getElementById(
@@ -2060,10 +2025,6 @@ milliseconds=400
   requestAnimationFrame(step);
 
 }
-
-/* =====================================================
-SFX ENGINE
-===================================================== */
 
 function tone({
   frequency=440,
@@ -2672,10 +2633,6 @@ function playHeartbeat(){
   }
 );
 
-/* =====================================================
-AUDIO SETTINGS
-===================================================== */
-
 const musicSlider=
   document.getElementById(
     "musicSlider"
@@ -2910,10 +2867,6 @@ quickMuteButton.onclick=
 
 updateAudioUI();
 
-/* =====================================================
-SAFARI BACKGROUND AUDIO
-===================================================== */
-
 document.addEventListener(
   "visibilitychange",
   ()=>{
@@ -2980,10 +2933,6 @@ window.addEventListener(
   }
 );
 
-/* =====================================================
-ASSETS
-===================================================== */
-
 const images={
 
   stage:new Image(),
@@ -3006,17 +2955,13 @@ images.voodoo.src=
   "assets/voodoo_atlas.png";
 
 images.mardiGras.src=
-  "assets/mardi_gras_atlas.png";
+  "assets/mardi_gras_atlas.PNG";
 
 const SPRITE_WIDTH=160;
 const SPRITE_HEIGHT=128;
 
 const MARDI_COLS=8;
 const MARDI_ROWS=9;
-
-/* =====================================================
-ANIMATION MAPS
-===================================================== */
 
 const chosenAnimations={
 
@@ -3149,10 +3094,6 @@ const mardiGrasAnimations={
 
 };
 
-/* =====================================================
-LIGHTNING COLORS
-===================================================== */
-
 const abilityColors={
 
   1:{
@@ -3214,10 +3155,6 @@ function abilityColor(level){
 
 }
 
-/* =====================================================
-GAME STATE
-===================================================== */
-
 let wave=1;
 let score=0;
 let voltage=0;
@@ -3254,10 +3191,6 @@ let bossIntroTimer=0;
 
 const BOSS_INTRO_LENGTH=150;
 
-/* =====================================================
-POLISH
-===================================================== */
-
 let hitStopFrames=0;
 
 let cameraShake=0;
@@ -3270,10 +3203,6 @@ let comboFlowTimer=0;
 
 let nextHeartbeat=0;
 
-/* =====================================================
-RECORDS
-===================================================== */
-
 let bestWaveRecord=
   readNumber(
     "chosenPowerSurgeBestWave",
@@ -3285,10 +3214,6 @@ let highScoreRecord=
     "chosenPowerSurgeHighScore",
     0
   );
-
-/* =====================================================
-ROAD
-===================================================== */
 
 function roadTop(){
   return H*.55;
@@ -3365,10 +3290,6 @@ function depthScale(y){
 
 }
 
-/* =====================================================
-UPGRADES
-===================================================== */
-
 const upgrades={
 
   power:1,
@@ -3416,10 +3337,6 @@ function resetUpgrades(){
   upgrades.twinThunder=1;
 
 }
-
-/* =====================================================
-PLAYER
-===================================================== */
 
 const player={
 
@@ -3470,10 +3387,6 @@ const player={
 
 };
 
-/* =====================================================
-INPUT
-===================================================== */
-
 const input={
 
   x:0,
@@ -3490,10 +3403,6 @@ let lightPressed=false;
 let heavyPressed=false;
 let specialPressed=false;
 let dashPressed=false;
-
-/* =====================================================
-PICKUPS
-===================================================== */
 
 const pickupTypes={
 
@@ -3549,10 +3458,6 @@ const pickupTypes={
 
 };
 
-/* =====================================================
-MESSAGES
-===================================================== */
-
 function showMessage(text){
 
   const element=
@@ -3582,10 +3487,6 @@ function showPickup(text){
   pickupTimer=85;
 
 }
-
-/* =====================================================
-DANGER
-===================================================== */
 
 function isDanger(){
 
@@ -3643,10 +3544,6 @@ function updateDangerMode(){
 
 }
 
-/* =====================================================
-CAMERA
-===================================================== */
-
 function addShake(
 strength=4,
 frames=8
@@ -3675,10 +3572,6 @@ function addHitStop(frames){
     );
 
 }
-
-/* =====================================================
-PAUSE
-===================================================== */
 
 const pauseMenu=
   document.getElementById(
@@ -3852,10 +3745,6 @@ document.getElementById(
   resetRun();
 
 };
-
-/* =====================================================
-JOYSTICK
-===================================================== */
 
 const joystick=
   document.getElementById(
@@ -4033,10 +3922,6 @@ joystick.addEventListener(
   releaseJoystick
 );
 
-/* =====================================================
-BUTTONS
-===================================================== */
-
 function bindButton(
 id,
 property
@@ -4112,10 +3997,6 @@ bindButton(
   "dashBtn",
   "dash"
 );
-
-/* =====================================================
-ANIMATION
-===================================================== */
 
 function changeState(
 entity,
@@ -4299,10 +4180,6 @@ function createFootstep(entity){
 
 }
 
-/* =====================================================
-SPRITE DRAWING
-===================================================== */
-
 function drawSprite(
 image,
 entity,
@@ -4445,10 +4322,6 @@ scale
 
 }
 
-/* =====================================================
-COMBAT VALUES
-===================================================== */
-
 function attackMultiplier(){
 
   return(
@@ -4533,10 +4406,6 @@ function dashDistance(){
   ];
 
 }
-
-/* =====================================================
-VOODOO
-===================================================== */
 
 function createVoodoo(
 elite=false
@@ -4628,10 +4497,6 @@ elite=false
   };
 
 }
-
-/* =====================================================
-BOSSES
-===================================================== */
 
 const bossNames=[
   "MARDI GRAS",
@@ -4804,10 +4669,6 @@ function getLivingBosses(){
   );
 
 }
-
-/* =====================================================
-MARDI GRAS INTRO
-===================================================== */
 
 function createMardiConfettiBurst(
 x,
@@ -5117,10 +4978,6 @@ function updateBossIntro(){
 
 }
 
-/* =====================================================
-BOSS SPAWNING
-===================================================== */
-
 function spawnBossWave(){
 
   const primaryIndex=
@@ -5295,10 +5152,6 @@ function spawnWave(){
   );
 
 }
-
-/* =====================================================
-DROP SCARCITY
-===================================================== */
 
 function healthDropMultiplier(){
 
@@ -5476,10 +5329,6 @@ function dropPickup(enemy){
 
 }
 
-/* =====================================================
-SKY JUDGMENT
-===================================================== */
-
 function attemptSkyJudgment(
 enemy,
 abilityKey
@@ -5529,10 +5378,6 @@ abilityKey
   );
 
 }
-
-/* =====================================================
-TRIPLE SURGE
-===================================================== */
 
 function attemptTripleSurge(
 defeatedEnemy
@@ -5884,10 +5729,6 @@ targets
 
 }
 
-/* =====================================================
-KILLS
-===================================================== */
-
 function killEnemy(
 enemy,
 abilityKey=null,
@@ -5997,10 +5838,6 @@ suppressTriple=false
   }
 
 }
-
-/* =====================================================
-PLAYER HITS ENEMIES
-===================================================== */
 
 function hitEnemies(
 range,
@@ -6178,10 +6015,6 @@ verticalScale=.42
 
 }
 
-/* =====================================================
-SKY STRIKE DAMAGE
-===================================================== */
-
 function applySkyStrikeDamage(
 effect
 ){
@@ -6272,10 +6105,6 @@ effect
   );
 
 }
-
-/* =====================================================
-EFFECT HELPERS
-===================================================== */
 
 function addElectricArc(
 x1,
@@ -6371,10 +6200,6 @@ function createAbilityBurst(level){
   }
 
 }
-
-/* =====================================================
-COMBOS
-===================================================== */
 
 function resetComboSequence(){
 
@@ -6898,10 +6723,6 @@ level
 
 }
 
-/* =====================================================
-DASH VISUAL
-===================================================== */
-
 function createDashVisual(level){
 
   effects.push({
@@ -6984,10 +6805,6 @@ function createDashVisual(level){
   }
 
 }
-
-/* =====================================================
-PLAYER UPDATE
-===================================================== */
 
 function updatePlayer(){
 
@@ -7111,8 +6928,6 @@ function updatePlayer(){
 
   }
 
-  /* LIGHT */
-
   if(
     input.light &&
     !lightPressed &&
@@ -7196,8 +7011,6 @@ function updatePlayer(){
   if(!input.light){
     lightPressed=false;
   }
-
-  /* HEAVY */
 
   if(
     input.heavy &&
@@ -7297,8 +7110,6 @@ function updatePlayer(){
   if(!input.heavy){
     heavyPressed=false;
   }
-
-  /* THUNDER BURST */
 
   if(
     input.special &&
@@ -7406,8 +7217,6 @@ function updatePlayer(){
   if(!input.special){
     specialPressed=false;
   }
-
-  /* DASH */
 
   if(
     input.dash &&
@@ -7529,10 +7338,6 @@ function updatePlayer(){
   );
 
 }
-
-/* =====================================================
-LIVES
-===================================================== */
 
 function handlePlayerDown(){
 
@@ -7666,10 +7471,6 @@ function updateRespawn(){
 
 }
 
-/* =====================================================
-GAME OVER
-===================================================== */
-
 function endGame(){
 
   gameIsOver=true;
@@ -7750,10 +7551,6 @@ function endGame(){
   );
 
 }
-
-/* =====================================================
-MARDI GRAS SPECIALS
-===================================================== */
 
 function startMardiSpin(
 enemy,
@@ -7839,10 +7636,6 @@ enemy
 
 }
 
-/* =====================================================
-ENEMY AI
-===================================================== */
-
 function updateEnemies(){
 
   enemies.forEach(
@@ -7884,8 +7677,6 @@ function updateEnemies(){
       if(enemy.hitRecovery>0){
         enemy.hitRecovery--;
       }
-
-      /* Mardi special action */
 
       if(
         enemy.boss &&
@@ -8239,8 +8030,6 @@ function updateEnemies(){
 
       }
 
-      /* BOSS SPECIAL */
-
       if(
         enemy.boss &&
         enemy.specialCooldown<=0 &&
@@ -8342,8 +8131,6 @@ function updateEnemies(){
           desiredY,
           .10
         );
-
-      /* CLOSE ATTACK */
 
       if(
         Math.abs(dx)<60 &&
@@ -8510,10 +8297,6 @@ function updateEnemies(){
 
 }
 
-/* =====================================================
-PICKUPS
-===================================================== */
-
 function updatePickups(){
 
   pickups.forEach(
@@ -8600,10 +8383,6 @@ function updatePickups(){
 
 }
 
-/* =====================================================
-EFFECT UPDATE
-===================================================== */
-
 function updateEffects(){
 
   effects.forEach(
@@ -8654,10 +8433,6 @@ function updateEffects(){
     );
 
 }
-
-/* =====================================================
-SHOP
-===================================================== */
 
 function shouldOpenShop(
 completedWave
@@ -9181,10 +8956,6 @@ document.getElementById(
 
 };
 
-/* =====================================================
-PLAY AGAIN
-===================================================== */
-
 document.getElementById(
   "playAgainButton"
 ).onclick=
@@ -9200,10 +8971,6 @@ document.getElementById(
   resetRun();
 
 };
-
-/* =====================================================
-RESET
-===================================================== */
 
 function resetRun(){
 
@@ -9317,10 +9084,6 @@ function resetRun(){
   );
 
 }
-
-/* =====================================================
-STAGE
-===================================================== */
 
 function drawStage(){
 
@@ -9808,10 +9571,6 @@ height
 
 }
 
-/* =====================================================
-CHARACTERS
-===================================================== */
-
 function drawShadow(
 entity,
 multiplier=1
@@ -10076,10 +9835,6 @@ function drawEnemy(enemy){
 
 }
 
-/* =====================================================
-PICKUP DRAW
-===================================================== */
-
 function drawPickups(){
 
   ctx.textAlign="center";
@@ -10142,10 +9897,6 @@ function drawPickups(){
   );
 
 }
-
-/* =====================================================
-EFFECT DRAW
-===================================================== */
 
 function drawEffects(){
 
@@ -11015,10 +10766,6 @@ function drawEffects(){
 
 }
 
-/* =====================================================
-CINEMATIC OVERLAY
-===================================================== */
-
 function drawBossIntroOverlay(){
 
   if(
@@ -11124,10 +10871,6 @@ function drawBossIntroOverlay(){
 
 }
 
-/* =====================================================
-BOSS HUD
-===================================================== */
-
 function updateBossHud(){
 
   const bosses=
@@ -11219,10 +10962,6 @@ function updateBossHud(){
 
 }
 
-/* =====================================================
-HUD
-===================================================== */
-
 function updateHud(){
 
   document.getElementById(
@@ -11302,10 +11041,6 @@ function updateHud(){
   updateBossHud();
 
 }
-
-/* =====================================================
-UPDATE
-===================================================== */
 
 function update(){
 
@@ -11410,10 +11145,6 @@ function update(){
 
 }
 
-/* =====================================================
-DRAW
-===================================================== */
-
 function draw(){
 
   ctx.save();
@@ -11481,10 +11212,6 @@ function draw(){
 
 }
 
-/* =====================================================
-LOOP
-===================================================== */
-
 function gameLoop(){
 
   update();
@@ -11496,10 +11223,6 @@ function gameLoop(){
   );
 
 }
-
-/* =====================================================
-START
-===================================================== */
 
 player.x=W*.5;
 player.y=H*.72;
