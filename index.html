@@ -1,19 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<title>CHOSEN: POWER SURGE</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  position:fixed;
+  inset:0;
+  background:#02040a;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+  touch-action:none;
+  overscroll-behavior:none;
+}
+
+button,input{
+  font:inherit;
+}
+
+canvas{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100dvh;
+  display:block;
+  image-rendering:pixelated;
+  touch-action:none;
+}
+
+/* =====================================================
+HUD
+===================================================== */
+
+#hud{
+  position:fixed;
+  inset:0;
+  z-index:10;
+  pointer-events:none;
+}
+
+#topHud{
+  position:absolute;
+  top:max(6px,env(safe-area-inset-top));
+  left:6px;
+  right:6px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:5px;
+}
+
+.panel{
+  background:rgba(2,5,11,.84);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:9px;
+  padding:5px 8px;
+  box-shadow:0 4px 14px rgba(0,0,0,.55);
+  backdrop-filter:blur(5px);
+}
+
+#playerPanel{
+  width:min(43vw,300px);
+}
+
+#centerPanel{
+  min-width:92px;
+  text-align:center;
+  font-size:12px;
+}
+
+#scorePanel{
+  min-width:90px;
+  text-align:right;
+  font-size:11px;
+}
+
+.playerName{
+  font-size:15px;
+  font-weight:1000;
+  font-style:italic;
+  letter-spacing:1px;
+  line-height:1.05;
+}
+
+#livesDisplay{
+  margin-top:1px;
+  color:#ff5858;
+  font-size:12px;
+  line-height:1.05;
+  letter-spacing:2px;
+  text-shadow:0 0 8px rgba(255,50,50,.5);
+}
+
+.statRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:2px;
+  font-size:9px;
+  line-height:1.05;
+  opacity:.86;
+}
+
+.bar{
+  height:6px;
+  margin-top:1px;
+  overflow:hidden;
+  border-radius:12px;
+  background:#252b35;
+  transition:box-shadow .2s,border .2s;
+}
+
+.fill{
+  height:100%;
+}
+
+#hpFill{
+  background:linear-gradient(90deg,#aa1421,#ff5343);
+}
+
+#energyFill{
+  background:linear-gradient(90deg,#1068d8,#6cecff);
+}
+
+/* =====================================================
+DANGER MODE
+===================================================== */
+
+#dangerText{
+  display:none;
+  margin-left:5px;
+  color:#ff3636;
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.5px;
+  text-shadow:0 0 8px #ff1a1a;
+}
+
+#dangerText.active{
+  display:inline-block;
+  animation:dangerPulse .72s infinite;
+}
+
+#hpBarOuter.danger{
+  border:1px solid rgba(255,55,55,.85);
+  box-shadow:
+    0 0 8px rgba(255,20,20,.95),
+    0 0 18px rgba(255,20,20,.6);
+  animation:dangerBar .72s infinite;
+}
+
+#hpBarOuter.danger #hpFill{
+  background:linear-gradient(90deg,#850000,#ff1717,#ff5a5a);
+}
+
+@keyframes dangerPulse{
+  0%,100%{
+    opacity:.55;
+    transform:scale(1);
+  }
+  50%{
+    opacity:1;
+    transform:scale(1.08);
+  }
+}
+
+@keyframes dangerBar{
+  0%,100%{opacity:.65}
+  50%{opacity:1}
+}
+
+/* =====================================================
+MESSAGES
+===================================================== */
+
+#message{
+  position:absolute;
+  top:19%;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  text-align:center;
+  font-size:clamp(22px,5vw,45px);
+  font-weight:1000;
+  font-style:italic;
+  text-shadow:
+    0 4px 5px #000,
+    0 0 18px #34c8ff;
+  opacity:0;
+}
+
+#pickupMessage{
+  position:absolute;
+  top:31%;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:15px;
+  font-weight:1000;
+  text-shadow:0 2px 5px #000;
+  opacity:0;
+}
+
+/* =====================================================
+BOSS HUD
+===================================================== */
+
+#bossHud{
+  position:absolute;
+  top:115px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(69vw,610px);
+  display:none;
+  pointer-events:none;
+}
+
+.bossRow{
+  margin-bottom:5px;
+  text-align:center;
+}
+
+.bossName{
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:1.5px;
+  text-shadow:
+    0 2px 4px #000,
+    0 0 5px #000;
+}
+
+.bossBarOuter{
+  height:10px;
+  margin-top:2px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.3);
+  border-radius:14px;
+  background:rgba(23,11,17,.9);
+  box-shadow:0 2px 5px rgba(0,0,0,.65);
+}
+
+.bossBar{
+  width:100%;
+  height:100%;
+  background:linear-gradient(90deg,#941536,#ff4549);
+}
+
+#bossRow2{
+  display:none;
+}
+
+/* =====================================================
+PAUSE + QUICK MUTE
+===================================================== */
+
+#pauseButton,
+#quickMuteButton{
+  position:fixed;
+  z-index:35;
+  top:max(91px,calc(env(safe-area-inset-top) + 84px));
+  width:42px;
+  height:42px;
+  border:1px solid rgba(255,255,255,.3);
+  border-radius:11px;
+  background:rgba(3,7,14,.83);
+  color:#fff;
+  font-size:19px;
+  font-weight:1000;
+  box-shadow:0 5px 16px rgba(0,0,0,.45);
+  touch-action:manipulation;
+  -webkit-touch-callout:none;
+}
+
+#pauseButton{
+  right:max(8px,env(safe-area-inset-right));
+}
+
+#quickMuteButton{
+  right:max(58px,calc(env(safe-area-inset-right) + 50px));
+  font-size:17px;
+}
+
+#quickMuteButton.muted{
+  border-color:rgba(255,100,100,.5);
+  background:rgba(55,8,12,.88);
+}
+
+/* =====================================================
+CONTROLS
+===================================================== */
+
+#controls{
+  position:fixed;
+  inset:0;
+  z-index:20;
+  pointer-events:none;
+  touch-action:none;
+}
+
+#joystick{
+  position:absolute;
+  left:max(18px,env(safe-area-inset-left));
+  bottom:max(23px,env(safe-area-inset-bottom));
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.25);
+  background:rgba(3,7,14,.58);
+  box-shadow:inset 0 0 25px rgba(0,0,0,.65);
+  pointer-events:auto;
+  touch-action:none;
+}
+
+#stick{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:61px;
+  height:61px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.55);
+  background:rgba(221,229,239,.78);
+  pointer-events:none;
+  touch-action:none;
+}
+
+#buttons{
+  position:absolute;
+  right:max(15px,env(safe-area-inset-right));
+  bottom:max(22px,env(safe-area-inset-bottom));
+  width:187px;
+  height:187px;
+  pointer-events:auto;
+  touch-action:manipulation;
+}
+
+.gameButton{
+  position:absolute;
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.25);
+  background:rgba(5,10,17,.88);
+  color:#fff;
+  font-size:21px;
+  font-weight:1000;
+  touch-action:manipulation;
+  -webkit-touch-callout:none;
+}
+
+.gameButton small{
+  display:block;
+  font-size:8px;
+  opacity:.82;
+}
+
+#lightBtn{
+  left:0;
+  top:58px;
+  color:#62bcff;
+}
+
+#heavyBtn{
+  left:65px;
+  top:0;
+  color:#ffd65c;
+}
+
+#specialBtn{
+  left:65px;
+  top:115px;
+  color:#65e7ff;
+}
+
+#dashBtn{
+  left:125px;
+  top:58px;
+  color:#ff6258;
+}
+
+/* =====================================================
+SHOP
+===================================================== */
+
+#shop{
+  position:fixed;
+  inset:0;
+  z-index:40;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,.76);
+  backdrop-filter:blur(5px);
+}
+
+#shopCard{
+  width:min(94vw,760px);
+  max-height:82dvh;
+  overflow:auto;
+  padding:16px;
+  border:2px solid rgba(75,205,255,.4);
+  border-radius:17px;
+  background:linear-gradient(#111a25,#070b11);
+  touch-action:pan-y;
+}
+
+.shopTitle{
+  text-align:center;
+  color:#70e3ff;
+  font-size:24px;
+  font-weight:1000;
+}
+
+.shopCurrency{
+  margin:8px 0 14px;
+  text-align:center;
+  color:#ffd95c;
+  font-weight:1000;
+}
+
+.shopSection{
+  margin:12px 0 7px;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:2px;
+  opacity:.7;
+}
+
+.shopGrid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+}
+
+.upgrade{
+  padding:11px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:11px;
+  background:#101722;
+}
+
+.upgrade.abilityCard{
+  background:linear-gradient(145deg,#101722,#101c2b);
+}
+
+.upgrade.vitalityCard{
+  border-color:rgba(255,95,95,.3);
+  background:linear-gradient(145deg,#1a1215,#251116);
+}
+
+.upgrade p{
+  min-height:29px;
+  margin:7px 0;
+  font-size:10px;
+  opacity:.72;
+}
+
+.levelDots{
+  margin:6px 0 8px;
+  font-size:14px;
+  letter-spacing:2px;
+}
+
+.upgrade button,
+#continueButton{
+  width:100%;
+  padding:10px;
+  border:0;
+  border-radius:9px;
+  background:#173651;
+  color:#fff;
+  font-weight:1000;
+}
+
+.upgrade button:disabled{
+  opacity:.45;
+}
+
+#vitalityButton{
+  background:#5b2027;
+}
+
+#continueButton{
+  margin-top:14px;
+  background:#167bd6;
+}
+
+/* =====================================================
+PAUSE MENU
+===================================================== */
+
+#pauseMenu{
+  position:fixed;
+  inset:0;
+  z-index:55;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  padding:16px;
+  background:rgba(0,0,0,.78);
+  backdrop-filter:blur(8px);
+}
+
+#pauseCard{
+  width:min(95vw,720px);
+  max-height:88dvh;
+  overflow:auto;
+  padding:17px;
+  border:2px solid rgba(73,194,255,.4);
+  border-radius:18px;
+  background:linear-gradient(#111a25,#06090e);
+  touch-action:pan-y;
+}
+
+.pauseHeader{
+  text-align:center;
+}
+
+.pauseHeader h1{
+  margin:0;
+  color:#70e4ff;
+  font-size:25px;
+}
+
+.pauseHeader p{
+  margin:4px 0 14px;
+  font-size:11px;
+  opacity:.6;
+}
+
+.pauseTabs{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:7px;
+  margin-bottom:12px;
+}
+
+.pauseTab{
+  padding:11px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:9px;
+  background:#101722;
+  color:#fff;
+  font-weight:900;
+}
+
+.pauseTab.active{
+  background:#174b70;
+  border-color:#59cdfd;
+}
+
+.pausePage{
+  display:none;
+}
+
+.pausePage.active{
+  display:block;
+}
+
+.pauseMainButton{
+  width:100%;
+  margin:7px 0;
+  padding:14px;
+  border:0;
+  border-radius:11px;
+  color:#fff;
+  font-size:16px;
+  font-weight:1000;
+  background:#167bd6;
+}
+
+.pauseMainButton.secondary{
+  background:#172331;
+}
+
+.pauseMainButton.danger{
+  background:#671d26;
+}
+
+.moveCard{
+  margin:8px 0;
+  padding:11px;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:11px;
+  background:#0e151e;
+}
+
+.moveTitle{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+  font-weight:1000;
+}
+
+.moveButtons{
+  color:#7de4ff;
+  white-space:nowrap;
+}
+
+.moveCard p{
+  margin:6px 0;
+  font-size:11px;
+  line-height:1.45;
+  opacity:.75;
+}
+
+.evolution{
+  margin-top:7px;
+  font-size:10px;
+  line-height:1.6;
+  opacity:.78;
+}
+
+.colorBlue{color:#66e7ff}
+.colorYellow{color:#ffe85b}
+.colorPink{color:#ff5cd8}
+.colorGreen{color:#57f77c}
+.colorPurple{color:#bb64ff}
+.colorRed{color:#ff4141}
+
+.colorRoyal{
+  color:#4280ff;
+  text-shadow:0 0 8px #286dff;
+}
+
+.audioRow{
+  margin:14px 0;
+  padding:12px;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:11px;
+  background:#0e151e;
+}
+
+.audioTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:9px;
+  font-weight:900;
+}
+
+.audioControls{
+  display:grid;
+  grid-template-columns:1fr 80px;
+  gap:9px;
+  align-items:center;
+}
+
+.audioControls input{
+  width:100%;
+}
+
+.muteButton{
+  padding:9px 5px;
+  border:0;
+  border-radius:8px;
+  background:#19334c;
+  color:#fff;
+  font-size:10px;
+  font-weight:1000;
+}
+
+/* =====================================================
+GAME OVER
+===================================================== */
+
+#gameOver{
+  position:fixed;
+  inset:0;
+  z-index:60;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  padding:18px;
+  background:
+    radial-gradient(
+      circle at 50% 30%,
+      rgba(40,70,120,.22),
+      rgba(0,0,0,.94) 65%
+    );
+  backdrop-filter:blur(8px);
+}
+
+#gameOverCard{
+  width:min(92vw,500px);
+  padding:24px 20px;
+  border:2px solid rgba(80,170,255,.45);
+  border-radius:20px;
+  background:linear-gradient(180deg,#111822,#05080d);
+  box-shadow:
+    0 0 40px rgba(30,110,255,.18),
+    0 18px 50px rgba(0,0,0,.8);
+  text-align:center;
+}
+
+.overLogo{
+  color:#68dfff;
+  font-size:15px;
+  font-weight:1000;
+  letter-spacing:2px;
+}
+
+.overTitle{
+  margin-top:6px;
+  color:#ff4c4c;
+  font-size:42px;
+  font-weight:1000;
+  font-style:italic;
+}
+
+.overSubtitle{
+  margin:3px 0 18px;
+  font-size:12px;
+  letter-spacing:2px;
+  opacity:.65;
+}
+
+.results{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.result{
+  padding:11px 6px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:10px;
+  background:#0c121a;
+}
+
+.result small{
+  display:block;
+  margin-bottom:4px;
+  font-size:9px;
+  opacity:.58;
+}
+
+.result strong{
+  font-size:20px;
+}
+
+.records{
+  margin:12px 0;
+  padding:10px;
+  border-radius:10px;
+  background:rgba(35,90,160,.13);
+  color:#7ee6ff;
+  font-weight:900;
+  line-height:1.7;
+}
+
+#playAgainButton{
+  width:100%;
+  margin-top:6px;
+  padding:15px;
+  border:0;
+  border-radius:12px;
+  background:linear-gradient(90deg,#126ed0,#48cfff);
+  color:#fff;
+  font-size:18px;
+  font-weight:1000;
+}
+
+@media(max-width:620px){
+
+  .shopGrid{
+    grid-template-columns:1fr;
+  }
+
+  #buttons{
+    transform:scale(.88);
+    transform-origin:bottom right;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="game"></canvas>
+
+<audio
+  id="musicTrack"
+  src="assets/power_surge_bourbon_theme.mp3"
+  preload="auto"
+  loop
+></audio>
+
+<div id="hud">
+
+  <div id="topHud">
+
+    <div class="panel" id="playerPanel">
+
+      <div class="playerName">
+        ⚡ CHOSEN
+      </div>
+
+      <div id="livesDisplay">
+        ♥ ♥ ♥
+      </div>
+
+      <div class="statRow">
+        <span>
+          HP
+          <span id="dangerText">
+            ⚠ DANGER!
+          </span>
+        </span>
+
+        <span id="hpText">
+          100 / 100
+        </span>
+      </div>
+
+      <div class="bar" id="hpBarOuter">
+        <div class="fill" id="hpFill"></div>
+      </div>
+
+      <div class="statRow">
+        <span>ENERGY</span>
+        <span id="energyText">
+          100 / 100
+        </span>
+      </div>
+
+      <div class="bar">
+        <div class="fill" id="energyFill"></div>
+      </div>
+
+    </div>
+
+    <div class="panel" id="centerPanel">
+
+      <b>
+        WAVE
+        <span id="waveText">1</span>
+      </b>
+
+      <br>
+
+      <span id="enemyText" style="font-size:9px;">
+        VOODOO CLAN
+      </span>
+
+      <br>
+
+      ⚡
+      <span id="voltageText">0</span>
+
+    </div>
+
+    <div class="panel" id="scorePanel">
+
+      SCORE
+      <br>
+      <b id="scoreText">0</b>
+
+      <br>
+
+      COMBO
+      <b id="comboText">0</b>
+
+    </div>
+
+  </div>
+
+  <div id="bossHud">
+
+    <div class="bossRow" id="bossRow1">
+
+      <div class="bossName" id="bossName1"></div>
+
+      <div class="bossBarOuter">
+        <div class="bossBar" id="bossBar1"></div>
+      </div>
+
+    </div>
+
+    <div class="bossRow" id="bossRow2">
+
+      <div class="bossName" id="bossName2"></div>
+
+      <div class="bossBarOuter">
+        <div class="bossBar" id="bossBar2"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="message"></div>
+  <div id="pickupMessage"></div>
+
+</div>
+
+<button
+  id="quickMuteButton"
+  aria-label="Mute all sound"
+>
+  🔊
+</button>
+
+<button id="pauseButton">
+  Ⅱ
+</button>
+
+<div id="controls">
+
+  <div id="joystick">
+    <div id="stick"></div>
+  </div>
+
+  <div id="buttons">
+
+    <button class="gameButton" id="lightBtn">
+      A
+      <small>SLASH</small>
+    </button>
+
+    <button class="gameButton" id="heavyBtn">
+      H
+      <small>HEAVY</small>
+    </button>
+
+    <button class="gameButton" id="specialBtn">
+      S
+      <small>POWER</small>
+    </button>
+
+    <button class="gameButton" id="dashBtn">
+      ⚡
+      <small>DASH</small>
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =====================================================
+UPGRADE SHOP
+===================================================== -->
+
+<div id="shop">
+
+  <div id="shopCard">
+
+    <div class="shopTitle">
+      ⚡ POWER SURGE UPGRADES
+    </div>
+
+    <div class="shopCurrency">
+      VOLTAGE:
+      <span id="shopVoltage">0</span>
+    </div>
+
+    <div class="shopSection">
+      CORE COMBAT
+    </div>
+
+    <div class="shopGrid">
+
+      <div class="upgrade">
+
+        <b>⚔ ATTACK POWER</b>
+
+        <p>
+          Increase sword damage, combo damage and finisher power.
+        </p>
+
+        <div>
+          LV
+          <span id="powerLevel">1</span>
+        </div>
+
+        <button id="powerButton"></button>
+
+      </div>
+
+      <div class="upgrade">
+
+        <b>⚡ ATTACK SPEED</b>
+
+        <p>
+          Faster attacks, smoother chaining and shorter recovery.
+        </p>
+
+        <div>
+          LV
+          <span id="speedLevel">1</span>
+        </div>
+
+        <button id="speedButton"></button>
+
+      </div>
+
+      <div class="upgrade vitalityCard">
+
+        <b>♥ VITALITY</b>
+
+        <p>
+          Expensive defensive upgrade that permanently increases maximum HP for the run.
+        </p>
+
+        <div>
+          HP
+          <span id="vitalityHp">100</span>
+          •
+          LV
+          <span id="vitalityLevel">0</span>/5
+        </div>
+
+        <button id="vitalityButton"></button>
+
+      </div>
+
+    </div>
+
+    <div class="shopSection">
+      ELECTRIC ABILITIES
+    </div>
+
+    <div class="shopGrid">
+
+      <div class="upgrade abilityCard">
+
+        <b>🌩 THUNDER BURST</b>
+
+        <p>
+          Larger shockwave, more damage and increasingly violent lightning.
+        </p>
+
+        <div class="levelDots" id="thunderDots"></div>
+
+        <button id="thunderButton"></button>
+
+      </div>
+
+      <div class="upgrade abilityCard">
+
+        <b>⚡ LIGHTNING DASH</b>
+
+        <p>
+          Every upgrade travels farther. Royal Blue unlocks Triple Surge.
+        </p>
+
+        <div class="levelDots" id="dashDots"></div>
+
+        <button id="dashUpgradeButton"></button>
+
+      </div>
+
+      <div class="upgrade abilityCard">
+
+        <b>⚔ VOLT RUSH</b>
+
+        <p>
+          A-A-H. Evolves into a faster, larger and more explosive sword rush.
+        </p>
+
+        <div class="levelDots" id="voltDots"></div>
+
+        <button id="voltButton"></button>
+
+      </div>
+
+      <div class="upgrade abilityCard">
+
+        <b>✕ ELECTRIC CROSS</b>
+
+        <p>
+          A-H-A. Evolves into a huge crossing-blade electrical detonation.
+        </p>
+
+        <div class="levelDots" id="crossDots"></div>
+
+        <button id="crossButton"></button>
+
+      </div>
+
+      <div class="upgrade abilityCard">
+
+        <b>⚡⚔ TWIN THUNDER</b>
+
+        <p>
+          H-A-H. Chosen's heaviest dual-sword electrical finisher.
+        </p>
+
+        <div class="levelDots" id="twinDots"></div>
+
+        <button id="twinButton"></button>
+
+      </div>
+
+    </div>
+
+    <button id="continueButton">
+      CONTINUE
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =====================================================
+PAUSE MENU
+===================================================== -->
+
+<div id="pauseMenu">
+
+  <div id="pauseCard">
+
+    <div class="pauseHeader">
+
+      <h1>
+        ⚡ CHOSEN: POWER SURGE
+      </h1>
+
+      <p>
+        PAUSED
+      </p>
+
+    </div>
+
+    <div class="pauseTabs">
+
+      <button class="pauseTab active" data-page="pauseHome">
+        MENU
+      </button>
+
+      <button class="pauseTab" data-page="moveList">
+        MOVE LIST
+      </button>
+
+      <button class="pauseTab" data-page="audioMenu">
+        AUDIO
+      </button>
+
+      <button class="pauseTab" data-page="abilityGuide">
+        EVOLUTION
+      </button>
+
+    </div>
+
+    <div class="pausePage active" id="pauseHome">
+
+      <button class="pauseMainButton" id="resumeButton">
+        ▶ RESUME
+      </button>
+
+      <button class="pauseMainButton secondary" id="movesButton">
+        ⚔ VIEW MOVES & COMBOS
+      </button>
+
+      <button class="pauseMainButton secondary" id="audioButton">
+        🔊 AUDIO SETTINGS
+      </button>
+
+      <button class="pauseMainButton danger" id="restartButton">
+        ↻ RESTART RUN
+      </button>
+
+    </div>
+
+    <div class="pausePage" id="moveList">
+
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>SWORD SLASH</span>
+          <span class="moveButtons">A</span>
+        </div>
+        <p>
+          Fast dual-sword slash. Best button for starting and extending combos.
+        </p>
+      </div>
+
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>HEAVY ELECTRIC SLASH</span>
+          <span class="moveButtons">H</span>
+        </div>
+        <p>
+          Slower, harder strike with electricity and strong knockback.
+        </p>
+      </div>
+
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>THUNDER BURST</span>
+          <span class="moveButtons">S</span>
+        </div>
+        <p>
+          Releases electricity around Chosen. Upgrading it increases radius,
+          damage, lightning density and impact strength.
+        </p>
+      </div>
+
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>LIGHTNING DASH</span>
+          <span class="moveButtons">⚡</span>
+        </div>
+        <p>
+          Chosen surges across the battlefield with temporary invulnerability.
+          Every level covers more ground.
+        </p>
+      </div>
+
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>VOLT RUSH</span>
+          <span class="moveButtons">A → A → H</span>
+        </div>
+        <p>
+          Two fast slashes flow directly into a powerful electric sword finisher.
+          Higher levels increase range, sword trails, lightning, knockback,
+          camera shake and impact strength.
+        </p>
+      </div>
+
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>ELECTRIC CROSS</span>
+          <span class="moveButtons">A → H → A</span>
+        </div>
+        <p>
+          Chosen crosses both blades through the target. The X-shaped attack
+          grows larger and more explosive at every level.
+        </p>
+      </div>
+
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>TWIN THUNDER</span>
+          <span class="moveButtons">H → A → H</span>
+        </div>
+        <p>
+          Chosen's strongest standard combo. Dual blade arcs erupt outward
+          with increasingly heavy electricity and knockback.
+        </p>
+      </div>
+
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>SKY JUDGMENT</span>
+          <span class="moveButtons">ROYAL BLUE</span>
+        </div>
+        <p>
+          Level 7 electric ability kills have a 30% chance to call down
+          a Royal Blue lightning strike from the sky.
+        </p>
+      </div>
+
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>TRIPLE SURGE</span>
+          <span class="moveButtons">DASH LV.7</span>
+        </div>
+        <p>
+          Fully upgraded Lightning Dash gives enemy defeats a 25% chance
+          to teleport Chosen through up to three surviving enemies.
+        </p>
+      </div>
+
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>VITALITY</span>
+          <span class="moveButtons">SHOP</span>
+        </div>
+        <p>
+          Expensive defensive upgrade. Maximum HP progresses:
+          100 → 115 → 130 → 150 → 175 → 200.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="pausePage" id="audioMenu">
+
+      <div class="audioRow">
+
+        <div class="audioTop">
+          <span>🎵 MUSIC</span>
+          <span id="musicValue">35%</span>
+        </div>
+
+        <div class="audioControls">
+
+          <input
+            id="musicSlider"
+            type="range"
+            min="0"
+            max="100"
+            value="35"
+          >
+
+          <button class="muteButton" id="musicMute">
+            MUTE
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="audioRow">
+
+        <div class="audioTop">
+          <span>⚔ SOUND EFFECTS</span>
+          <span id="sfxValue">35%</span>
+        </div>
+
+        <div class="audioControls">
+
+          <input
+            id="sfxSlider"
+            type="range"
+            min="0"
+            max="100"
+            value="35"
+          >
+
+          <button class="muteButton" id="sfxMute">
+            MUTE
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="moveCard">
+        <p>
+          Music and sound settings are saved automatically on this device.
+          Use the speaker button beside Pause for instant full mute.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="pausePage" id="abilityGuide">
+
+      <div class="moveCard">
+
+        <div class="moveTitle">
+          <span>⚡ ELECTRIC EVOLUTION</span>
+          <span>LV. 1–7</span>
+        </div>
+
+        <div class="evolution">
+
+          <span class="colorBlue">
+            ● LV.1 ELECTRIC BLUE
+          </span>
+          — Base electricity and smaller attack trails.
+          <br>
+
+          <span class="colorYellow">
+            ● LV.2 YELLOW
+          </span>
+          — Increased brightness and impact.
+          <br>
+
+          <span class="colorPink">
+            ● LV.3 PINK
+          </span>
+          — Longer trails and more lightning.
+          <br>
+
+          <span class="colorGreen">
+            ● LV.4 GREEN
+          </span>
+          — Larger attack shapes and stronger knockback.
+          <br>
+
+          <span class="colorPurple">
+            ● LV.5 PURPLE
+          </span>
+          — Heavy glow, afterimages and larger finishers.
+          <br>
+
+          <span class="colorRed">
+            ● LV.6 RED
+          </span>
+          — Violent high-power effects and stronger impact shake.
+          <br>
+
+          <span class="colorRoyal">
+            ● LV.7 ROYAL BLUE
+          </span>
+          — Ultimate form. Maximum visual power and special proc abilities.
+
+        </div>
+
+      </div>
+
+      <div class="moveCard">
+
+        <div class="moveTitle">
+          <span>VITALITY</span>
+          <span>MAX 200 HP</span>
+        </div>
+
+        <p>
+          Costs 1,500 → 3,000 → 5,000 → 8,000 → 12,000 Voltage.
+          Purchasing Vitality adds only the newly gained HP instead of
+          completely healing Chosen.
+        </p>
+
+      </div>
+
+      <div class="moveCard">
+
+        <div class="moveTitle">
+          <span>LATE GAME</span>
+          <span>WAVE 30+</span>
+        </div>
+
+        <p>
+          Health items become progressively rarer after Wave 30.
+          Double-boss fights begin at Wave 50.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =====================================================
+GAME OVER
+===================================================== -->
+
+<div id="gameOver">
+
+  <div id="gameOverCard">
+
+    <div class="overLogo">
+      ⚡ CHOSEN: POWER SURGE ⚡
+    </div>
+
+    <div class="overTitle">
+      GAME OVER
+    </div>
+
+    <div class="overSubtitle">
+      CHOSEN HAS FALLEN
+    </div>
+
+    <div class="results">
+
+      <div class="result">
+        <small>WAVE REACHED</small>
+        <strong id="overWave">1</strong>
+      </div>
+
+      <div class="result">
+        <small>FINAL SCORE</small>
+        <strong id="overScore">0</strong>
+      </div>
+
+      <div class="result">
+        <small>ENEMIES DEFEATED</small>
+        <strong id="overKills">0</strong>
+      </div>
+
+      <div class="result">
+        <small>VOLTAGE EARNED</small>
+        <strong id="overVoltage">0</strong>
+      </div>
+
+    </div>
+
+    <div class="records">
+
+      👑 BEST WAVE:
+      <span id="bestWave">1</span>
+
+      <br>
+
+      🏆 HIGH SCORE:
+      <span id="highScore">0</span>
+
+    </div>
+
+    <button id="playAgainButton">
+      ⚡ PLAY AGAIN
+    </button>
+
+  </div>
+
+</div>
+
 <script>
 "use strict";
 
 /* =====================================================
-MOBILE SCREEN LOCK + ZOOM PROTECTION
+MOBILE LOCK + ZOOM PROTECTION
 ===================================================== */
 
 document.addEventListener(
   "touchmove",
   event=>{
+
     if(
       !event.target.closest("#shopCard") &&
       !event.target.closest("#pauseCard")
     ){
       event.preventDefault();
     }
+
   },
   {passive:false}
 );
@@ -23,11 +1540,13 @@ document.addEventListener(
   "gesturechange",
   "gestureend"
 ].forEach(name=>{
+
   document.addEventListener(
     name,
     event=>event.preventDefault(),
     {passive:false}
   );
+
 });
 
 document.addEventListener(
@@ -130,7 +1649,7 @@ function lerp(a,b,t){
 }
 
 /* =====================================================
-DYNAMIC BOSS HUD
+BOSS HUD POSITION
 ===================================================== */
 
 function positionBossHud(){
@@ -213,7 +1732,7 @@ value
 }
 
 /* =====================================================
-MUSIC
+AUDIO
 ===================================================== */
 
 const musicTrack=
@@ -259,7 +1778,6 @@ let quickMuted=
     0
   );
 
-let musicStarted=false;
 let wasPlayingBeforeHidden=false;
 
 let audioContext=null;
@@ -420,9 +1938,7 @@ function ensureAudio(){
 
       refreshSfxVolume();
 
-      refreshMusicVolume(
-        true
-      );
+      refreshMusicVolume(true);
 
     }
 
@@ -432,9 +1948,7 @@ function ensureAudio(){
     audioContext &&
     audioContext.state==="suspended"
   ){
-
     audioContext.resume();
-
   }
 
   if(!document.hidden){
@@ -451,8 +1965,6 @@ function startRealMusic(){
   ){
     return;
   }
-
-  musicStarted=true;
 
   musicTrack.loop=true;
 
@@ -550,7 +2062,7 @@ milliseconds=400
 }
 
 /* =====================================================
-SFX
+SFX ENGINE
 ===================================================== */
 
 function tone({
@@ -711,7 +2223,9 @@ function lightningPitch(level){
     520,
     390,
     260
-  ][clamp(level,1,7)];
+  ][
+    clamp(level,1,7)
+  ];
 
 }
 
@@ -1159,7 +2673,7 @@ function playHeartbeat(){
 );
 
 /* =====================================================
-AUDIO UI
+AUDIO SETTINGS
 ===================================================== */
 
 const musicSlider=
@@ -1207,6 +2721,15 @@ function updateQuickMuteUI(){
   quickMuteButton.classList.toggle(
     "muted",
     quickMuted
+  );
+
+  quickMuteButton.setAttribute(
+    "aria-label",
+    quickMuted
+      ?
+      "Unmute all sound"
+      :
+      "Mute all sound"
   );
 
 }
@@ -1388,7 +2911,7 @@ quickMuteButton.onclick=
 updateAudioUI();
 
 /* =====================================================
-BACKGROUND AUDIO
+SAFARI BACKGROUND AUDIO
 ===================================================== */
 
 document.addEventListener(
@@ -1469,11 +2992,6 @@ const images={
 
   voodoo:new Image(),
 
-  /*
-  NEW:
-  Unique Mardi Gras boss atlas.
-  */
-
   mardiGras:new Image()
 
 };
@@ -1493,15 +3011,12 @@ images.mardiGras.src=
 const SPRITE_WIDTH=160;
 const SPRITE_HEIGHT=128;
 
-/*
-Mardi Gras is a clean 8-column × 9-row atlas.
-
-We calculate its actual frame dimensions from the image,
-so it does NOT need to use Chosen's 160×128 cell size.
-*/
-
 const MARDI_COLS=8;
 const MARDI_ROWS=9;
+
+/* =====================================================
+ANIMATION MAPS
+===================================================== */
 
 const chosenAnimations={
 
@@ -1566,20 +3081,6 @@ const voodooAnimations={
   }
 
 };
-
-/*
-MARDI GRAS ATLAS
-
-Row 0 = Idle
-Row 1 = Run
-Row 2 = Cane Attack
-Row 3 = Spin Attack
-Row 4 = Confetti Storm
-Row 5 = Hit / Stun
-Row 6 = Knockback
-Row 7 = Defeat
-Row 8 = Entrance
-*/
 
 const mardiGrasAnimations={
 
@@ -1649,7 +3150,7 @@ const mardiGrasAnimations={
 };
 
 /* =====================================================
-ELECTRIC LEVELS
+LIGHTNING COLORS
 ===================================================== */
 
 const abilityColors={
@@ -1747,21 +3248,14 @@ let respawnTimer=0;
 
 let tripleSurgeActive=false;
 
-/*
-NEW:
-Boss cinematic state.
-*/
-
 let bossIntroActive=false;
-
 let bossIntroBoss=null;
-
 let bossIntroTimer=0;
 
 const BOSS_INTRO_LENGTH=150;
 
 /* =====================================================
-POLISH STATE
+POLISH
 ===================================================== */
 
 let hitStopFrames=0;
@@ -1830,9 +3324,7 @@ function constrainToRoad(entity){
 
 }
 
-function constrainEnteringEntity(
-entity
-){
+function constrainEnteringEntity(entity){
 
   entity.y=
     clamp(
@@ -2185,7 +3677,7 @@ function addHitStop(frames){
 }
 
 /* =====================================================
-PAUSE MENU
+PAUSE
 ===================================================== */
 
 const pauseMenu=
@@ -2622,7 +4114,7 @@ bindButton(
 );
 
 /* =====================================================
-ANIMATION HELPERS
+ANIMATION
 ===================================================== */
 
 function changeState(
@@ -2923,13 +4415,6 @@ scale
     !images.mardiGras.naturalWidth
   ){
 
-    /*
-    Safe fallback:
-    If the new image failed to load,
-    the boss still appears as a Voodoo sprite
-    instead of becoming invisible.
-    */
-
     drawSprite(
       images.voodoo,
       enemy,
@@ -3050,7 +4535,7 @@ function dashDistance(){
 }
 
 /* =====================================================
-NORMAL ENEMIES
+VOODOO
 ===================================================== */
 
 function createVoodoo(
@@ -3104,10 +4589,11 @@ elite=false
     speed:
       elite
         ? 1.6
-        : random(
-            1.25,
-            1.48
-          ),
+        :
+        random(
+          1.25,
+          1.48
+        ),
 
     attackCooldown:
       random(
@@ -3261,16 +4747,14 @@ side=1
     damage,
 
     attackCooldown,
+
     attackCooldownBase:
       attackCooldown,
 
     specialCooldown,
+
     specialCooldownBase:
       specialCooldown,
-
-    /*
-    Unique boss action state.
-    */
 
     bossActionTimer:0,
 
@@ -3322,8 +4806,95 @@ function getLivingBosses(){
 }
 
 /* =====================================================
-MARDI GRAS CINEMATIC
+MARDI GRAS INTRO
 ===================================================== */
+
+function createMardiConfettiBurst(
+x,
+y,
+count=30,
+spreadX=100,
+spreadY=100
+){
+
+  for(
+    let i=0;
+    i<count;
+    i++
+  ){
+
+    effects.push({
+
+      type:"mardiConfetti",
+
+      x:
+        x+
+        random(
+          -spreadX,
+          spreadX
+        ),
+
+      y:
+        y-
+        random(
+          20,
+          spreadY
+        ),
+
+      vx:
+        random(
+          -2.2,
+          2.2
+        ),
+
+      vy:
+        random(
+          .3,
+          2.5
+        ),
+
+      rotation:
+        random(
+          0,
+          Math.PI*2
+        ),
+
+      spin:
+        random(
+          -.22,
+          .22
+        ),
+
+      color:
+        [
+          "#7b39c8",
+          "#2cba62",
+          "#f5c842"
+        ][
+          Math.floor(
+            Math.random()*3
+          )
+        ],
+
+      life:
+        random(
+          75,
+          120
+        ),
+
+      maxLife:120,
+
+      size:
+        random(
+          3,
+          6
+        )
+
+    });
+
+  }
+
+}
 
 function startMardiGrasIntro(
 boss
@@ -3337,11 +4908,6 @@ boss
     BOSS_INTRO_LENGTH;
 
   clearInput();
-
-  /*
-  Place Chosen in a readable position
-  while Mardi Gras enters from the opposite side.
-  */
 
   player.vx=0;
   player.vy=0;
@@ -3407,84 +4973,13 @@ boss
 
   playBossEntrance();
 
-  /*
-  Entrance confetti burst.
-  */
-
-  for(
-    let i=0;
-    i<26;
-    i++
-  ){
-
-    effects.push({
-
-      type:"mardiConfetti",
-
-      x:
-        random(
-          W*.58,
-          W*.96
-        ),
-
-      y:
-        random(
-          roadTop()-25,
-          roadBottom()-55
-        ),
-
-      vx:
-        random(
-          -1.8,
-          1.8
-        ),
-
-      vy:
-        random(
-          .7,
-          2.4
-        ),
-
-      rotation:
-        random(
-          0,
-          Math.PI*2
-        ),
-
-      spin:
-        random(
-          -.18,
-          .18
-        ),
-
-      color:
-        [
-          "#7b39c8",
-          "#2cba62",
-          "#f5c842"
-        ][
-          Math.floor(
-            Math.random()*3
-          )
-        ],
-
-      life:
-        random(
-          80,
-          125
-        ),
-
-      maxLife:125,
-
-      size:
-        random(
-          3,
-          6
-        )
-
-    });
-
-  }
+  createMardiConfettiBurst(
+    W*.78,
+    boss.y-15,
+    26,
+    W*.20,
+    120
+  );
 
 }
 
@@ -3502,14 +4997,8 @@ function updateBossIntro(){
 
   bossIntroTimer--;
 
-  /*
-  First half:
-  Mardi Gras walks/flourishes into view.
-  */
-
   if(
-    bossIntroTimer>
-    78
+    bossIntroTimer>78
   ){
 
     const targetX=
@@ -3524,24 +5013,12 @@ function updateBossIntro(){
 
     boss.facing=-1;
 
-    if(
-      bossIntroTimer<
-      120
-    ){
-
-      changeState(
-        boss,
-        "entrance"
-      );
-
-    }
+    changeState(
+      boss,
+      "entrance"
+    );
 
   }
-
-  /*
-  Midpoint:
-  Big name reveal.
-  */
 
   if(
     bossIntroTimer===76
@@ -3558,82 +5035,13 @@ function updateBossIntro(){
       10
     );
 
-    for(
-      let i=0;
-      i<32;
-      i++
-    ){
-
-      effects.push({
-
-        type:"mardiConfetti",
-
-        x:
-          boss.x+
-          random(
-            -75,
-            75
-          ),
-
-        y:
-          boss.y-
-          random(
-            35,
-            115
-          ),
-
-        vx:
-          random(
-            -2.4,
-            2.4
-          ),
-
-        vy:
-          random(
-            -.5,
-            2.7
-          ),
-
-        rotation:
-          random(
-            0,
-            Math.PI*2
-          ),
-
-        spin:
-          random(
-            -.22,
-            .22
-          ),
-
-        color:
-          [
-            "#7b39c8",
-            "#2cba62",
-            "#f5c842"
-          ][
-            Math.floor(
-              Math.random()*3
-            )
-          ],
-
-        life:
-          random(
-            70,
-            110
-          ),
-
-        maxLife:110,
-
-        size:
-          random(
-            3,
-            6
-          )
-
-      });
-
-    }
+    createMardiConfettiBurst(
+      boss.x,
+      boss.y-15,
+      38,
+      85,
+      145
+    );
 
   }
 
@@ -3800,12 +5208,6 @@ function spawnBossWave(){
     ).textContent=
       "BOSS WAVE";
 
-    /*
-    Mardi Gras now gets his unique cinematic.
-    Kooshma and Rougaroux retain their current
-    standard entrances until their atlases are created.
-    */
-
     if(
       primaryName===
       "MARDI GRAS"
@@ -3895,7 +5297,7 @@ function spawnWave(){
 }
 
 /* =====================================================
-HEALTH DROPS
+DROP SCARCITY
 ===================================================== */
 
 function healthDropMultiplier(){
@@ -4483,7 +5885,7 @@ targets
 }
 
 /* =====================================================
-KILL
+KILLS
 ===================================================== */
 
 function killEnemy(
@@ -4498,11 +5900,6 @@ suppressTriple=false
   ){
     return;
   }
-
-  /*
-  Mardi Gras gets his actual defeat animation
-  instead of instantly disappearing.
-  */
 
   if(
     enemy.boss &&
@@ -4602,7 +5999,7 @@ suppressTriple=false
 }
 
 /* =====================================================
-HIT ENEMIES
+PLAYER HITS ENEMIES
 ===================================================== */
 
 function hitEnemies(
@@ -4686,11 +6083,6 @@ verticalScale=.42
             knockback*
             .62;
 
-          /*
-          Mardi Gras uses his dedicated
-          hit and knockback animation rows.
-          */
-
           if(
             enemy.name===
             "MARDI GRAS"
@@ -4720,10 +6112,12 @@ verticalScale=.42
 
         const fxLevel=
           abilityKey
-            ? upgrades[
-                abilityKey
-              ]
-            : 1;
+            ?
+            upgrades[
+              abilityKey
+            ]
+            :
+            1;
 
         effects.push({
 
@@ -4985,6 +6379,7 @@ COMBOS
 function resetComboSequence(){
 
   comboSequence=[];
+
   comboSequenceTimer=0;
 
 }
@@ -5000,6 +6395,7 @@ letter
   }
 
   comboSequenceTimer=46;
+
   comboFlowTimer=34;
 
   player.actionTimer=
@@ -5503,7 +6899,7 @@ level
 }
 
 /* =====================================================
-DASH
+DASH VISUAL
 ===================================================== */
 
 function createDashVisual(level){
@@ -5902,7 +7298,7 @@ function updatePlayer(){
     heavyPressed=false;
   }
 
-  /* SPECIAL */
+  /* THUNDER BURST */
 
   if(
     input.special &&
@@ -6135,7 +7531,7 @@ function updatePlayer(){
 }
 
 /* =====================================================
-PLAYER LIVES
+LIVES
 ===================================================== */
 
 function handlePlayerDown(){
@@ -6433,82 +7829,13 @@ enemy
 
   playMardiFlourish();
 
-  for(
-    let i=0;
-    i<42;
-    i++
-  ){
-
-    effects.push({
-
-      type:"mardiConfetti",
-
-      x:
-        enemy.x+
-        random(
-          -105,
-          105
-        ),
-
-      y:
-        enemy.y-
-        random(
-          55,
-          145
-        ),
-
-      vx:
-        random(
-          -2.1,
-          2.1
-        ),
-
-      vy:
-        random(
-          .5,
-          2.5
-        ),
-
-      rotation:
-        random(
-          0,
-          Math.PI*2
-        ),
-
-      spin:
-        random(
-          -.2,
-          .2
-        ),
-
-      color:
-        [
-          "#7b39c8",
-          "#2cba62",
-          "#f5c842"
-        ][
-          Math.floor(
-            Math.random()*3
-          )
-        ],
-
-      life:
-        random(
-          75,
-          120
-        ),
-
-      maxLife:120,
-
-      size:
-        random(
-          3,
-          6
-        )
-
-    });
-
-  }
+  createMardiConfettiBurst(
+    enemy.x,
+    enemy.y,
+    46,
+    110,
+    155
+  );
 
 }
 
@@ -6524,10 +7851,6 @@ function updateEnemies(){
       if(enemy.dead){
         return;
       }
-
-      /*
-      Mardi Gras defeat animation.
-      */
 
       if(enemy.dying){
 
@@ -6562,9 +7885,7 @@ function updateEnemies(){
         enemy.hitRecovery--;
       }
 
-      /*
-      Unique Mardi Gras special animation lock.
-      */
+      /* Mardi special action */
 
       if(
         enemy.boss &&
@@ -6586,6 +7907,18 @@ function updateEnemies(){
           enemy.vy*=.965;
 
           constrainToRoad(enemy);
+
+          effects.push({
+
+            type:"mardiSpinRing",
+
+            x:enemy.x,
+            y:enemy.y-40,
+
+            life:9,
+            maxLife:9
+
+          });
 
           if(
             !enemy.specialHitDone &&
@@ -6642,10 +7975,6 @@ function updateEnemies(){
 
           enemy.vx*=.8;
           enemy.vy*=.8;
-
-          /*
-          Confetti attack lands around mid animation.
-          */
 
           if(
             enemy.bossActionTimer===34 &&
@@ -6734,10 +8063,6 @@ function updateEnemies(){
 
       if(enemy.entering){
 
-        /*
-        Intro cinematic controls Mardi Gras separately.
-        */
-
         if(
           enemy.boss &&
           enemy.name==="MARDI GRAS" &&
@@ -6798,11 +8123,6 @@ function updateEnemies(){
         enemy.y+=enemy.vy;
 
         constrainToRoad(enemy);
-
-        /*
-        Keep Mardi's hit/knockback animation
-        while stunned.
-        */
 
         if(
           !(
@@ -6898,10 +8218,6 @@ function updateEnemies(){
 
       }
 
-      /*
-      Mardi Gras erratic movement.
-      */
-
       if(
         enemy.boss &&
         enemy.name==="MARDI GRAS" &&
@@ -6923,7 +8239,7 @@ function updateEnemies(){
 
       }
 
-      /* BOSS SPECIALS */
+      /* BOSS SPECIAL */
 
       if(
         enemy.boss &&
@@ -6936,12 +8252,6 @@ function updateEnemies(){
           enemy.name===
           "MARDI GRAS"
         ){
-
-          /*
-          Mardi now randomly chooses between:
-          - Masquerade Spin
-          - Confetti Storm
-          */
 
           if(Math.random()<.58){
 
@@ -7033,9 +8343,7 @@ function updateEnemies(){
           .10
         );
 
-      /*
-      CLOSE-RANGE ATTACK
-      */
+      /* CLOSE ATTACK */
 
       if(
         Math.abs(dx)<60 &&
@@ -7314,10 +8622,6 @@ function updateEffects(){
         addHitStop(5);
 
       }
-
-      /*
-      Confetti physics.
-      */
 
       if(
         effect.type===
@@ -8683,11 +9987,6 @@ function drawEnemy(enemy){
         ? 1.08
         : 1;
 
-  /*
-  Mardi Gras is deliberately a little taller
-  than a normal enemy but still agile-looking.
-  */
-
   if(
     enemy.boss &&
     enemy.name==="MARDI GRAS"
@@ -8778,7 +10077,7 @@ function drawEnemy(enemy){
 }
 
 /* =====================================================
-PICKUPS
+PICKUP DRAW
 ===================================================== */
 
 function drawPickups(){
@@ -8845,7 +10144,7 @@ function drawPickups(){
 }
 
 /* =====================================================
-EFFECT DRAWING
+EFFECT DRAW
 ===================================================== */
 
 function drawEffects(){
@@ -9736,9 +11035,11 @@ function drawBossIntroOverlay(){
 
   ctx.save();
 
-  /*
-  Subtle letterbox bars.
-  */
+  const barHeight=
+    Math.min(
+      50,
+      H*.06
+    );
 
   ctx.fillStyle=
     "rgba(0,0,0,.82)";
@@ -9747,29 +11048,15 @@ function drawBossIntroOverlay(){
     0,
     0,
     W,
-    Math.min(
-      50,
-      H*.06
-    )
+    barHeight
   );
 
   ctx.fillRect(
     0,
-    H-
-    Math.min(
-      50,
-      H*.06
-    ),
+    H-barHeight,
     W,
-    Math.min(
-      50,
-      H*.06
-    )
+    barHeight
   );
-
-  /*
-  Reveal name during second half.
-  */
 
   if(progress>.42){
 
@@ -9857,10 +11144,6 @@ function updateBossHud(){
     );
 
   positionBossHud();
-
-  /*
-  Hide health bar during cinematic reveal.
-  */
 
   if(
     bosses.length===0 ||
@@ -10033,11 +11316,6 @@ function update(){
     return;
   }
 
-  /*
-  Boss cinematic gets its own update path.
-  Normal combat remains frozen.
-  */
-
   if(bossIntroActive){
 
     updateBossIntro();
@@ -10204,7 +11482,7 @@ function draw(){
 }
 
 /* =====================================================
-GAME LOOP
+LOOP
 ===================================================== */
 
 function gameLoop(){
@@ -10246,3 +11524,6 @@ gameLoop();
 
 })();
 </script>
+
+</body>
+</html>
