@@ -45,9 +45,9 @@ canvas{
   touch-action:none;
 }
 
-/* ================================
+/* ==================================================
 HUD
-================================ */
+================================================== */
 
 #hud{
   position:fixed;
@@ -95,6 +95,14 @@ HUD
   font-weight:1000;
   font-style:italic;
   letter-spacing:1px;
+}
+
+#livesDisplay{
+  margin-top:2px;
+  color:#ff5858;
+  font-size:14px;
+  letter-spacing:3px;
+  text-shadow:0 0 8px rgba(255,50,50,.5);
 }
 
 .statRow{
@@ -156,7 +164,7 @@ HUD
 
 #bossHud{
   position:absolute;
-  top:max(108px,calc(env(safe-area-inset-top) + 102px));
+  top:max(112px,calc(env(safe-area-inset-top) + 106px));
   left:50%;
   transform:translateX(-50%);
   width:min(70vw,620px);
@@ -184,9 +192,9 @@ HUD
   background:linear-gradient(90deg,#941536,#ff4549);
 }
 
-/* ================================
+/* ==================================================
 CONTROLS
-================================ */
+================================================== */
 
 #controls{
   position:fixed;
@@ -238,7 +246,7 @@ CONTROLS
   border-radius:50%;
   border:2px solid rgba(255,255,255,.25);
   background:rgba(5,10,17,.88);
-  color:white;
+  color:#fff;
   font-size:21px;
   font-weight:1000;
   touch-action:none;
@@ -274,9 +282,9 @@ CONTROLS
   color:#ff6258;
 }
 
-/* ================================
+/* ==================================================
 SHOP
-================================ */
+================================================== */
 
 #shop{
   position:fixed;
@@ -329,9 +337,7 @@ SHOP
 }
 
 .upgrade{
-  position:relative;
   padding:11px;
-  overflow:hidden;
   text-align:center;
   border:1px solid rgba(255,255,255,.12);
   border-radius:11px;
@@ -352,7 +358,7 @@ SHOP
 .levelDots{
   margin:6px 0 8px;
   font-size:14px;
-  letter-spacing:3px;
+  letter-spacing:2px;
 }
 
 .upgrade button,
@@ -375,7 +381,108 @@ SHOP
   background:#167bd6;
 }
 
+/* ==================================================
+GAME OVER
+================================================== */
+
+#gameOver{
+  position:fixed;
+  inset:0;
+  z-index:60;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  padding:18px;
+  background:
+    radial-gradient(circle at 50% 30%,rgba(40,70,120,.22),rgba(0,0,0,.94) 65%);
+  backdrop-filter:blur(8px);
+}
+
+#gameOverCard{
+  width:min(92vw,500px);
+  padding:24px 20px;
+  border:2px solid rgba(80,170,255,.45);
+  border-radius:20px;
+  background:linear-gradient(180deg,#111822,#05080d);
+  box-shadow:
+    0 0 40px rgba(30,110,255,.18),
+    0 18px 50px rgba(0,0,0,.8);
+  text-align:center;
+}
+
+.overLogo{
+  color:#68dfff;
+  font-size:16px;
+  font-weight:1000;
+  letter-spacing:3px;
+}
+
+.overTitle{
+  margin-top:6px;
+  color:#ff4c4c;
+  font-size:42px;
+  font-weight:1000;
+  font-style:italic;
+  text-shadow:0 0 18px rgba(255,40,40,.4);
+}
+
+.overSubtitle{
+  margin:3px 0 18px;
+  font-size:12px;
+  letter-spacing:2px;
+  opacity:.65;
+}
+
+.results{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.result{
+  padding:11px 6px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:10px;
+  background:#0c121a;
+}
+
+.result small{
+  display:block;
+  margin-bottom:4px;
+  font-size:9px;
+  letter-spacing:1px;
+  opacity:.58;
+}
+
+.result strong{
+  font-size:20px;
+}
+
+.records{
+  margin:12px 0;
+  padding:10px;
+  border-radius:10px;
+  background:rgba(35,90,160,.13);
+  color:#7ee6ff;
+  font-weight:900;
+  line-height:1.7;
+}
+
+#playAgainButton{
+  width:100%;
+  margin-top:6px;
+  padding:15px;
+  border:0;
+  border-radius:12px;
+  background:linear-gradient(90deg,#126ed0,#48cfff);
+  color:white;
+  font-size:18px;
+  font-weight:1000;
+  box-shadow:0 0 22px rgba(40,170,255,.24);
+}
+
 @media(max-width:620px){
+
   .shopGrid{
     grid-template-columns:1fr;
   }
@@ -384,7 +491,9 @@ SHOP
     transform:scale(.88);
     transform-origin:bottom right;
   }
+
 }
+
 </style>
 </head>
 
@@ -398,7 +507,13 @@ SHOP
 
     <div class="panel" id="playerPanel">
 
-      <div class="playerName">⚡ CHOSEN</div>
+      <div class="playerName">
+        ⚡ CHOSEN
+      </div>
+
+      <div id="livesDisplay">
+        ♥ ♥ ♥
+      </div>
 
       <div class="statRow">
         <span>HP</span>
@@ -419,7 +534,9 @@ SHOP
       </div>
 
       <div class="statRow">
-        <span>LV <span id="levelText">1</span></span>
+        <span>
+          LV <span id="levelText">1</span>
+        </span>
         <span>XP</span>
       </div>
 
@@ -428,6 +545,7 @@ SHOP
       </div>
 
     </div>
+
 
     <div class="panel" id="centerPanel">
 
@@ -449,10 +567,12 @@ SHOP
 
     </div>
 
+
     <div class="panel" id="scorePanel">
 
       SCORE
       <br>
+
       <b id="scoreText">0</b>
 
       <br>
@@ -464,6 +584,7 @@ SHOP
 
   </div>
 
+
   <div id="bossHud">
 
     <div id="bossName"></div>
@@ -474,10 +595,13 @@ SHOP
 
   </div>
 
+
   <div id="message"></div>
+
   <div id="pickupMessage"></div>
 
 </div>
+
 
 <div id="controls">
 
@@ -511,6 +635,7 @@ SHOP
 
 </div>
 
+
 <div id="shop">
 
   <div id="shopCard">
@@ -524,6 +649,7 @@ SHOP
       <span id="shopVoltage">0</span>
     </div>
 
+
     <div class="shopSection">
       CORE COMBAT
     </div>
@@ -535,7 +661,7 @@ SHOP
         <b>⚔ ATTACK POWER</b>
 
         <p>
-          Increases all sword and physical damage.
+          Increase all sword and physical damage.
         </p>
 
         <div>
@@ -547,12 +673,13 @@ SHOP
 
       </div>
 
+
       <div class="upgrade">
 
         <b>⚡ ATTACK SPEED</b>
 
         <p>
-          Reduces recovery between attacks.
+          Faster attacks and shorter recovery.
         </p>
 
         <div>
@@ -566,6 +693,7 @@ SHOP
 
     </div>
 
+
     <div class="shopSection">
       ELECTRIC ABILITIES
     </div>
@@ -577,7 +705,7 @@ SHOP
         <b>🌩 THUNDER BURST</b>
 
         <p>
-          Larger shockwave, more damage and stronger lightning FX.
+          Larger shockwave, more damage and stronger lightning.
         </p>
 
         <div class="levelDots" id="thunderDots"></div>
@@ -586,12 +714,13 @@ SHOP
 
       </div>
 
+
       <div class="upgrade abilityCard">
 
         <b>⚡ LIGHTNING DASH</b>
 
         <p>
-          Longer dash, stronger impact and brighter afterimages.
+          Longer dash, stronger impact and more afterimages.
         </p>
 
         <div class="levelDots" id="dashDots"></div>
@@ -600,12 +729,13 @@ SHOP
 
       </div>
 
+
       <div class="upgrade abilityCard">
 
         <b>⚔ VOLT RUSH</b>
 
         <p>
-          Upgrades the A-A-H electric sword combo.
+          Evolves Chosen's A-A-H electric sword combo.
         </p>
 
         <div class="levelDots" id="voltDots"></div>
@@ -614,12 +744,13 @@ SHOP
 
       </div>
 
+
       <div class="upgrade abilityCard">
 
         <b>✕ ELECTRIC CROSS</b>
 
         <p>
-          Upgrades the A-H-A crossing blade combo.
+          Evolves Chosen's A-H-A crossing blade combo.
         </p>
 
         <div class="levelDots" id="crossDots"></div>
@@ -627,6 +758,7 @@ SHOP
         <button id="crossButton"></button>
 
       </div>
+
 
       <div class="upgrade abilityCard">
 
@@ -644,6 +776,7 @@ SHOP
 
     </div>
 
+
     <button id="continueButton">
       CONTINUE
     </button>
@@ -652,23 +785,86 @@ SHOP
 
 </div>
 
+
+<div id="gameOver">
+
+  <div id="gameOverCard">
+
+    <div class="overLogo">
+      ⚡ TEMPLE OF ASH ⚡
+    </div>
+
+    <div class="overTitle">
+      GAME OVER
+    </div>
+
+    <div class="overSubtitle">
+      CHOSEN HAS FALLEN
+    </div>
+
+
+    <div class="results">
+
+      <div class="result">
+        <small>WAVE REACHED</small>
+        <strong id="overWave">1</strong>
+      </div>
+
+      <div class="result">
+        <small>FINAL SCORE</small>
+        <strong id="overScore">0</strong>
+      </div>
+
+      <div class="result">
+        <small>ENEMIES DEFEATED</small>
+        <strong id="overKills">0</strong>
+      </div>
+
+      <div class="result">
+        <small>VOLTAGE EARNED</small>
+        <strong id="overVoltage">0</strong>
+      </div>
+
+    </div>
+
+
+    <div class="records">
+
+      👑 BEST WAVE:
+      <span id="bestWave">1</span>
+
+      <br>
+
+      🏆 HIGH SCORE:
+      <span id="highScore">0</span>
+
+    </div>
+
+
+    <button id="playAgainButton">
+      ⚡ PLAY AGAIN
+    </button>
+
+  </div>
+
+</div>
+
+
 <script>
 
 "use strict";
 
 
-/* =====================================================
+/* ==================================================
 MOBILE LOCK
-===================================================== */
+================================================== */
 
 document.addEventListener(
   "touchmove",
   event=>{
 
     if(
-      !event.target.closest(
-        "#shopCard"
-      )
+      !event.target.closest("#shopCard")
     ){
       event.preventDefault();
     }
@@ -676,6 +872,7 @@ document.addEventListener(
   },
   {passive:false}
 );
+
 
 [
   "gesturestart",
@@ -693,39 +890,39 @@ document.addEventListener(
   }
 );
 
+
 document.addEventListener(
   "contextmenu",
   event=>event.preventDefault()
 );
 
 
-/* =====================================================
+/* ==================================================
 GAME
-===================================================== */
+================================================== */
 
 (()=>{
 
+
 const canvas=
-  document.getElementById(
-    "game"
-  );
+  document.getElementById("game");
+
 
 const ctx=
-  canvas.getContext(
-    "2d"
-  );
+  canvas.getContext("2d");
 
-ctx.imageSmoothingEnabled=
-  false;
+
+ctx.imageSmoothingEnabled=false;
+
 
 let W=0;
 let H=0;
 let DPR=1;
 
 
-/* =====================================================
+/* ==================================================
 RESIZE
-===================================================== */
+================================================== */
 
 function resize(){
 
@@ -760,8 +957,7 @@ function resize(){
     0
   );
 
-  ctx.imageSmoothingEnabled=
-    false;
+  ctx.imageSmoothingEnabled=false;
 
 }
 
@@ -773,9 +969,9 @@ window.addEventListener(
 );
 
 
-/* =====================================================
+/* ==================================================
 HELPERS
-===================================================== */
+================================================== */
 
 const clamp=
 (value,min,max)=>
@@ -787,11 +983,13 @@ Math.max(
   )
 );
 
+
 const random=
 (min,max)=>
 min+
 Math.random()*
 (max-min);
+
 
 const distance=
 (a,b)=>
@@ -800,52 +998,56 @@ Math.hypot(
   a.y-b.y
 );
 
+
 function lerp(
 a,
 b,
 amount
 ){
+
   return(
     a+
     (b-a)*
     amount
   );
+
 }
 
 
-/* =====================================================
+/* ==================================================
 ASSETS
-===================================================== */
+================================================== */
 
 const images={
 
-  stage:
-    new Image(),
+  stage:new Image(),
 
-  chosen:
-    new Image(),
+  chosen:new Image(),
 
-  voodoo:
-    new Image()
+  voodoo:new Image()
 
 };
+
 
 images.stage.src=
   "assets/bourbon_stage.jpg";
 
+
 images.chosen.src=
   "assets/chosen_atlas.png";
+
 
 images.voodoo.src=
   "assets/voodoo_atlas.png";
 
 
-/* =====================================================
+/* ==================================================
 SPRITES
-===================================================== */
+================================================== */
 
 const SPRITE_WIDTH=160;
 const SPRITE_HEIGHT=128;
+
 
 const chosenAnimations={
 
@@ -886,6 +1088,7 @@ const chosenAnimations={
 
 };
 
+
 const voodooAnimations={
 
   idle:{
@@ -912,15 +1115,81 @@ const voodooAnimations={
 };
 
 
-/* =====================================================
+/* ==================================================
+ABILITY COLORS
+
+1 blue
+2 yellow
+3 pink
+4 purple
+5 red
+6 ROYAL BLUE
+================================================== */
+
+const abilityColors={
+
+  1:{
+    main:"#66e7ff",
+    glow:"#25bfff",
+    name:"ELECTRIC BLUE"
+  },
+
+  2:{
+    main:"#ffe85b",
+    glow:"#ffbd18",
+    name:"YELLOW"
+  },
+
+  3:{
+    main:"#ff5cd8",
+    glow:"#ff23ad",
+    name:"PINK"
+  },
+
+  4:{
+    main:"#bb64ff",
+    glow:"#8032ff",
+    name:"PURPLE"
+  },
+
+  5:{
+    main:"#ff4141",
+    glow:"#ff1010",
+    name:"RED"
+  },
+
+  6:{
+    main:"#286dff",
+    glow:"#0648ff",
+    core:"#e8f3ff",
+    name:"ROYAL BLUE"
+  }
+
+};
+
+
+function abilityColor(level){
+
+  return(
+    abilityColors[
+      clamp(level,1,6)
+    ]
+  );
+
+}
+
+
+/* ==================================================
 STATE
-===================================================== */
+================================================== */
 
 let wave=1;
 
 let score=0;
 
 let voltage=0;
+
+let runVoltageEarned=0;
 
 let level=1;
 
@@ -938,6 +1207,8 @@ let pickupTimer=0;
 
 let paused=false;
 
+let gameIsOver=false;
+
 let wavePending=false;
 
 let pendingSpawns=0;
@@ -945,29 +1216,103 @@ let pendingSpawns=0;
 let currentBoss=null;
 
 let enemies=[];
+
 let pickups=[];
+
 let effects=[];
 
+let kills=0;
 
-/* =====================================================
-HORIZONTAL ROAD
-===================================================== */
+
+/* ==================================================
+LIVES
+================================================== */
+
+let lives=3;
+
+let respawning=false;
+
+let respawnTimer=0;
+
+
+/* ==================================================
+RECORDS
+================================================== */
+
+function readRecord(
+key,
+fallback=0
+){
+
+  try{
+
+    return Number(
+      localStorage.getItem(key)
+    ) || fallback;
+
+  }catch(error){
+
+    return fallback;
+
+  }
+
+}
+
+
+function writeRecord(
+key,
+value
+){
+
+  try{
+
+    localStorage.setItem(
+      key,
+      String(value)
+    );
+
+  }catch(error){}
+
+}
+
+
+let bestWaveRecord=
+  readRecord(
+    "templeOfAshBestWave",
+    1
+  );
+
+
+let highScoreRecord=
+  readRecord(
+    "templeOfAshHighScore",
+    0
+  );
+
+
+/* ==================================================
+ROAD
+================================================== */
 
 function roadTop(){
   return H*.55;
 }
 
+
 function roadBottom(){
   return H*.86;
 }
+
 
 function roadLeftAt(){
   return W*.025;
 }
 
+
 function roadRightAt(){
   return W*.975;
 }
+
 
 function constrainToRoad(
 entity
@@ -989,6 +1334,7 @@ entity
 
 }
 
+
 function constrainEnteringEntity(
 entity
 ){
@@ -1007,18 +1353,16 @@ entity
 
     entity.entering=false;
 
-    constrainToRoad(
-      entity
-    );
+    constrainToRoad(entity);
 
   }
 
 }
 
 
-/* =====================================================
-DEPTH SCALE
-===================================================== */
+/* ==================================================
+DEPTH
+================================================== */
 
 function depthScale(y){
 
@@ -1042,9 +1386,9 @@ function depthScale(y){
 }
 
 
-/* =====================================================
+/* ==================================================
 UPGRADES
-===================================================== */
+================================================== */
 
 const upgrades={
 
@@ -1065,9 +1409,28 @@ const upgrades={
 };
 
 
-/* =====================================================
+function resetUpgrades(){
+
+  upgrades.power=1;
+
+  upgrades.speed=1;
+
+  upgrades.thunderBurst=1;
+
+  upgrades.lightningDash=1;
+
+  upgrades.voltRush=1;
+
+  upgrades.electricCross=1;
+
+  upgrades.twinThunder=1;
+
+}
+
+
+/* ==================================================
 PLAYER
-===================================================== */
+================================================== */
 
 const player={
 
@@ -1100,10 +1463,9 @@ const player={
   frameTimer:0,
 
   walkDistance:0,
+
   previousX:0,
   previousY:0,
-
-  stepSide:0,
 
   actionLocked:false,
   actionTimer:0,
@@ -1115,14 +1477,16 @@ const player={
 
   invincible:0,
 
-  electric:0
+  electric:0,
+
+  electricLevel:1
 
 };
 
 
-/* =====================================================
+/* ==================================================
 INPUT
-===================================================== */
+================================================== */
 
 const input={
 
@@ -1136,15 +1500,16 @@ const input={
 
 };
 
+
 let lightPressed=false;
 let heavyPressed=false;
 let specialPressed=false;
 let dashPressed=false;
 
 
-/* =====================================================
+/* ==================================================
 PICKUPS
-===================================================== */
+================================================== */
 
 const pickupTypes={
 
@@ -1201,11 +1566,13 @@ const pickupTypes={
 };
 
 
-/* =====================================================
+/* ==================================================
 MESSAGES
-===================================================== */
+================================================== */
 
-function showMessage(text){
+function showMessage(
+text
+){
 
   const element=
     document.getElementById(
@@ -1216,11 +1583,14 @@ function showMessage(text){
 
   element.style.opacity=1;
 
-  messageTimer=80;
+  messageTimer=90;
 
 }
 
-function showPickup(text){
+
+function showPickup(
+text
+){
 
   const element=
     document.getElementById(
@@ -1236,26 +1606,52 @@ function showPickup(text){
 }
 
 
-/* =====================================================
+/* ==================================================
 JOYSTICK
-===================================================== */
+================================================== */
 
 const joystick=
   document.getElementById(
     "joystick"
   );
 
+
 const stick=
   document.getElementById(
     "stick"
   );
 
+
 let joystickPointer=null;
+
+
+function clearInput(){
+
+  input.x=0;
+  input.y=0;
+
+  input.light=false;
+  input.heavy=false;
+  input.special=false;
+  input.dash=false;
+
+  stick.style.transform=
+    "translate(-50%,-50%)";
+
+}
+
 
 function updateJoystick(
 clientX,
 clientY
 ){
+
+  if(
+    gameIsOver ||
+    respawning
+  ){
+    return;
+  }
 
   const rect=
     joystick.getBoundingClientRect();
@@ -1269,12 +1665,10 @@ clientY
     rect.height/2;
 
   let dx=
-    clientX-
-    centerX;
+    clientX-centerX;
 
   let dy=
-    clientY-
-    centerY;
+    clientY-centerY;
 
   const maxDistance=
     rect.width*.31;
@@ -1286,29 +1680,24 @@ clientY
     );
 
   if(
-    magnitude>
-    maxDistance
+    magnitude>maxDistance
   ){
 
     dx=
-      dx/
-      magnitude*
+      dx/magnitude*
       maxDistance;
 
     dy=
-      dy/
-      magnitude*
+      dy/magnitude*
       maxDistance;
 
   }
 
   let nx=
-    dx/
-    maxDistance;
+    dx/maxDistance;
 
   let ny=
-    dy/
-    maxDistance;
+    dy/maxDistance;
 
   if(
     Math.abs(nx)<.09
@@ -1333,6 +1722,7 @@ clientY
 
 }
 
+
 joystick.addEventListener(
   "pointerdown",
   event=>{
@@ -1354,6 +1744,7 @@ joystick.addEventListener(
   }
 );
 
+
 joystick.addEventListener(
   "pointermove",
   event=>{
@@ -1374,6 +1765,7 @@ joystick.addEventListener(
 
   }
 );
+
 
 function releaseJoystick(
 event
@@ -1397,10 +1789,12 @@ event
 
 }
 
+
 joystick.addEventListener(
   "pointerup",
   releaseJoystick
 );
+
 
 joystick.addEventListener(
   "pointercancel",
@@ -1408,9 +1802,9 @@ joystick.addEventListener(
 );
 
 
-/* =====================================================
+/* ==================================================
 BUTTONS
-===================================================== */
+================================================== */
 
 function bindButton(
 id,
@@ -1425,6 +1819,13 @@ property
     event=>{
 
       event.preventDefault();
+
+      if(
+        gameIsOver ||
+        respawning
+      ){
+        return;
+      }
 
       input[property]=true;
 
@@ -1456,20 +1857,24 @@ property
 
 }
 
+
 bindButton(
   "lightBtn",
   "light"
 );
+
 
 bindButton(
   "heavyBtn",
   "heavy"
 );
 
+
 bindButton(
   "specialBtn",
   "special"
 );
+
 
 bindButton(
   "dashBtn",
@@ -1477,9 +1882,9 @@ bindButton(
 );
 
 
-/* =====================================================
+/* ==================================================
 ANIMATION
-===================================================== */
+================================================== */
 
 function changeState(
 entity,
@@ -1502,19 +1907,11 @@ state
   if(
     state==="walk"
   ){
-
     entity.walkDistance=0;
-
   }
 
 }
 
-
-/*
-Idle / attack animations still use time.
-
-Walking is handled separately by distance.
-*/
 
 function updateAnimation(
 entity,
@@ -1552,14 +1949,10 @@ animations
       if(
         animation.loop
       ){
-
         entity.frame=0;
-
       }else{
-
         entity.frame=
           animation.frames-1;
-
       }
 
     }
@@ -1569,9 +1962,9 @@ animations
 }
 
 
-/* =====================================================
-FOOTSTEP SYSTEM
-===================================================== */
+/* ==================================================
+DISTANCE-SYNCED FOOTSTEPS
+================================================== */
 
 function updateWalkAnimation(
 entity,
@@ -1611,8 +2004,7 @@ stepDistance=8
   entity.previousY=
     entity.y;
 
-  entity.walkDistance+=
-    moved;
+  entity.walkDistance+=moved;
 
   if(
     entity.walkDistance>=
@@ -1626,11 +2018,6 @@ stepDistance=8
       (
         entity.frame+1
       )%8;
-
-    /*
-    Frames 1 and 5 act as
-    foot-contact frames.
-    */
 
     if(
       entity.frame===1 ||
@@ -1647,10 +2034,6 @@ stepDistance=8
 
 }
 
-
-/* =====================================================
-FOOTSTEP FX
-===================================================== */
 
 function createFootstep(
 entity
@@ -1700,9 +2083,9 @@ entity
 }
 
 
-/* =====================================================
+/* ==================================================
 DRAW SPRITE
-===================================================== */
+================================================== */
 
 function drawSprite(
 image,
@@ -1751,11 +2134,6 @@ extraScale=1
   const drawHeight=
     SPRITE_HEIGHT*
     scale;
-
-  /*
-  Slight natural body bob while walking.
-  It follows the leg cycle.
-  */
 
   const walkBob=
     entity.state==="walk"
@@ -1821,9 +2199,9 @@ extraScale=1
 }
 
 
-/* =====================================================
-COMBAT VALUES
-===================================================== */
+/* ==================================================
+COMBAT
+================================================== */
 
 function attackMultiplier(){
 
@@ -1835,6 +2213,7 @@ function attackMultiplier(){
   );
 
 }
+
 
 function cooldownMultiplier(){
 
@@ -1849,9 +2228,25 @@ function cooldownMultiplier(){
 }
 
 
-/* =====================================================
-ABILITY VALUES
-===================================================== */
+function comboDamage(
+base,
+abilityLevel
+){
+
+  return(
+    base+
+    (
+      abilityLevel-1
+    )*
+    8
+  );
+
+}
+
+
+/* ==================================================
+ABILITY STATS
+================================================== */
 
 function thunderDamage(){
 
@@ -1863,6 +2258,7 @@ function thunderDamage(){
 
 }
 
+
 function thunderRange(){
 
   return(
@@ -1872,6 +2268,7 @@ function thunderRange(){
   );
 
 }
+
 
 function dashDamage(){
 
@@ -1883,6 +2280,7 @@ function dashDamage(){
 
 }
 
+
 function dashDistance(){
 
   return(
@@ -1893,25 +2291,10 @@ function dashDistance(){
 
 }
 
-function comboDamage(
-base,
-level
-){
 
-  return(
-    base+
-    (
-      level-1
-    )*
-    8
-  );
-
-}
-
-
-/* =====================================================
-VOODOO SPAWN
-===================================================== */
+/* ==================================================
+ENEMIES
+================================================== */
 
 function createVoodoo(
 elite=false
@@ -1930,6 +2313,13 @@ elite=false
       roadBottom()-15
     );
 
+  const startX=
+    side<0
+    ?
+    -75
+    :
+    W+75;
+
   return{
 
     boss:false,
@@ -1938,12 +2328,7 @@ elite=false
 
     entering:true,
 
-    x:
-      side<0
-      ?
-      -75
-      :
-      W+75,
+    x:startX,
 
     y,
 
@@ -2009,12 +2394,7 @@ elite=false
 
     walkDistance:0,
 
-    previousX:
-      side<0
-      ?
-      -75
-      :
-      W+75,
+    previousX:startX,
 
     previousY:y
 
@@ -2023,9 +2403,9 @@ elite=false
 }
 
 
-/* =====================================================
+/* ==================================================
 BOSSES
-===================================================== */
+================================================== */
 
 function createBoss(){
 
@@ -2055,9 +2435,7 @@ function createBoss(){
   let hp=540;
   let speed=1.55;
   let damage=14;
-
   let attackCooldown=62;
-
   let specialCooldown=130;
 
   if(
@@ -2138,7 +2516,9 @@ function createBoss(){
       specialCooldown,
 
     stun:0,
+
     hitTimer:0,
+
     hitRecovery:0,
 
     dead:false,
@@ -2162,13 +2542,14 @@ function createBoss(){
 }
 
 
-/* =====================================================
+/* ==================================================
 WAVES
-===================================================== */
+================================================== */
 
 function isBossWave(){
   return wave%5===0;
 }
+
 
 function spawnWave(){
 
@@ -2226,6 +2607,12 @@ function spawnWave(){
       setTimeout(
         ()=>{
 
+          if(
+            gameIsOver
+          ){
+            return;
+          }
+
           enemies.push(
             createVoodoo(
               wave>=4 &&
@@ -2250,9 +2637,9 @@ function spawnWave(){
 }
 
 
-/* =====================================================
-RARER DROPS
-===================================================== */
+/* ==================================================
+DROPS
+================================================== */
 
 function dropPickup(
 enemy
@@ -2285,14 +2672,7 @@ enemy
       type="beads";
     }
 
-  }
-
-  else{
-
-    /*
-    Approx 15% total normal-enemy
-    item drop chance.
-    */
+  }else{
 
     if(
       roll<.005
@@ -2370,12 +2750,77 @@ enemy
 }
 
 
-/* =====================================================
+/* ==================================================
+ROYAL BLUE SKY JUDGMENT
+================================================== */
+
+function attemptSkyJudgment(
+enemy,
+abilityKey
+){
+
+  if(
+    !abilityKey
+  ){
+    return;
+  }
+
+  if(
+    upgrades[
+      abilityKey
+    ]!==6
+  ){
+    return;
+  }
+
+  if(
+    Math.random()>.30
+  ){
+    return;
+  }
+
+  const strikeX=
+    clamp(
+      enemy.x,
+      45,
+      W-45
+    );
+
+  const strikeY=
+    enemy.y;
+
+  effects.push({
+
+    type:"skyStrike",
+
+    x:strikeX,
+
+    y:strikeY,
+
+    life:34,
+
+    maxLife:34,
+
+    level:6,
+
+    damageDone:false
+
+  });
+
+  showMessage(
+    "⚡ SKY JUDGMENT ⚡"
+  );
+
+}
+
+
+/* ==================================================
 KILL
-===================================================== */
+================================================== */
 
 function killEnemy(
-enemy
+enemy,
+abilityKey=null
 ){
 
   if(
@@ -2386,9 +2831,15 @@ enemy
 
   enemy.dead=true;
 
-  dropPickup(
-    enemy
+  kills++;
+
+  dropPickup(enemy);
+
+  attemptSkyJudgment(
+    enemy,
+    abilityKey
   );
+
 
   if(
     enemy.boss
@@ -2418,6 +2869,8 @@ enemy
 
     voltage+=reward;
 
+    runVoltageEarned+=reward;
+
     score+=
       reward*2;
 
@@ -2428,12 +2881,16 @@ enemy
 
   }else{
 
-    voltage+=
+    const reward=
       enemy.elite
       ?
       60
       :
       25;
+
+    voltage+=reward;
+
+    runVoltageEarned+=reward;
 
     score+=
       enemy.elite
@@ -2447,15 +2904,16 @@ enemy
 }
 
 
-/* =====================================================
-ATTACKS
-===================================================== */
+/* ==================================================
+HIT ENEMIES
+================================================== */
 
 function hitEnemies(
 range,
 damage,
 knockback,
-electric=false
+electric=false,
+abilityKey=null
 ){
 
   let hits=0;
@@ -2553,6 +3011,15 @@ electric=false
             1.2
           );
 
+        const fxLevel=
+          abilityKey
+          ?
+          upgrades[
+            abilityKey
+          ]
+          :
+          1;
+
         effects.push({
 
           type:
@@ -2573,7 +3040,9 @@ electric=false
 
           life:14,
 
-          maxLife:14
+          maxLife:14,
+
+          level:fxLevel
 
         });
 
@@ -2584,7 +3053,8 @@ electric=false
         ){
 
           killEnemy(
-            enemy
+            enemy,
+            abilityKey
           );
 
         }
@@ -2612,9 +3082,117 @@ electric=false
 }
 
 
-/* =====================================================
-ABILITY VISUAL HELPERS
-===================================================== */
+/* ==================================================
+SKY STRIKE DAMAGE
+================================================== */
+
+function applySkyStrikeDamage(
+effect
+){
+
+  if(
+    effect.damageDone
+  ){
+    return;
+  }
+
+  effect.damageDone=true;
+
+  const radius=115;
+
+  enemies.forEach(
+    enemy=>{
+
+      if(
+        enemy.dead ||
+        enemy.entering
+      ){
+        return;
+      }
+
+      const d=
+        Math.hypot(
+          enemy.x-
+          effect.x,
+
+          enemy.y-
+          effect.y
+        );
+
+      if(
+        d<radius
+      ){
+
+        enemy.hp-=55;
+
+        enemy.stun=
+          enemy.boss
+          ?
+          20
+          :
+          32;
+
+        const direction=
+          Math.sign(
+            enemy.x-
+            effect.x
+          ) || 1;
+
+        enemy.vx+=
+          direction*
+          (
+            enemy.boss
+            ?
+            8
+            :
+            18
+          );
+
+        effects.push({
+
+          type:"electricHit",
+
+          x:enemy.x,
+
+          y:
+            enemy.y-
+            40,
+
+          life:16,
+
+          maxLife:16,
+
+          level:6
+
+        });
+
+        if(
+          enemy.hp<=0
+        ){
+
+          /*
+          Secondary Sky Judgment kills do
+          not recursively call another bolt.
+          */
+
+          killEnemy(
+            enemy,
+            null
+          );
+
+        }
+
+      }
+
+    }
+  );
+
+}
+
+
+/* ==================================================
+ELECTRIC ARC
+================================================== */
 
 function addElectricArc(
 x1,
@@ -2638,12 +3216,17 @@ strength=1
     life,
     maxLife:life,
 
-    strength
+    level:
+      strength
 
   });
 
 }
 
+
+/* ==================================================
+THUNDER BURST VISUAL
+================================================== */
 
 function createAbilityBurst(
 level
@@ -2667,9 +3250,6 @@ level
 
   });
 
-  /*
-  LV3+ gets extra satellite bolts.
-  */
 
   if(
     level>=3
@@ -2684,7 +3264,11 @@ level
       ?
       5
       :
-      8;
+      level===5
+      ?
+      7
+      :
+      10;
 
     for(
       let i=0;
@@ -2706,12 +3290,15 @@ level
       addElectricArc(
         player.x,
         player.y-35,
+
         player.x+
         Math.cos(angle)*
         radius,
+
         player.y-35+
         Math.sin(angle)*
         radius*.45,
+
         14,
         level
       );
@@ -2723,20 +3310,19 @@ level
 }
 
 
-/* =====================================================
+/* ==================================================
 COMBOS
-===================================================== */
+================================================== */
 
 let sequence=[];
 let sequenceTimer=0;
+
 
 function registerAttack(
 letter
 ){
 
-  sequence.push(
-    letter
-  );
+  sequence.push(letter);
 
   if(
     sequence.length>3
@@ -2749,9 +3335,8 @@ letter
   const code=
     sequence.join("");
 
-  /*
-  VOLT RUSH
-  */
+
+  /* VOLT RUSH */
 
   if(
     code==="AAH"
@@ -2764,6 +3349,8 @@ letter
       22+
       lvl*7;
 
+    player.electricLevel=lvl;
+
     hitEnemies(
       115+
       lvl*6,
@@ -2773,7 +3360,8 @@ letter
       ),
       19+
       lvl*2,
-      true
+      true,
+      "voltRush"
     );
 
     createComboVisual(
@@ -2791,9 +3379,7 @@ letter
   }
 
 
-  /*
-  ELECTRIC CROSS
-  */
+  /* ELECTRIC CROSS */
 
   else if(
     code==="AHA"
@@ -2806,6 +3392,8 @@ letter
       25+
       lvl*8;
 
+    player.electricLevel=lvl;
+
     hitEnemies(
       125+
       lvl*8,
@@ -2815,7 +3403,8 @@ letter
       ),
       20+
       lvl*2.4,
-      true
+      true,
+      "electricCross"
     );
 
     createComboVisual(
@@ -2833,9 +3422,7 @@ letter
   }
 
 
-  /*
-  TWIN THUNDER
-  */
+  /* TWIN THUNDER */
 
   else if(
     code==="HAH"
@@ -2848,6 +3435,8 @@ letter
       32+
       lvl*10;
 
+    player.electricLevel=lvl;
+
     hitEnemies(
       145+
       lvl*10,
@@ -2857,7 +3446,8 @@ letter
       ),
       25+
       lvl*3,
-      true
+      true,
+      "twinThunder"
     );
 
     createComboVisual(
@@ -2877,9 +3467,9 @@ letter
 }
 
 
-/* =====================================================
+/* ==================================================
 COMBO VISUALS
-===================================================== */
+================================================== */
 
 function createComboVisual(
 type,
@@ -2889,6 +3479,7 @@ level
   const length=
     65+
     level*15;
+
 
   if(
     type==="volt"
@@ -2999,24 +3590,40 @@ level
     });
 
     if(
-      level===5
+      level>=5
     ){
+
+      const count=
+        level===6
+        ?
+        9
+        :
+        5;
 
       for(
         let i=0;
-        i<5;
+        i<count;
         i++
       ){
 
         addElectricArc(
           player.x,
           player.y-50,
+
           player.x+
-          random(-120,120),
+          random(
+            -120,
+            120
+          ),
+
           player.y+
-          random(-85,15),
+          random(
+            -85,
+            15
+          ),
+
           15,
-          5
+          level
         );
 
       }
@@ -3028,467 +3635,9 @@ level
 }
 
 
-/* =====================================================
-PLAYER UPDATE
-===================================================== */
-
-function updatePlayer(){
-
-  let inputX=
-    input.x;
-
-  let inputY=
-    input.y;
-
-  const magnitude=
-    Math.hypot(
-      inputX,
-      inputY
-    );
-
-  if(
-    magnitude>1
-  ){
-
-    inputX/=magnitude;
-    inputY/=magnitude;
-
-  }
-
-  player.targetVx=
-    inputX*
-    player.maxSpeed;
-
-  player.targetVy=
-    inputY*
-    player.maxSpeed*
-    .67;
-
-  if(
-    player.actionLocked
-  ){
-
-    player.targetVx*=.15;
-
-    player.targetVy*=.15;
-
-  }
-
-  player.vx=
-    lerp(
-      player.vx,
-      player.targetVx,
-      player.acceleration
-    );
-
-  player.vy=
-    lerp(
-      player.vy,
-      player.targetVy,
-      player.acceleration
-    );
-
-  if(
-    Math.abs(inputX)<.05
-  ){
-
-    player.vx*=
-      player.friction;
-
-  }
-
-  if(
-    Math.abs(inputY)<.05
-  ){
-
-    player.vy*=
-      player.friction;
-
-  }
-
-  player.x+=
-    player.vx;
-
-  player.y+=
-    player.vy;
-
-  constrainToRoad(
-    player
-  );
-
-  if(
-    Math.abs(
-      player.vx
-    )>.15
-  ){
-
-    player.facing=
-      Math.sign(
-        player.vx
-      );
-
-  }
-
-  if(
-    player.actionTimer>0
-  ){
-    player.actionTimer--;
-  }
-
-  if(
-    player.actionTimer<=0 &&
-    player.actionLocked
-  ){
-
-    player.actionLocked=false;
-
-  }
-
-  if(
-    !player.actionLocked
-  ){
-
-    const moving=
-      Math.abs(
-        player.vx
-      )>.3
-      ||
-      Math.abs(
-        player.vy
-      )>.25;
-
-    changeState(
-      player,
-      moving
-      ?
-      "walk"
-      :
-      "idle"
-    );
-
-  }
-
-
-  /* ======================
-  LIGHT
-  ====================== */
-
-  if(
-    input.light &&
-    !lightPressed &&
-    player.lightCooldown<=0
-  ){
-
-    lightPressed=true;
-
-    player.actionLocked=true;
-
-    player.actionTimer=22;
-
-    changeState(
-      player,
-      "light"
-    );
-
-    player.lightCooldown=
-      Math.floor(
-        21*
-        cooldownMultiplier()
-      );
-
-    setTimeout(
-      ()=>{
-
-        hitEnemies(
-          86,
-          15,
-          9,
-          false
-        );
-
-      },
-      65
-    );
-
-    registerAttack(
-      "A"
-    );
-
-  }
-
-  if(
-    !input.light
-  ){
-    lightPressed=false;
-  }
-
-
-  /* ======================
-  HEAVY
-  ====================== */
-
-  if(
-    input.heavy &&
-    !heavyPressed &&
-    player.heavyCooldown<=0
-  ){
-
-    heavyPressed=true;
-
-    player.actionLocked=true;
-
-    player.actionTimer=30;
-
-    player.electric=18;
-
-    changeState(
-      player,
-      "heavy"
-    );
-
-    player.heavyCooldown=
-      Math.floor(
-        42*
-        cooldownMultiplier()
-      );
-
-    setTimeout(
-      ()=>{
-
-        hitEnemies(
-          105,
-          29,
-          18,
-          true
-        );
-
-      },
-      90
-    );
-
-    registerAttack(
-      "H"
-    );
-
-  }
-
-  if(
-    !input.heavy
-  ){
-    heavyPressed=false;
-  }
-
-
-  /* ======================
-  THUNDER BURST
-  ====================== */
-
-  if(
-    input.special &&
-    !specialPressed &&
-    player.specialCooldown<=0 &&
-    player.energy>=35
-  ){
-
-    specialPressed=true;
-
-    const lvl=
-      upgrades.thunderBurst;
-
-    const energyCost=
-      Math.max(
-        25,
-        35-
-        (
-          lvl-1
-        )*2
-      );
-
-    player.energy-=
-      energyCost;
-
-    player.actionLocked=true;
-
-    player.actionTimer=
-      30+
-      lvl;
-
-    player.electric=
-      40+
-      lvl*12;
-
-    changeState(
-      player,
-      "special"
-    );
-
-    player.specialCooldown=
-      Math.max(
-        45,
-        90-
-        lvl*5
-      );
-
-    createAbilityBurst(
-      lvl
-    );
-
-    setTimeout(
-      ()=>{
-
-        hitEnemies(
-          thunderRange(),
-          thunderDamage(),
-          18+
-          lvl*3,
-          true
-        );
-
-      },
-      90
-    );
-
-    showMessage(
-      "THUNDER BURST LV."+
-      lvl
-    );
-
-  }
-
-  if(
-    !input.special
-  ){
-    specialPressed=false;
-  }
-
-
-  /* ======================
-  LIGHTNING DASH
-  ====================== */
-
-  if(
-    input.dash &&
-    !dashPressed &&
-    player.dashCooldown<=0
-  ){
-
-    dashPressed=true;
-
-    const lvl=
-      upgrades.lightningDash;
-
-    player.dashCooldown=
-      Math.max(
-        22,
-        48-
-        lvl*4
-      );
-
-    player.invincible=
-      18+
-      lvl*2;
-
-    player.electric=
-      25+
-      lvl*8;
-
-    let dx=inputX;
-    let dy=inputY;
-
-    if(
-      Math.hypot(
-        dx,
-        dy
-      )<.2
-    ){
-
-      dx=
-        player.facing;
-
-      dy=0;
-
-    }
-
-    player.vx+=
-      dx*
-      dashDistance();
-
-    player.vy+=
-      dy*
-      (
-        6+
-        lvl*.7
-      );
-
-    createDashVisual(
-      lvl
-    );
-
-    hitEnemies(
-      80+
-      lvl*6,
-      dashDamage(),
-      12+
-      lvl*2,
-      true
-    );
-
-  }
-
-  if(
-    !input.dash
-  ){
-    dashPressed=false;
-  }
-
-
-  [
-    "lightCooldown",
-    "heavyCooldown",
-    "specialCooldown",
-    "dashCooldown",
-    "invincible",
-    "electric"
-  ]
-  .forEach(
-    key=>{
-
-      if(
-        player[key]>0
-      ){
-        player[key]--;
-      }
-
-    }
-  );
-
-  player.energy=
-    Math.min(
-      player.maxEnergy,
-      player.energy+.15
-    );
-
-
-  /*
-  THIS is the important walking fix.
-  */
-
-  updateWalkAnimation(
-    player,
-    7
-  );
-
-  updateAnimation(
-    player,
-    chosenAnimations
-  );
-
-}
-
-
-/* =====================================================
-DASH VISUAL LEVELS
-===================================================== */
+/* ==================================================
+DASH VISUAL
+================================================== */
 
 function createDashVisual(
 level
@@ -3518,17 +3667,15 @@ level
   });
 
 
-  /*
-  Higher levels create
-  visible afterimages.
-  */
-
   if(
     level>=2
   ){
 
     const copies=
-      level-1;
+      Math.min(
+        level-1,
+        5
+      );
 
     for(
       let i=1;
@@ -3566,18 +3713,20 @@ level
 
 
   if(
-    level===5
+    level===6
   ){
 
     addElectricArc(
       player.x-
       player.facing*75,
       player.y-40,
+
       player.x+
       player.facing*70,
       player.y-35,
+
       16,
-      5
+      6
     );
 
   }
@@ -3585,9 +3734,732 @@ level
 }
 
 
-/* =====================================================
+/* ==================================================
+PLAYER UPDATE
+================================================== */
+
+function updatePlayer(){
+
+  if(
+    respawning ||
+    gameIsOver
+  ){
+
+    player.vx*=.8;
+    player.vy*=.8;
+
+    return;
+
+  }
+
+
+  let inputX=
+    input.x;
+
+  let inputY=
+    input.y;
+
+
+  const magnitude=
+    Math.hypot(
+      inputX,
+      inputY
+    );
+
+
+  if(
+    magnitude>1
+  ){
+
+    inputX/=magnitude;
+
+    inputY/=magnitude;
+
+  }
+
+
+  player.targetVx=
+    inputX*
+    player.maxSpeed;
+
+
+  player.targetVy=
+    inputY*
+    player.maxSpeed*
+    .67;
+
+
+  if(
+    player.actionLocked
+  ){
+
+    player.targetVx*=.15;
+
+    player.targetVy*=.15;
+
+  }
+
+
+  player.vx=
+    lerp(
+      player.vx,
+      player.targetVx,
+      player.acceleration
+    );
+
+
+  player.vy=
+    lerp(
+      player.vy,
+      player.targetVy,
+      player.acceleration
+    );
+
+
+  if(
+    Math.abs(inputX)<.05
+  ){
+
+    player.vx*=
+      player.friction;
+
+  }
+
+
+  if(
+    Math.abs(inputY)<.05
+  ){
+
+    player.vy*=
+      player.friction;
+
+  }
+
+
+  player.x+=
+    player.vx;
+
+
+  player.y+=
+    player.vy;
+
+
+  constrainToRoad(
+    player
+  );
+
+
+  if(
+    Math.abs(
+      player.vx
+    )>.15
+  ){
+
+    player.facing=
+      Math.sign(
+        player.vx
+      );
+
+  }
+
+
+  if(
+    player.actionTimer>0
+  ){
+    player.actionTimer--;
+  }
+
+
+  if(
+    player.actionTimer<=0 &&
+    player.actionLocked
+  ){
+
+    player.actionLocked=false;
+
+  }
+
+
+  if(
+    !player.actionLocked
+  ){
+
+    const moving=
+      Math.abs(
+        player.vx
+      )>.3
+      ||
+      Math.abs(
+        player.vy
+      )>.25;
+
+    changeState(
+      player,
+      moving
+      ?
+      "walk"
+      :
+      "idle"
+    );
+
+  }
+
+
+  /* LIGHT */
+
+  if(
+    input.light &&
+    !lightPressed &&
+    player.lightCooldown<=0
+  ){
+
+    lightPressed=true;
+
+    player.actionLocked=true;
+
+    player.actionTimer=22;
+
+    changeState(
+      player,
+      "light"
+    );
+
+    player.lightCooldown=
+      Math.floor(
+        21*
+        cooldownMultiplier()
+      );
+
+    setTimeout(
+      ()=>{
+
+        if(
+          gameIsOver ||
+          respawning
+        ){
+          return;
+        }
+
+        hitEnemies(
+          86,
+          15,
+          9,
+          false,
+          null
+        );
+
+      },
+      65
+    );
+
+    registerAttack("A");
+
+  }
+
+
+  if(
+    !input.light
+  ){
+    lightPressed=false;
+  }
+
+
+  /* HEAVY */
+
+  if(
+    input.heavy &&
+    !heavyPressed &&
+    player.heavyCooldown<=0
+  ){
+
+    heavyPressed=true;
+
+    player.actionLocked=true;
+
+    player.actionTimer=30;
+
+    player.electric=18;
+
+    player.electricLevel=1;
+
+    changeState(
+      player,
+      "heavy"
+    );
+
+    player.heavyCooldown=
+      Math.floor(
+        42*
+        cooldownMultiplier()
+      );
+
+    setTimeout(
+      ()=>{
+
+        if(
+          gameIsOver ||
+          respawning
+        ){
+          return;
+        }
+
+        hitEnemies(
+          105,
+          29,
+          18,
+          true,
+          null
+        );
+
+      },
+      90
+    );
+
+    registerAttack("H");
+
+  }
+
+
+  if(
+    !input.heavy
+  ){
+    heavyPressed=false;
+  }
+
+
+  /* THUNDER BURST */
+
+  if(
+    input.special &&
+    !specialPressed &&
+    player.specialCooldown<=0 &&
+    player.energy>=35
+  ){
+
+    specialPressed=true;
+
+    const lvl=
+      upgrades.thunderBurst;
+
+    const energyCost=
+      Math.max(
+        23,
+        35-
+        (
+          lvl-1
+        )*2
+      );
+
+    player.energy-=
+      energyCost;
+
+    player.actionLocked=true;
+
+    player.actionTimer=
+      30+
+      lvl;
+
+    player.electric=
+      40+
+      lvl*12;
+
+    player.electricLevel=lvl;
+
+    changeState(
+      player,
+      "special"
+    );
+
+    player.specialCooldown=
+      Math.max(
+        42,
+        90-
+        lvl*5
+      );
+
+    createAbilityBurst(lvl);
+
+    setTimeout(
+      ()=>{
+
+        if(
+          gameIsOver ||
+          respawning
+        ){
+          return;
+        }
+
+        hitEnemies(
+          thunderRange(),
+          thunderDamage(),
+          18+
+          lvl*3,
+          true,
+          "thunderBurst"
+        );
+
+      },
+      90
+    );
+
+    showMessage(
+      "THUNDER BURST LV."+
+      lvl
+    );
+
+  }
+
+
+  if(
+    !input.special
+  ){
+    specialPressed=false;
+  }
+
+
+  /* LIGHTNING DASH */
+
+  if(
+    input.dash &&
+    !dashPressed &&
+    player.dashCooldown<=0
+  ){
+
+    dashPressed=true;
+
+    const lvl=
+      upgrades.lightningDash;
+
+    player.dashCooldown=
+      Math.max(
+        20,
+        48-
+        lvl*4
+      );
+
+    player.invincible=
+      18+
+      lvl*2;
+
+    player.electric=
+      25+
+      lvl*8;
+
+    player.electricLevel=lvl;
+
+    let dx=inputX;
+    let dy=inputY;
+
+    if(
+      Math.hypot(
+        dx,
+        dy
+      )<.2
+    ){
+
+      dx=
+        player.facing;
+
+      dy=0;
+
+    }
+
+    player.vx+=
+      dx*
+      dashDistance();
+
+    player.vy+=
+      dy*
+      (
+        6+
+        lvl*.7
+      );
+
+    createDashVisual(lvl);
+
+    hitEnemies(
+      80+
+      lvl*6,
+      dashDamage(),
+      12+
+      lvl*2,
+      true,
+      "lightningDash"
+    );
+
+  }
+
+
+  if(
+    !input.dash
+  ){
+    dashPressed=false;
+  }
+
+
+  [
+    "lightCooldown",
+    "heavyCooldown",
+    "specialCooldown",
+    "dashCooldown",
+    "invincible",
+    "electric"
+  ]
+  .forEach(
+    key=>{
+
+      if(
+        player[key]>0
+      ){
+        player[key]--;
+      }
+
+    }
+  );
+
+
+  player.energy=
+    Math.min(
+      player.maxEnergy,
+      player.energy+.15
+    );
+
+
+  updateWalkAnimation(
+    player,
+    7
+  );
+
+
+  updateAnimation(
+    player,
+    chosenAnimations
+  );
+
+}
+
+
+/* ==================================================
+PLAYER DOWN / LIFE SYSTEM
+================================================== */
+
+function handlePlayerDown(){
+
+  if(
+    respawning ||
+    gameIsOver
+  ){
+    return;
+  }
+
+
+  lives--;
+
+  clearInput();
+
+  player.hp=0;
+
+  player.vx=0;
+
+  player.vy=0;
+
+  player.actionLocked=false;
+
+  changeState(
+    player,
+    "idle"
+  );
+
+
+  if(
+    lives<=0
+  ){
+
+    endGame();
+
+    return;
+
+  }
+
+
+  respawning=true;
+
+  respawnTimer=100;
+
+  showMessage(
+    "CHOSEN DOWN — "+
+    lives+
+    (
+      lives===1
+      ?
+      " LIFE REMAINING"
+      :
+      " LIVES REMAINING"
+    )
+  );
+
+}
+
+
+/* ==================================================
+RESPAWN
+================================================== */
+
+function updateRespawn(){
+
+  if(
+    !respawning
+  ){
+    return;
+  }
+
+
+  respawnTimer--;
+
+
+  if(
+    respawnTimer<=0
+  ){
+
+    player.x=
+      W*.5;
+
+    player.y=
+      H*.73;
+
+    constrainToRoad(
+      player
+    );
+
+    player.previousX=
+      player.x;
+
+    player.previousY=
+      player.y;
+
+    player.vx=0;
+    player.vy=0;
+
+    player.hp=
+      player.maxHp;
+
+    player.energy=
+      player.maxEnergy;
+
+    player.invincible=180;
+
+    player.actionLocked=false;
+
+    player.actionTimer=0;
+
+    player.lightCooldown=0;
+
+    player.heavyCooldown=0;
+
+    player.specialCooldown=0;
+
+    player.dashCooldown=0;
+
+    respawning=false;
+
+    showMessage(
+      "⚡ CHOSEN RISES ⚡"
+    );
+
+  }
+
+}
+
+
+/* ==================================================
+GAME OVER
+================================================== */
+
+function endGame(){
+
+  gameIsOver=true;
+
+  paused=true;
+
+  clearInput();
+
+  if(
+    wave>
+    bestWaveRecord
+  ){
+
+    bestWaveRecord=wave;
+
+    writeRecord(
+      "templeOfAshBestWave",
+      bestWaveRecord
+    );
+
+  }
+
+
+  if(
+    score>
+    highScoreRecord
+  ){
+
+    highScoreRecord=score;
+
+    writeRecord(
+      "templeOfAshHighScore",
+      highScoreRecord
+    );
+
+  }
+
+
+  document.getElementById(
+    "overWave"
+  ).textContent=
+    wave;
+
+
+  document.getElementById(
+    "overScore"
+  ).textContent=
+    score.toLocaleString();
+
+
+  document.getElementById(
+    "overKills"
+  ).textContent=
+    kills;
+
+
+  document.getElementById(
+    "overVoltage"
+  ).textContent=
+    runVoltageEarned.toLocaleString();
+
+
+  document.getElementById(
+    "bestWave"
+  ).textContent=
+    bestWaveRecord;
+
+
+  document.getElementById(
+    "highScore"
+  ).textContent=
+    highScoreRecord.toLocaleString();
+
+
+  document.getElementById(
+    "gameOver"
+  ).style.display=
+    "flex";
+
+}
+
+
+/* ==================================================
 ENEMY AI
-===================================================== */
+================================================== */
 
 function updateEnemies(){
 
@@ -3600,11 +4472,13 @@ function updateEnemies(){
         return;
       }
 
+
       if(
         enemy.hitTimer>0
       ){
         enemy.hitTimer--;
       }
+
 
       if(
         enemy.attackCooldown>0
@@ -3612,11 +4486,13 @@ function updateEnemies(){
         enemy.attackCooldown--;
       }
 
+
       if(
         enemy.specialCooldown>0
       ){
         enemy.specialCooldown--;
       }
+
 
       if(
         enemy.hitRecovery>0
@@ -3625,9 +4501,7 @@ function updateEnemies(){
       }
 
 
-      /*
-      ENTRY
-      */
+      /* ENTRY */
 
       if(
         enemy.entering
@@ -3678,9 +4552,7 @@ function updateEnemies(){
       }
 
 
-      /*
-      HIT / KNOCKBACK
-      */
+      /* HIT KNOCKBACK */
 
       if(
         enemy.stun>0
@@ -3689,6 +4561,7 @@ function updateEnemies(){
         enemy.stun--;
 
         enemy.vx*=.88;
+
         enemy.vy*=.88;
 
         enemy.x+=
@@ -3699,6 +4572,34 @@ function updateEnemies(){
 
         constrainToRoad(
           enemy
+        );
+
+        updateAnimation(
+          enemy,
+          voodooAnimations
+        );
+
+        return;
+
+      }
+
+
+      /*
+      During Chosen's respawn delay,
+      enemies idle instead of attacking.
+      */
+
+      if(
+        respawning
+      ){
+
+        enemy.vx*=.82;
+
+        enemy.vy*=.82;
+
+        changeState(
+          enemy,
+          "idle"
         );
 
         updateAnimation(
@@ -3789,9 +4690,7 @@ function updateEnemies(){
       }
 
 
-      /*
-      BOSS SPECIAL
-      */
+      /* BOSS SPECIAL */
 
       if(
         enemy.boss &&
@@ -3816,6 +4715,7 @@ function updateEnemies(){
 
         }
 
+
         else if(
           enemy.name==="ROUXGAROUX"
         ){
@@ -3831,6 +4731,7 @@ function updateEnemies(){
           );
 
         }
+
 
         else{
 
@@ -3875,6 +4776,7 @@ function updateEnemies(){
           .10
         );
 
+
       enemy.vy=
         lerp(
           enemy.vy,
@@ -3883,9 +4785,7 @@ function updateEnemies(){
         );
 
 
-      /*
-      BASIC ATTACK
-      */
+      /* ATTACK */
 
       if(
         Math.abs(dx)<60 &&
@@ -3930,11 +4830,15 @@ function updateEnemies(){
 
             x:player.x,
 
-            y:player.y-45,
+            y:
+              player.y-
+              45,
 
             life:14,
 
-            maxLife:14
+            maxLife:14,
+
+            level:1
 
           });
 
@@ -3969,26 +4873,25 @@ function updateEnemies(){
 
       }
 
+
       enemy.x+=
         enemy.vx;
 
+
       enemy.y+=
         enemy.vy;
+
 
       constrainToRoad(
         enemy
       );
 
 
-      /*
-      Enemy steps are also
-      distance synchronized.
-      */
-
       updateWalkAnimation(
         enemy,
         8
       );
+
 
       updateAnimation(
         enemy,
@@ -4005,15 +4908,11 @@ function updateEnemies(){
     );
 
 
-  /*
-  Don't finish a wave while
-  delayed enemies are still spawning.
-  */
-
   if(
     enemies.length===0 &&
     pendingSpawns===0 &&
-    !wavePending
+    !wavePending &&
+    !gameIsOver
   ){
 
     wavePending=true;
@@ -4025,7 +4924,15 @@ function updateEnemies(){
     ){
 
       setTimeout(
-        openShop,
+        ()=>{
+
+          if(
+            !gameIsOver
+          ){
+            openShop();
+          }
+
+        },
         650
       );
 
@@ -4033,6 +4940,12 @@ function updateEnemies(){
 
       setTimeout(
         ()=>{
+
+          if(
+            gameIsOver
+          ){
+            return;
+          }
 
           wave++;
 
@@ -4052,15 +4965,17 @@ function updateEnemies(){
   if(
     player.hp<=0
   ){
-    resetGame();
+
+    handlePlayerDown();
+
   }
 
 }
 
 
-/* =====================================================
+/* ==================================================
 PICKUPS
-===================================================== */
+================================================== */
 
 function updatePickups(){
 
@@ -4072,6 +4987,7 @@ function updatePickups(){
       pickup.bob+=.055;
 
       if(
+        !respawning &&
         distance(
           player,
           pickup
@@ -4111,6 +5027,7 @@ function updatePickups(){
 
         }
 
+
         if(
           data.points
         ){
@@ -4119,6 +5036,9 @@ function updatePickups(){
             data.points;
 
           voltage+=
+            data.voltage;
+
+          runVoltageEarned+=
             data.voltage;
 
           showPickup(
@@ -4137,6 +5057,7 @@ function updatePickups(){
     }
   );
 
+
   pickups=
     pickups.filter(
       pickup=>pickup.life>0
@@ -4145,19 +5066,36 @@ function updatePickups(){
 }
 
 
-/* =====================================================
+/* ==================================================
 EFFECT UPDATE
-===================================================== */
+================================================== */
 
 function updateEffects(){
 
   effects.forEach(
     effect=>{
 
+      /*
+      Sky Judgment impact lands part-way
+      through the bolt animation.
+      */
+
+      if(
+        effect.type==="skyStrike" &&
+        effect.life===22
+      ){
+
+        applySkyStrikeDamage(
+          effect
+        );
+
+      }
+
       effect.life--;
 
     }
   );
+
 
   effects=
     effects.filter(
@@ -4167,9 +5105,9 @@ function updateEffects(){
 }
 
 
-/* =====================================================
+/* ==================================================
 SHOP
-===================================================== */
+================================================== */
 
 function shouldOpenShop(
 completedWave
@@ -4196,11 +5134,8 @@ function coreUpgradeCost(
 type
 ){
 
-  const base=
-    220;
-
   return Math.floor(
-    base*
+    220*
     Math.pow(
       1.42,
       upgrades[type]-1
@@ -4214,32 +5149,32 @@ function abilityUpgradeCost(
 type
 ){
 
-  const level=
+  const abilityLevel=
     upgrades[type];
 
   return(
-    220+
-    level*
-    130
+    200+
+    abilityLevel*
+    115
   );
 
 }
 
 
 function levelDots(
-level
+abilityLevel
 ){
 
   let text="";
 
   for(
     let i=1;
-    i<=5;
+    i<=6;
     i++
   ){
 
     text+=
-      i<=level
+      i<=abilityLevel
       ?
       "●"
       :
@@ -4272,7 +5207,7 @@ dotsId,
 buttonId
 ){
 
-  const level=
+  const abilityLevel=
     upgrades[type];
 
   const dots=
@@ -4285,17 +5220,29 @@ buttonId
       buttonId
     );
 
-  dots.textContent=
-    levelDots(
-      level
+  const colors=
+    abilityColor(
+      abilityLevel
     );
 
+  dots.textContent=
+    levelDots(
+      abilityLevel
+    );
+
+  dots.style.color=
+    colors.main;
+
+  dots.style.textShadow=
+    `0 0 10px ${colors.glow}`;
+
+
   if(
-    level>=5
+    abilityLevel>=6
   ){
 
     button.textContent=
-      "MAX LEVEL";
+      "👑 ROYAL BLUE — MAX";
 
     button.disabled=true;
 
@@ -4303,15 +5250,20 @@ buttonId
 
   }
 
+
   const price=
-    abilityUpgradeCost(
-      type
+    abilityUpgradeCost(type);
+
+  const nextColor=
+    abilityColor(
+      abilityLevel+1
     );
 
   button.textContent=
     "⚡ "+
     price+
-    " VOLTAGE";
+    " → "+
+    nextColor.name;
 
   button.disabled=
     voltage<price;
@@ -4326,10 +5278,12 @@ function updateShop(){
   ).textContent=
     voltage;
 
+
   document.getElementById(
     "powerLevel"
   ).textContent=
     upgrades.power;
+
 
   document.getElementById(
     "speedLevel"
@@ -4348,9 +5302,7 @@ function updateShop(){
         document.getElementById(id);
 
       const price=
-        coreUpgradeCost(
-          type
-        );
+        coreUpgradeCost(type);
 
       button.textContent=
         "⚡ "+
@@ -4370,11 +5322,13 @@ function updateShop(){
     "thunderButton"
   );
 
+
   updateAbilityCard(
     "lightningDash",
     "dashDots",
     "dashUpgradeButton"
   );
+
 
   updateAbilityCard(
     "voltRush",
@@ -4382,11 +5336,13 @@ function updateShop(){
     "voltButton"
   );
 
+
   updateAbilityCard(
     "electricCross",
     "crossDots",
     "crossButton"
   );
+
 
   updateAbilityCard(
     "twinThunder",
@@ -4402,9 +5358,7 @@ type
 ){
 
   const price=
-    coreUpgradeCost(
-      type
-    );
+    coreUpgradeCost(type);
 
   if(
     voltage<price
@@ -4415,6 +5369,7 @@ type
   voltage-=price;
 
   upgrades[type]++;
+
 
   if(
     type==="power"
@@ -4434,15 +5389,13 @@ type
 ){
 
   if(
-    upgrades[type]>=5
+    upgrades[type]>=6
   ){
     return;
   }
 
   const price=
-    abilityUpgradeCost(
-      type
-    );
+    abilityUpgradeCost(type);
 
   if(
     voltage<price
@@ -4454,8 +5407,19 @@ type
 
   upgrades[type]++;
 
+  const newLevel=
+    upgrades[type];
+
+  const color=
+    abilityColor(newLevel);
+
   showMessage(
-    "ABILITY EVOLVED!"
+    newLevel===6
+    ?
+    "👑 ROYAL BLUE UNLEASHED 👑"
+    :
+    color.name+
+    " LIGHTNING!"
   );
 
   updateShop();
@@ -4466,16 +5430,14 @@ type
 document.getElementById(
   "powerButton"
 ).onclick=
-()=>buyCoreUpgrade(
-  "power"
-);
+()=>buyCoreUpgrade("power");
+
 
 document.getElementById(
   "speedButton"
 ).onclick=
-()=>buyCoreUpgrade(
-  "speed"
-);
+()=>buyCoreUpgrade("speed");
+
 
 document.getElementById(
   "thunderButton"
@@ -4484,12 +5446,14 @@ document.getElementById(
   "thunderBurst"
 );
 
+
 document.getElementById(
   "dashUpgradeButton"
 ).onclick=
 ()=>buyAbilityUpgrade(
   "lightningDash"
 );
+
 
 document.getElementById(
   "voltButton"
@@ -4498,12 +5462,14 @@ document.getElementById(
   "voltRush"
 );
 
+
 document.getElementById(
   "crossButton"
 ).onclick=
 ()=>buyAbilityUpgrade(
   "electricCross"
 );
+
 
 document.getElementById(
   "twinButton"
@@ -4544,17 +5510,82 @@ document.getElementById(
 };
 
 
-/* =====================================================
-RESET
-===================================================== */
+/* ==================================================
+PLAY AGAIN
+================================================== */
 
-function resetGame(){
+document.getElementById(
+  "playAgainButton"
+).onclick=
+()=>{
 
-  player.hp=
-    player.maxHp;
+  document.getElementById(
+    "gameOver"
+  ).style.display=
+    "none";
 
-  player.energy=
-    player.maxEnergy;
+  resetRun();
+
+};
+
+
+/* ==================================================
+FULL RUN RESET
+================================================== */
+
+function resetRun(){
+
+  gameIsOver=false;
+
+  paused=false;
+
+  respawning=false;
+
+  respawnTimer=0;
+
+  lives=3;
+
+  wave=1;
+
+  score=0;
+
+  voltage=0;
+
+  runVoltageEarned=0;
+
+  level=1;
+
+  xp=0;
+
+  xpNeeded=150;
+
+  combo=0;
+
+  comboTimer=0;
+
+  kills=0;
+
+  wavePending=false;
+
+  pendingSpawns=0;
+
+  currentBoss=null;
+
+  enemies=[];
+
+  pickups=[];
+
+  effects=[];
+
+  resetUpgrades();
+
+  player.maxHp=120;
+
+  player.hp=120;
+
+  player.maxEnergy=100;
+
+  player.energy=100;
 
   player.x=
     W*.5;
@@ -4563,6 +5594,7 @@ function resetGame(){
     H*.72;
 
   player.vx=0;
+
   player.vy=0;
 
   player.previousX=
@@ -4573,34 +5605,45 @@ function resetGame(){
 
   player.walkDistance=0;
 
-  score=0;
-  combo=0;
-  wave=1;
+  player.invincible=90;
 
-  pickups=[];
-  effects=[];
-  enemies=[];
+  player.electric=0;
 
-  pendingSpawns=0;
+  player.electricLevel=1;
 
-  wavePending=false;
+  player.actionLocked=false;
 
-  constrainToRoad(
-    player
+  player.actionTimer=0;
+
+  player.lightCooldown=0;
+
+  player.heavyCooldown=0;
+
+  player.specialCooldown=0;
+
+  player.dashCooldown=0;
+
+  changeState(
+    player,
+    "idle"
   );
+
+  constrainToRoad(player);
+
+  clearInput();
 
   spawnWave();
 
   showMessage(
-    "CHOSEN RISES"
+    "⚡ TEMPLE OF ASH ⚡"
   );
 
 }
 
 
-/* =====================================================
+/* ==================================================
 STAGE
-===================================================== */
+================================================== */
 
 function drawStage(){
 
@@ -4650,13 +5693,12 @@ function drawStage(){
   }
 
 
-  /* SIDEWALK */
-
   const sidewalkTop=
     H*.50;
 
   const sidewalkBottom=
     roadTop();
+
 
   const sidewalkGradient=
     ctx.createLinearGradient(
@@ -4666,18 +5708,22 @@ function drawStage(){
       sidewalkBottom
     );
 
+
   sidewalkGradient.addColorStop(
     0,
     "rgba(25,22,25,.55)"
   );
+
 
   sidewalkGradient.addColorStop(
     1,
     "#29252a"
   );
 
+
   ctx.fillStyle=
     sidewalkGradient;
+
 
   ctx.fillRect(
     0,
@@ -4691,7 +5737,9 @@ function drawStage(){
   ctx.strokeStyle=
     "rgba(255,255,255,.05)";
 
+
   ctx.lineWidth=1;
+
 
   for(
     let x=0;
@@ -4768,23 +5816,28 @@ function drawStage(){
       H
     );
 
+
   road.addColorStop(
     0,
     "#231f22"
   );
+
 
   road.addColorStop(
     .55,
     "#19171a"
   );
 
+
   road.addColorStop(
     1,
     "#101015"
   );
 
+
   ctx.fillStyle=
     road;
+
 
   ctx.fillRect(
     0,
@@ -4797,6 +5850,7 @@ function drawStage(){
   /* COBBLE */
 
   let row=0;
+
 
   for(
     let y=
@@ -4815,30 +5869,38 @@ function drawStage(){
         roadTop()
       );
 
+
     const alpha=
       .04+
       depth*.04;
 
+
     ctx.strokeStyle=
       `rgba(190,170,160,${alpha})`;
 
+
     ctx.beginPath();
+
 
     ctx.moveTo(
       0,
       y
     );
 
+
     ctx.lineTo(
       W,
       y
     );
 
+
     ctx.stroke();
+
 
     const spacing=
       48+
       depth*20;
+
 
     const offset=
       row%2
@@ -4846,6 +5908,7 @@ function drawStage(){
       spacing/2
       :
       0;
+
 
     for(
       let x=
@@ -4857,21 +5920,26 @@ function drawStage(){
       ctx.strokeStyle=
         `rgba(180,165,155,${alpha*.65})`;
 
+
       ctx.beginPath();
+
 
       ctx.moveTo(
         x,
         y
       );
 
+
       ctx.lineTo(
         x+2,
         y+20
       );
 
+
       ctx.stroke();
 
     }
+
 
     row++;
 
@@ -4888,23 +5956,28 @@ function drawStage(){
       roadBottom()
     );
 
+
   sheen.addColorStop(
     0,
     "rgba(70,100,125,.025)"
   );
+
 
   sheen.addColorStop(
     .5,
     "rgba(255,255,255,.012)"
   );
 
+
   sheen.addColorStop(
     1,
     "rgba(75,95,120,.045)"
   );
 
+
   ctx.fillStyle=
     sheen;
+
 
   ctx.fillRect(
     0,
@@ -4922,6 +5995,7 @@ function drawStage(){
     68
   );
 
+
   drawStreetReflection(
     W*.35,
     roadTop()+32,
@@ -4930,6 +6004,7 @@ function drawStage(){
     54
   );
 
+
   drawStreetReflection(
     W*.69,
     roadTop()+25,
@@ -4937,6 +6012,7 @@ function drawStage(){
     34,
     72
   );
+
 
   drawStreetReflection(
     W*.86,
@@ -4954,12 +6030,14 @@ function drawStage(){
     11
   );
 
+
   drawPuddle(
     W*.47,
     H*.68,
     36,
     8
   );
+
 
   drawPuddle(
     W*.72,
@@ -5001,6 +6079,7 @@ function drawStage(){
 
   ctx.lineWidth=1;
 
+
   for(
     let i=0;
     i<42;
@@ -5038,9 +6117,9 @@ function drawStage(){
 }
 
 
-/* =====================================================
-REFLECTION
-===================================================== */
+/* ==================================================
+STREET REFLECTION
+================================================== */
 
 function drawStreetReflection(
 x,
@@ -5116,9 +6195,9 @@ height
 }
 
 
-/* =====================================================
-PUDDLES
-===================================================== */
+/* ==================================================
+PUDDLE
+================================================== */
 
 function drawPuddle(
 x,
@@ -5170,9 +6249,9 @@ height
 }
 
 
-/* =====================================================
+/* ==================================================
 SHADOW
-===================================================== */
+================================================== */
 
 function drawShadow(
 entity,
@@ -5183,12 +6262,6 @@ multiplier=1
     depthScale(
       entity.y
     );
-
-  /*
-  Shadow compresses slightly
-  during the upper portion of
-  a walk stride.
-  */
 
   const stepCompression=
     entity.state==="walk"
@@ -5229,27 +6302,42 @@ multiplier=1
 }
 
 
-/* =====================================================
+/* ==================================================
 DRAW PLAYER
-===================================================== */
+================================================== */
 
 function drawPlayer(){
+
+  if(
+    respawning
+  ){
+
+    if(
+      respawnTimer>25
+    ){
+      return;
+    }
+
+  }
+
 
   drawShadow(
     player,
     1.08
   );
 
+
   if(
     player.invincible>0 &&
     Math.floor(
-      player.invincible/3
+      player.invincible/4
     )%2
   ){
 
-    ctx.globalAlpha=.55;
+    ctx.globalAlpha=.45;
 
   }
+
 
   drawSprite(
     images.chosen,
@@ -5257,6 +6345,7 @@ function drawPlayer(){
     chosenAnimations,
     1.18
   );
+
 
   ctx.globalAlpha=1;
 
@@ -5270,17 +6359,27 @@ function drawPlayer(){
         player.y
       );
 
+    const color=
+      abilityColor(
+        player.electricLevel
+      );
+
     ctx.save();
 
     ctx.strokeStyle=
-      "#69e7ff";
+      color.main;
 
     ctx.shadowColor=
-      "#32c7ff";
+      color.glow;
 
-    ctx.shadowBlur=15;
+    ctx.shadowBlur=
+      12+
+      player.electricLevel*2;
 
-    ctx.lineWidth=2;
+    ctx.lineWidth=
+      1.5+
+      player.electricLevel*.25;
+
 
     for(
       let i=0;
@@ -5313,6 +6412,31 @@ function drawPlayer(){
 
     }
 
+
+    if(
+      player.electricLevel===6
+    ){
+
+      ctx.strokeStyle=
+        color.core;
+
+      ctx.lineWidth=1.4;
+
+      ctx.beginPath();
+
+      ctx.arc(
+        player.x,
+        player.y-
+        48*scale,
+        32*scale,
+        0,
+        Math.PI*2
+      );
+
+      ctx.stroke();
+
+    }
+
     ctx.restore();
 
   }
@@ -5320,9 +6444,9 @@ function drawPlayer(){
 }
 
 
-/* =====================================================
+/* ==================================================
 DRAW ENEMY
-===================================================== */
+================================================== */
 
 function drawEnemy(
 enemy
@@ -5339,10 +6463,12 @@ enemy
     :
     1;
 
+
   drawShadow(
     enemy,
     size
   );
+
 
   if(
     enemy.hitTimer>0
@@ -5352,12 +6478,14 @@ enemy
 
   }
 
+
   drawSprite(
     images.voodoo,
     enemy,
     voodooAnimations,
     size
   );
+
 
   ctx.globalAlpha=1;
 
@@ -5416,9 +6544,9 @@ enemy
 }
 
 
-/* =====================================================
-PICKUP DRAW
-===================================================== */
+/* ==================================================
+DRAW PICKUPS
+================================================== */
 
 function drawPickups(){
 
@@ -5488,9 +6616,9 @@ function drawPickups(){
 }
 
 
-/* =====================================================
+/* ==================================================
 DRAW EFFECTS
-===================================================== */
+================================================== */
 
 function drawEffects(){
 
@@ -5511,6 +6639,12 @@ function drawEffects(){
           0,
           ratio
         );
+
+      const level=
+        effect.level || 1;
+
+      const colors=
+        abilityColor(level);
 
 
       /* FOOTSTEP */
@@ -5544,14 +6678,143 @@ function drawEffects(){
       }
 
 
-      /* THUNDER BURST */
+      /* SKY JUDGMENT */
+
+      else if(
+        effect.type==="skyStrike"
+      ){
+
+        const impactProgress=
+          1-ratio;
+
+        ctx.globalAlpha=
+          Math.min(
+            1,
+            ratio*2
+          );
+
+        ctx.shadowColor=
+          "#0648ff";
+
+        ctx.shadowBlur=30;
+
+        /*
+        Massive bolt from sky.
+        */
+
+        ctx.strokeStyle=
+          "#eaf4ff";
+
+        ctx.lineWidth=7;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+          effect.x+
+          random(-12,12),
+          0
+        );
+
+        const segments=7;
+
+        for(
+          let i=1;
+          i<segments;
+          i++
+        ){
+
+          ctx.lineTo(
+            effect.x+
+            random(-18,18),
+            lerp(
+              0,
+              effect.y,
+              i/segments
+            )
+          );
+
+        }
+
+        ctx.lineTo(
+          effect.x,
+          effect.y
+        );
+
+        ctx.stroke();
+
+
+        ctx.strokeStyle=
+          "#286dff";
+
+        ctx.lineWidth=13;
+
+        ctx.globalAlpha=.36;
+
+        ctx.stroke();
+
+
+        /*
+        Impact circle.
+        */
+
+        ctx.globalAlpha=
+          Math.max(
+            0,
+            .75-impactProgress*.25
+          );
+
+        ctx.strokeStyle=
+          "#286dff";
+
+        ctx.lineWidth=5;
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+          effect.x,
+          effect.y,
+          20+
+          impactProgress*95,
+          7+
+          impactProgress*26,
+          0,
+          0,
+          Math.PI*2
+        );
+
+        ctx.stroke();
+
+
+        if(
+          effect.life<22
+        ){
+
+          ctx.fillStyle=
+            "rgba(40,109,255,.16)";
+
+          ctx.beginPath();
+
+          ctx.arc(
+            effect.x,
+            effect.y-15,
+            100*
+            impactProgress,
+            0,
+            Math.PI*2
+          );
+
+          ctx.fill();
+
+        }
+
+      }
+
+
+      /* BURST */
 
       else if(
         effect.type==="burst"
       ){
-
-        const level=
-          effect.level || 1;
 
         const progress=
           1-ratio;
@@ -5565,10 +6828,10 @@ function drawEffects(){
           );
 
         ctx.strokeStyle=
-          "#69e7ff";
+          colors.main;
 
         ctx.shadowColor=
-          "#39c9ff";
+          colors.glow;
 
         ctx.shadowBlur=
           12+
@@ -5614,18 +6877,20 @@ function drawEffects(){
 
 
         if(
-          level===5
+          level===6
         ){
 
-          ctx.globalAlpha*=
-            .8;
+          ctx.strokeStyle=
+            colors.core;
+
+          ctx.globalAlpha=.8;
 
           ctx.beginPath();
 
           ctx.arc(
             effect.x,
             effect.y,
-            radius*1.23,
+            radius*1.24,
             0,
             Math.PI*2
           );
@@ -5644,18 +6909,22 @@ function drawEffects(){
       ){
 
         ctx.strokeStyle=
-          "#6beaff";
+          level===6
+          ?
+          colors.core
+          :
+          colors.main;
 
         ctx.shadowColor=
-          "#2dc8ff";
+          colors.glow;
 
         ctx.shadowBlur=
           8+
-          effect.strength*3;
+          level*3;
 
         ctx.lineWidth=
           1.5+
-          effect.strength*.4;
+          level*.4;
 
         ctx.beginPath();
 
@@ -5709,14 +6978,11 @@ function drawEffects(){
         effect.type==="dash"
       ){
 
-        const level=
-          effect.level || 1;
-
         ctx.strokeStyle=
-          "#58ddff";
+          colors.main;
 
         ctx.shadowColor=
-          "#31c7ff";
+          colors.glow;
 
         ctx.shadowBlur=
           10+
@@ -5740,8 +7006,7 @@ function drawEffects(){
 
         ctx.lineTo(
           effect.x+
-          effect.facing*
-          18,
+          effect.facing*18,
           effect.y-35
         );
 
@@ -5757,11 +7022,18 @@ function drawEffects(){
       ){
 
         ctx.strokeStyle=
-          "rgba(90,220,255,.55)";
+          colors.main;
+
+        ctx.shadowColor=
+          colors.glow;
+
+        ctx.shadowBlur=
+          4+
+          level*2;
 
         ctx.lineWidth=
           4+
-          effect.level*.5;
+          level*.5;
 
         ctx.beginPath();
 
@@ -5780,25 +7052,25 @@ function drawEffects(){
       }
 
 
-      /* VOLT RUSH */
+      /* SWORD WAVE */
 
       else if(
         effect.type==="swordWave"
       ){
 
         ctx.strokeStyle=
-          "#72eaff";
+          colors.main;
 
         ctx.shadowColor=
-          "#28bfff";
+          colors.glow;
 
         ctx.shadowBlur=
           10+
-          effect.level*4;
+          level*4;
 
         ctx.lineWidth=
           3+
-          effect.level*.7;
+          level*.7;
 
         ctx.beginPath();
 
@@ -5821,10 +7093,14 @@ function drawEffects(){
       ){
 
         ctx.strokeStyle=
-          "#d9faff";
+          level===6
+          ?
+          colors.core
+          :
+          colors.main;
 
         ctx.shadowColor=
-          "#4ad8ff";
+          colors.glow;
 
         ctx.shadowBlur=15;
 
@@ -5836,7 +7112,7 @@ function drawEffects(){
           effect.x,
           effect.y,
           62+
-          effect.level*6,
+          level*6,
           -.9,
           .8
         );
@@ -5846,20 +7122,17 @@ function drawEffects(){
       }
 
 
-      /* ELECTRIC CROSS */
+      /* CROSS */
 
       else if(
         effect.type==="cross"
       ){
 
-        const level=
-          effect.level || 1;
-
         ctx.strokeStyle=
-          "#74eaff";
+          colors.main;
 
         ctx.shadowColor=
-          "#33c9ff";
+          colors.glow;
 
         ctx.shadowBlur=
           10+
@@ -5906,18 +7179,15 @@ function drawEffects(){
         effect.type==="twin"
       ){
 
-        const level=
-          effect.level || 1;
-
         const radius=
           45+
           level*13;
 
         ctx.strokeStyle=
-          "#7aeaff";
+          colors.main;
 
         ctx.shadowColor=
-          "#26c2ff";
+          colors.glow;
 
         ctx.shadowBlur=
           12+
@@ -5954,14 +7224,31 @@ function drawEffects(){
       }
 
 
+      /* HIT */
+
       else{
 
         ctx.fillStyle=
           effect.type==="electricHit"
           ?
-          "#73ecff"
+          colors.main
           :
           "#ff5a4f";
+
+        ctx.shadowColor=
+          effect.type==="electricHit"
+          ?
+          colors.glow
+          :
+          "#ff2929";
+
+        ctx.shadowBlur=
+          effect.type==="electricHit"
+          ?
+          6+
+          level*2
+          :
+          5;
 
         ctx.fillRect(
           effect.x-5,
@@ -5980,9 +7267,9 @@ function drawEffects(){
 }
 
 
-/* =====================================================
+/* ==================================================
 HUD
-===================================================== */
+================================================== */
 
 function updateHud(){
 
@@ -5998,6 +7285,7 @@ function updateHud(){
     " / "+
     player.maxHp;
 
+
   document.getElementById(
     "energyText"
   ).textContent=
@@ -6006,6 +7294,7 @@ function updateHud(){
     )+
     " / "+
     player.maxEnergy;
+
 
   document.getElementById(
     "hpFill"
@@ -6018,6 +7307,7 @@ function updateHud(){
     )+
     "%";
 
+
   document.getElementById(
     "energyFill"
   ).style.width=
@@ -6025,6 +7315,7 @@ function updateHud(){
     player.maxEnergy*
     100+
     "%";
+
 
   document.getElementById(
     "xpFill"
@@ -6034,35 +7325,55 @@ function updateHud(){
     100+
     "%";
 
+
   document.getElementById(
     "levelText"
   ).textContent=
     level;
+
 
   document.getElementById(
     "waveText"
   ).textContent=
     wave;
 
+
   document.getElementById(
     "voltageText"
   ).textContent=
     voltage;
+
 
   document.getElementById(
     "scoreText"
   ).textContent=
     score;
 
+
   document.getElementById(
     "comboText"
   ).textContent=
     combo;
 
+
+  document.getElementById(
+    "livesDisplay"
+  ).textContent=
+    Array(
+      Math.max(
+        0,
+        lives
+      )
+    )
+    .fill("♥")
+    .join(" ");
+
+
   const bossHud=
     document.getElementById(
       "bossHud"
     );
+
 
   if(
     currentBoss &&
@@ -6100,17 +7411,27 @@ function updateHud(){
 }
 
 
-/* =====================================================
+/* ==================================================
 UPDATE
-===================================================== */
+================================================== */
 
 function update(){
+
+  if(
+    gameIsOver
+  ){
+    return;
+  }
+
 
   if(
     paused
   ){
     return;
   }
+
+
+  updateRespawn();
 
   updatePlayer();
 
@@ -6120,6 +7441,7 @@ function update(){
 
   updateEffects();
 
+
   if(
     comboTimer>0
   ){
@@ -6128,6 +7450,7 @@ function update(){
     combo=0;
   }
 
+
   if(
     sequenceTimer>0
   ){
@@ -6135,6 +7458,7 @@ function update(){
   }else{
     sequence=[];
   }
+
 
   if(
     messageTimer>0
@@ -6147,6 +7471,7 @@ function update(){
     ).style.opacity=0;
 
   }
+
 
   if(
     pickupTimer>0
@@ -6163,13 +7488,14 @@ function update(){
 }
 
 
-/* =====================================================
+/* ==================================================
 DRAW
-===================================================== */
+================================================== */
 
 function draw(){
 
   drawStage();
+
 
   const actors=[
 
@@ -6196,14 +7522,17 @@ function draw(){
 
   ];
 
+
   actors.sort(
     (a,b)=>
     a.y-b.y
   );
 
+
   actors.forEach(
     actor=>actor.draw()
   );
+
 
   drawPickups();
 
@@ -6214,9 +7543,9 @@ function draw(){
 }
 
 
-/* =====================================================
+/* ==================================================
 LOOP
-===================================================== */
+================================================== */
 
 function gameLoop(){
 
@@ -6231,9 +7560,9 @@ function gameLoop(){
 }
 
 
-/* =====================================================
+/* ==================================================
 START
-===================================================== */
+================================================== */
 
 player.x=
   W*.5;
@@ -6254,6 +7583,7 @@ constrainToRoad(
 spawnWave();
 
 gameLoop();
+
 
 })();
 
