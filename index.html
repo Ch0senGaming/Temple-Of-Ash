@@ -5,283 +5,580 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
 <title>CHOSEN: POWER SURGE</title>
 
 <style>
-*{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;position:fixed;inset:0;background:#02040a;color:#fff;font-family:Arial,Helvetica,sans-serif;touch-action:none;overscroll-behavior:none}
-button,input{font:inherit}
-canvas{position:fixed;inset:0;width:100vw;height:100dvh;display:block;image-rendering:pixelated;touch-action:none}
+*{
+  box-sizing:border-box;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-tap-highlight-color:transparent;
+}
 
-#hud{position:fixed;inset:0;z-index:10;pointer-events:none}
-#topHud{position:absolute;top:max(6px,env(safe-area-inset-top));left:6px;right:6px;display:flex;justify-content:space-between;align-items:flex-start;gap:5px}
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  position:fixed;
+  inset:0;
+  background:#02040a;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+  touch-action:none;
+  overscroll-behavior:none;
+}
 
-.panel{background:rgba(2,5,11,.84);border:1px solid rgba(255,255,255,.18);border-radius:9px;padding:5px 8px;box-shadow:0 4px 14px rgba(0,0,0,.55);backdrop-filter:blur(5px)}
+button,input{
+  font:inherit;
+}
 
-#playerPanel{width:min(43vw,300px)}
-#centerPanel{min-width:92px;text-align:center;font-size:12px}
-#scorePanel{min-width:90px;text-align:right;font-size:11px}
+canvas{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100dvh;
+  display:block;
+  image-rendering:pixelated;
+  touch-action:none;
+}
 
-.playerName{font-size:15px;font-weight:1000;font-style:italic;letter-spacing:1px}
-.lives{margin-top:1px;color:#ff5858;font-size:12px;letter-spacing:2px}
+#hud{
+  position:fixed;
+  inset:0;
+  z-index:10;
+  pointer-events:none;
+}
 
-.statRow{display:flex;justify-content:space-between;align-items:center;margin-top:2px;font-size:9px;opacity:.86}
-.bar{height:6px;margin-top:1px;overflow:hidden;border-radius:12px;background:#252b35}
-.fill{height:100%}
+#topHud{
+  position:absolute;
+  top:max(6px,env(safe-area-inset-top));
+  left:6px;
+  right:6px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:5px;
+}
 
-#hpFill{background:linear-gradient(90deg,#aa1421,#ff5343)}
-#energyFill{background:linear-gradient(90deg,#1068d8,#6cecff)}
+.panel{
+  background:rgba(2,5,11,.84);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:9px;
+  padding:5px 8px;
+  box-shadow:0 4px 14px rgba(0,0,0,.55);
+  backdrop-filter:blur(5px);
+}
 
-#dangerText{display:none;color:#ff3636;font-size:9px;font-weight:1000;text-shadow:0 0 8px #ff1a1a}
-#dangerText.active{display:inline;animation:pulse .72s infinite}
-#hpBarOuter.danger{border:1px solid #ff3434;box-shadow:0 0 12px #f22;animation:pulse .72s infinite}
+#playerPanel{
+  width:min(43vw,300px);
+}
+
+#centerPanel{
+  min-width:92px;
+  text-align:center;
+  font-size:12px;
+}
+
+#scorePanel{
+  min-width:90px;
+  text-align:right;
+  font-size:11px;
+}
+
+.playerName{
+  font-size:15px;
+  font-weight:1000;
+  font-style:italic;
+  letter-spacing:1px;
+}
+
+.lives{
+  margin-top:1px;
+  color:#ff5858;
+  font-size:12px;
+  letter-spacing:2px;
+}
+
+.statRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:2px;
+  font-size:9px;
+  opacity:.86;
+}
+
+.bar{
+  height:6px;
+  margin-top:1px;
+  overflow:hidden;
+  border-radius:12px;
+  background:#252b35;
+}
+
+.fill{
+  height:100%;
+}
+
+#hpFill{
+  background:linear-gradient(90deg,#aa1421,#ff5343);
+}
+
+#energyFill{
+  background:linear-gradient(90deg,#1068d8,#6cecff);
+}
+
+#dangerText{
+  display:none;
+  color:#ff3636;
+  font-size:9px;
+  font-weight:1000;
+  text-shadow:0 0 8px #ff1a1a;
+}
+
+#dangerText.active{
+  display:inline;
+  animation:pulse .72s infinite;
+}
+
+#hpBarOuter.danger{
+  border:1px solid #ff3434;
+  box-shadow:0 0 12px #f22;
+  animation:pulse .72s infinite;
+}
 
 @keyframes pulse{
-50%{opacity:.58}
+  50%{
+    opacity:.58;
+  }
 }
 
 #message{
-position:absolute;
-top:19%;
-left:50%;
-transform:translateX(-50%);
-width:92%;
-text-align:center;
-font-size:clamp(21px,5vw,44px);
-font-weight:1000;
-font-style:italic;
-text-shadow:0 4px 5px #000,0 0 18px #34c8ff;
-opacity:0
+  position:absolute;
+  top:19%;
+  left:50%;
+  transform:translateX(-50%);
+  width:92%;
+  text-align:center;
+  font-size:clamp(21px,5vw,44px);
+  font-weight:1000;
+  font-style:italic;
+  text-shadow:0 4px 5px #000,0 0 18px #34c8ff;
+  opacity:0;
 }
 
 #pickupMessage{
-position:absolute;
-top:31%;
-left:50%;
-transform:translateX(-50%);
-font-size:15px;
-font-weight:1000;
-text-shadow:0 2px 5px #000;
-opacity:0
+  position:absolute;
+  top:31%;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:15px;
+  font-weight:1000;
+  text-shadow:0 2px 5px #000;
+  opacity:0;
 }
 
 #bossHud{
-position:absolute;
-left:50%;
-transform:translateX(-50%);
-width:min(70vw,610px);
-display:none
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(70vw,610px);
+  display:none;
 }
 
-.bossRow{text-align:center;margin-bottom:4px}
-.bossName{font-size:10px;font-weight:1000;letter-spacing:1.5px;text-shadow:0 2px 4px #000}
-.bossBarOuter{height:9px;margin-top:2px;overflow:hidden;border:1px solid #ffffff4d;border-radius:14px;background:#170b11e6}
-.bossBar{height:100%;background:linear-gradient(90deg,#941536,#ff4549)}
+.bossRow{
+  text-align:center;
+  margin-bottom:4px;
+}
+
+.bossName{
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:1.5px;
+  text-shadow:0 2px 4px #000;
+}
+
+.bossBarOuter{
+  height:9px;
+  margin-top:2px;
+  overflow:hidden;
+  border:1px solid #ffffff4d;
+  border-radius:14px;
+  background:#170b11e6;
+}
+
+.bossBar{
+  height:100%;
+  background:linear-gradient(90deg,#941536,#ff4549);
+}
 
 #pauseButton,
 #quickMuteButton{
-position:fixed;
-z-index:35;
-top:max(91px,calc(env(safe-area-inset-top) + 84px));
-width:42px;
-height:42px;
-border:1px solid #ffffff4d;
-border-radius:11px;
-background:#03070ed4;
-color:#fff;
-font-size:19px;
-font-weight:1000;
-touch-action:manipulation
+  position:fixed;
+  z-index:35;
+  top:max(91px,calc(env(safe-area-inset-top) + 84px));
+  width:42px;
+  height:42px;
+  border:1px solid #ffffff4d;
+  border-radius:11px;
+  background:#03070ed4;
+  color:#fff;
+  font-size:19px;
+  font-weight:1000;
+  touch-action:manipulation;
 }
 
-#pauseButton{right:max(8px,env(safe-area-inset-right))}
-#quickMuteButton{right:max(58px,calc(env(safe-area-inset-right) + 50px));font-size:17px}
+#pauseButton{
+  right:max(8px,env(safe-area-inset-right));
+}
 
-#controls{position:fixed;inset:0;z-index:20;pointer-events:none}
+#quickMuteButton{
+  right:max(58px,calc(env(safe-area-inset-right) + 50px));
+  font-size:17px;
+}
+
+#controls{
+  position:fixed;
+  inset:0;
+  z-index:20;
+  pointer-events:none;
+}
 
 #joystick{
-position:absolute;
-left:max(18px,env(safe-area-inset-left));
-bottom:max(23px,env(safe-area-inset-bottom));
-width:140px;
-height:140px;
-border-radius:50%;
-border:2px solid #ffffff40;
-background:#03070e94;
-pointer-events:auto;
-touch-action:none
+  position:absolute;
+  left:max(18px,env(safe-area-inset-left));
+  bottom:max(23px,env(safe-area-inset-bottom));
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  border:2px solid #ffffff40;
+  background:#03070e94;
+  pointer-events:auto;
+  touch-action:none;
 }
 
 #stick{
-position:absolute;
-left:50%;
-top:50%;
-width:61px;
-height:61px;
-transform:translate(-50%,-50%);
-border-radius:50%;
-border:2px solid #ffffff8c;
-background:#dde5efc7
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:61px;
+  height:61px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  border:2px solid #ffffff8c;
+  background:#dde5efc7;
 }
 
 #buttons{
-position:absolute;
-right:max(15px,env(safe-area-inset-right));
-bottom:max(22px,env(safe-area-inset-bottom));
-width:187px;
-height:187px;
-pointer-events:auto
+  position:absolute;
+  right:max(15px,env(safe-area-inset-right));
+  bottom:max(22px,env(safe-area-inset-bottom));
+  width:187px;
+  height:187px;
+  pointer-events:auto;
 }
 
 .gameButton{
-position:absolute;
-width:70px;
-height:70px;
-border-radius:50%;
-border:2px solid #ffffff40;
-background:#050a11e0;
-color:#fff;
-font-size:21px;
-font-weight:1000;
-touch-action:manipulation
+  position:absolute;
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  border:2px solid #ffffff40;
+  background:#050a11e0;
+  color:#fff;
+  font-size:21px;
+  font-weight:1000;
+  touch-action:manipulation;
 }
 
-.gameButton small{display:block;font-size:8px;opacity:.82}
+.gameButton small{
+  display:block;
+  font-size:8px;
+  opacity:.82;
+}
 
-#lightBtn{left:0;top:58px;color:#62bcff}
-#heavyBtn{left:65px;top:0;color:#ffd65c}
-#specialBtn{left:65px;top:115px;color:#65e7ff}
-#dashBtn{left:125px;top:58px;color:#ff6258}
+#lightBtn{
+  left:0;
+  top:58px;
+  color:#62bcff;
+}
+
+#heavyBtn{
+  left:65px;
+  top:0;
+  color:#ffd65c;
+}
+
+#specialBtn{
+  left:65px;
+  top:115px;
+  color:#65e7ff;
+}
+
+#dashBtn{
+  left:125px;
+  top:58px;
+  color:#ff6258;
+}
 
 .overlay{
-position:fixed;
-inset:0;
-z-index:55;
-display:none;
-justify-content:center;
-align-items:center;
-padding:16px;
-background:#000c;
-backdrop-filter:blur(8px)
+  position:fixed;
+  inset:0;
+  z-index:55;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  padding:16px;
+  background:#000c;
+  backdrop-filter:blur(8px);
 }
 
 .card{
-width:min(95vw,720px);
-max-height:88dvh;
-overflow:auto;
-padding:17px;
-border:2px solid #49c2ff66;
-border-radius:18px;
-background:linear-gradient(#111a25,#06090e);
-touch-action:pan-y
+  width:min(95vw,720px);
+  max-height:88dvh;
+  overflow:auto;
+  padding:17px;
+  border:2px solid #49c2ff66;
+  border-radius:18px;
+  background:linear-gradient(#111a25,#06090e);
+  touch-action:pan-y;
 }
 
-.title{text-align:center;color:#70e4ff;font-size:24px;font-weight:1000}
-.sub{text-align:center;font-size:11px;opacity:.65;margin:4px 0 12px}
+.title{
+  text-align:center;
+  color:#70e4ff;
+  font-size:24px;
+  font-weight:1000;
+}
 
-.tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:12px}
+.sub{
+  text-align:center;
+  font-size:11px;
+  opacity:.65;
+  margin:4px 0 12px;
+}
+
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:7px;
+  margin-bottom:12px;
+}
 
 .tab,
 .mainBtn,
 .upgrade button{
-padding:11px;
-border:0;
-border-radius:9px;
-background:#172331;
-color:#fff;
-font-weight:900
+  padding:11px;
+  border:0;
+  border-radius:9px;
+  background:#172331;
+  color:#fff;
+  font-weight:900;
 }
 
-.tab.active{background:#174b70;border:1px solid #59cdfd}
+.tab.active{
+  background:#174b70;
+  border:1px solid #59cdfd;
+}
 
-.page{display:none}
-.page.active{display:block}
+.page{
+  display:none;
+}
 
-.mainBtn{width:100%;margin:6px 0;padding:14px;font-size:15px}
-.primary{background:#167bd6}
-.dangerBtn{background:#671d26}
+.page.active{
+  display:block;
+}
+
+.mainBtn{
+  width:100%;
+  margin:6px 0;
+  padding:14px;
+  font-size:15px;
+}
+
+.primary{
+  background:#167bd6;
+}
+
+.dangerBtn{
+  background:#671d26;
+}
 
 .moveCard,
 .audioRow,
 .leaderRow{
-margin:8px 0;
-padding:11px;
-border:1px solid #ffffff1a;
-border-radius:11px;
-background:#0e151e
+  margin:8px 0;
+  padding:11px;
+  border:1px solid #ffffff1a;
+  border-radius:11px;
+  background:#0e151e;
 }
 
-.moveTitle{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:1000}
-.moveCard p{margin:6px 0;font-size:11px;line-height:1.45;opacity:.78}
-.audioTop{display:flex;justify-content:space-between;font-weight:900}
-.audioControls{display:grid;grid-template-columns:1fr 80px;gap:9px;align-items:center;margin-top:9px}
-.audioControls input{width:100%}
+.moveTitle{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  font-size:13px;
+  font-weight:1000;
+}
 
-#shop{z-index:50}
-.shopGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.moveCard p{
+  margin:6px 0;
+  font-size:11px;
+  line-height:1.45;
+  opacity:.78;
+}
+
+.audioTop{
+  display:flex;
+  justify-content:space-between;
+  font-weight:900;
+}
+
+.audioControls{
+  display:grid;
+  grid-template-columns:1fr 80px;
+  gap:9px;
+  align-items:center;
+  margin-top:9px;
+}
+
+.audioControls input{
+  width:100%;
+}
+
+.upgrade button:disabled{
+  opacity:.45;
+  filter:grayscale(.35);
+  cursor:not-allowed;
+}
+
+#shop{
+  z-index:50;
+}
+
+.shopGrid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+}
 
 .upgrade{
-padding:11px;
-text-align:center;
-border:1px solid #ffffff1f;
-border-radius:11px;
-background:#101722
+  padding:11px;
+  text-align:center;
+  border:1px solid #ffffff1f;
+  border-radius:11px;
+  background:#101722;
 }
 
-.upgrade p{min-height:28px;margin:7px 0;font-size:10px;opacity:.72}
-
-/* RESTORED GREYED-OUT UNAFFORDABLE UPGRADES */
-.upgrade button:disabled{
-opacity:.34;
-filter:grayscale(1);
-background:#252b32;
-color:#7f8993;
-box-shadow:none
+.upgrade p{
+  min-height:28px;
+  margin:7px 0;
+  font-size:10px;
+  opacity:.72;
 }
 
-.levelDots{font-size:13px;letter-spacing:1px;margin:6px 0}
-.currency{text-align:center;color:#ffd95c;font-weight:1000;margin:8px 0 14px}
+.levelDots{
+  font-size:13px;
+  letter-spacing:1px;
+  margin:6px 0;
+}
+
+.currency{
+  text-align:center;
+  color:#ffd95c;
+  font-weight:1000;
+  margin:8px 0 14px;
+}
 
 #continueButton{
-width:100%;
-margin-top:14px;
-padding:12px;
-border:0;
-border-radius:10px;
-background:#167bd6;
-color:#fff;
-font-weight:1000
+  width:100%;
+  margin-top:14px;
+  padding:12px;
+  border:0;
+  border-radius:10px;
+  background:#167bd6;
+  color:#fff;
+  font-weight:1000;
 }
 
-#leaderboard{z-index:70}
-
 #leaderboardTable{
-width:100%;
-border-collapse:collapse;
-font-size:11px
+  width:100%;
+  border-collapse:collapse;
+  font-size:11px;
 }
 
 #leaderboardTable th,
 #leaderboardTable td{
-padding:8px 4px;
-border-bottom:1px solid #ffffff14;
-text-align:right
+  padding:8px 4px;
+  border-bottom:1px solid #ffffff14;
+  text-align:right;
 }
 
 #leaderboardTable th:first-child,
-#leaderboardTable td:first-child{text-align:center}
+#leaderboardTable td:first-child{
+  text-align:center;
+}
 
-#gameOver{z-index:60}
-.overTitle{font-size:42px;color:#ff4c4c;font-weight:1000;font-style:italic;text-align:center}
-.results{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.result{padding:11px;border:1px solid #ffffff17;border-radius:10px;background:#0c121a;text-align:center}
-.result small{display:block;font-size:9px;opacity:.58}
-.result strong{font-size:20px}
-.records{text-align:center;margin:12px 0;padding:10px;border-radius:10px;background:#235aa021;color:#7ee6ff;font-weight:900;line-height:1.7}
+#gameOver{
+  z-index:60;
+}
+
+.overTitle{
+  font-size:42px;
+  color:#ff4c4c;
+  font-weight:1000;
+  font-style:italic;
+  text-align:center;
+}
+
+.results{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.result{
+  padding:11px;
+  border:1px solid #ffffff17;
+  border-radius:10px;
+  background:#0c121a;
+  text-align:center;
+}
+
+.result small{
+  display:block;
+  font-size:9px;
+  opacity:.58;
+}
+
+.result strong{
+  font-size:20px;
+}
+
+.records{
+  text-align:center;
+  margin:12px 0;
+  padding:10px;
+  border-radius:10px;
+  background:#235aa021;
+  color:#7ee6ff;
+  font-weight:900;
+  line-height:1.7;
+}
 
 @media(max-width:620px){
-.shopGrid{grid-template-columns:1fr}
-#buttons{transform:scale(.88);transform-origin:bottom right}
+  .shopGrid{
+    grid-template-columns:1fr;
+  }
+
+  #buttons{
+    transform:scale(.88);
+    transform-origin:bottom right;
+  }
 }
 </style>
 </head>
@@ -291,537 +588,565 @@ text-align:right
 <canvas id="game"></canvas>
 
 <audio
-id="musicTrack"
-src="assets/power_surge_bourbon_theme.mp3"
-preload="auto"
-loop>
-</audio>
+  id="musicTrack"
+  src="assets/power_surge_bourbon_theme.mp3"
+  preload="auto"
+  loop
+></audio>
 
 <div id="hud">
 
-<div id="topHud">
+  <div id="topHud">
 
-<div class="panel" id="playerPanel">
+    <div class="panel" id="playerPanel">
 
-<div class="playerName">
-⚡ CHOSEN
-</div>
+      <div class="playerName">
+        ⚡ CHOSEN
+      </div>
 
-<div class="lives" id="livesDisplay">
-♥ ♥ ♥
-</div>
+      <div class="lives" id="livesDisplay">
+        ♥ ♥ ♥
+      </div>
 
-<div class="statRow">
-<span>
-HP
-<span id="dangerText">⚠ DANGER!</span>
-</span>
+      <div class="statRow">
+        <span>
+          HP
+          <span id="dangerText">
+            ⚠ DANGER!
+          </span>
+        </span>
 
-<span id="hpText">
-100 / 100
-</span>
-</div>
+        <span id="hpText">
+          100 / 100
+        </span>
+      </div>
 
-<div class="bar" id="hpBarOuter">
-<div class="fill" id="hpFill"></div>
-</div>
+      <div class="bar" id="hpBarOuter">
+        <div class="fill" id="hpFill"></div>
+      </div>
 
-<div class="statRow">
-<span>ENERGY</span>
-<span id="energyText">100 / 100</span>
-</div>
+      <div class="statRow">
+        <span>ENERGY</span>
+        <span id="energyText">100 / 100</span>
+      </div>
 
-<div class="bar">
-<div class="fill" id="energyFill"></div>
-</div>
+      <div class="bar">
+        <div class="fill" id="energyFill"></div>
+      </div>
 
-</div>
+    </div>
 
-<div class="panel" id="centerPanel">
+    <div class="panel" id="centerPanel">
+      <b>
+        WAVE
+        <span id="waveText">1</span>
+      </b>
+      <br>
+      <span id="enemyText" style="font-size:9px">
+        VOODOO CLAN
+      </span>
+      <br>
+      ⚡ <span id="voltageText">0</span>
+    </div>
 
-<b>
-WAVE
-<span id="waveText">1</span>
-</b>
+    <div class="panel" id="scorePanel">
+      SCORE
+      <br>
+      <b id="scoreText">0</b>
+      <br>
+      COMBO
+      <b id="comboText">0</b>
+    </div>
 
-<br>
+  </div>
 
-<span id="enemyText" style="font-size:9px">
-VOODOO CLAN
-</span>
+  <div id="bossHud">
 
-<br>
+    <div class="bossRow" id="bossRow1">
+      <div class="bossName" id="bossName1"></div>
+      <div class="bossBarOuter">
+        <div class="bossBar" id="bossBar1"></div>
+      </div>
+    </div>
 
-⚡
-<span id="voltageText">
-0
-</span>
+    <div class="bossRow" id="bossRow2">
+      <div class="bossName" id="bossName2"></div>
+      <div class="bossBarOuter">
+        <div class="bossBar" id="bossBar2"></div>
+      </div>
+    </div>
 
-</div>
+    <div class="bossRow" id="bossRow3">
+      <div class="bossName" id="bossName3"></div>
+      <div class="bossBarOuter">
+        <div class="bossBar" id="bossBar3"></div>
+      </div>
+    </div>
 
-<div class="panel" id="scorePanel">
+  </div>
 
-SCORE
-<br>
-
-<b id="scoreText">
-0
-</b>
-
-<br>
-
-COMBO
-<b id="comboText">
-0
-</b>
-
-</div>
-
-</div>
-
-<div id="bossHud">
-
-<div class="bossRow" id="bossRow1">
-<div class="bossName" id="bossName1"></div>
-<div class="bossBarOuter">
-<div class="bossBar" id="bossBar1"></div>
-</div>
-</div>
-
-<div class="bossRow" id="bossRow2">
-<div class="bossName" id="bossName2"></div>
-<div class="bossBarOuter">
-<div class="bossBar" id="bossBar2"></div>
-</div>
-</div>
-
-<div class="bossRow" id="bossRow3">
-<div class="bossName" id="bossName3"></div>
-<div class="bossBarOuter">
-<div class="bossBar" id="bossBar3"></div>
-</div>
-</div>
-
-</div>
-
-<div id="message"></div>
-<div id="pickupMessage"></div>
+  <div id="message"></div>
+  <div id="pickupMessage"></div>
 
 </div>
 
 <button id="quickMuteButton">
-🔊
+  🔊
 </button>
 
 <button id="pauseButton">
-Ⅱ
+  Ⅱ
 </button>
 
 <div id="controls">
 
-<div id="joystick">
-<div id="stick"></div>
-</div>
+  <div id="joystick">
+    <div id="stick"></div>
+  </div>
 
-<div id="buttons">
+  <div id="buttons">
 
-<button class="gameButton" id="lightBtn">
-A
-<small>SLASH</small>
-</button>
+    <button class="gameButton" id="lightBtn">
+      A
+      <small>SLASH</small>
+    </button>
 
-<button class="gameButton" id="heavyBtn">
-H
-<small>HEAVY</small>
-</button>
+    <button class="gameButton" id="heavyBtn">
+      H
+      <small>HEAVY</small>
+    </button>
 
-<button class="gameButton" id="specialBtn">
-S
-<small>POWER</small>
-</button>
+    <button class="gameButton" id="specialBtn">
+      S
+      <small>POWER</small>
+    </button>
 
-<button class="gameButton" id="dashBtn">
-⚡
-<small>DASH</small>
-</button>
+    <button class="gameButton" id="dashBtn">
+      ⚡
+      <small>DASH</small>
+    </button>
 
-</div>
+  </div>
 
 </div>
 
 <div class="overlay" id="shop">
 
-<div class="card">
+  <div class="card">
 
-<div class="title">
-⚡ POWER SURGE UPGRADES
-</div>
+    <div class="title">
+      ⚡ POWER SURGE UPGRADES
+    </div>
 
-<div class="currency">
-VOLTAGE:
-<span id="shopVoltage">0</span>
-</div>
+    <div class="currency">
+      VOLTAGE:
+      <span id="shopVoltage">0</span>
+    </div>
 
-<div class="shopGrid">
+    <div class="shopGrid">
 
-<div class="upgrade">
-<b>⚔ ATTACK POWER</b>
-<p>Increase sword and combo damage.</p>
-<div>LV <span id="powerLevel">1</span></div>
-<button id="powerButton"></button>
-</div>
+      <div class="upgrade">
+        <b>⚔ ATTACK POWER</b>
+        <p>
+          Increase sword and combo damage.
+        </p>
+        <div>
+          LV
+          <span id="powerLevel">1</span>
+        </div>
+        <button id="powerButton"></button>
+      </div>
 
-<div class="upgrade">
-<b>⚡ ATTACK SPEED</b>
-<p>Faster attacks and shorter recovery.</p>
-<div>LV <span id="speedLevel">1</span></div>
-<button id="speedButton"></button>
-</div>
+      <div class="upgrade">
+        <b>⚡ ATTACK SPEED</b>
+        <p>
+          Faster attacks and shorter recovery.
+        </p>
+        <div>
+          LV
+          <span id="speedLevel">1</span>
+        </div>
+        <button id="speedButton"></button>
+      </div>
 
-<div class="upgrade">
-<b>♥ VITALITY</b>
-<p>Expensive permanent maximum HP increase.</p>
-<div>
-HP <span id="vitalityHp">100</span>
-•
-LV <span id="vitalityLevel">0</span>/5
-</div>
-<button id="vitalityButton"></button>
-</div>
+      <div class="upgrade">
+        <b>♥ VITALITY</b>
+        <p>
+          Expensive permanent maximum HP increase.
+        </p>
+        <div>
+          HP
+          <span id="vitalityHp">100</span>
+          • LV
+          <span id="vitalityLevel">0</span>/5
+        </div>
+        <button id="vitalityButton"></button>
+      </div>
 
-<div class="upgrade">
-<b>🌩 THUNDER BURST</b>
-<p>LV5 Chain Burst • LV10 Heaven's Thunder.</p>
-<div class="levelDots" id="thunderDots"></div>
-<button id="thunderButton"></button>
-</div>
+      <div class="upgrade">
+        <b>🌩 THUNDER BURST</b>
+        <p>
+          Area electric attack. Evolution powers unlock at Levels 5 and 10.
+        </p>
+        <div class="levelDots" id="thunderDots"></div>
+        <button id="thunderButton"></button>
+      </div>
 
-<div class="upgrade">
-<b>⚡ LIGHTNING DASH</b>
-<p>LV5 Volt Trail • LV10 Triple Surge.</p>
-<div class="levelDots" id="dashDots"></div>
-<button id="dashUpgradeButton"></button>
-</div>
+      <div class="upgrade">
+        <b>⚡ LIGHTNING DASH</b>
+        <p>
+          Lightning movement attack with stronger evolutions.
+        </p>
+        <div class="levelDots" id="dashDots"></div>
+        <button id="dashUpgradeButton"></button>
+      </div>
 
-<div class="upgrade">
-<b>⚔ VOLT RUSH</b>
-<p>A-A-H • LV5 Double Rush • LV10 Royal Tempest.</p>
-<div class="levelDots" id="voltDots"></div>
-<button id="voltButton"></button>
-</div>
+      <div class="upgrade">
+        <b>⚔ VOLT RUSH</b>
+        <p>
+          A → A → H electric sword rush.
+        </p>
+        <div class="levelDots" id="voltDots"></div>
+        <button id="voltButton"></button>
+      </div>
 
-<div class="upgrade">
-<b>✕ ELECTRIC CROSS</b>
-<p>A-H-A • LV5 Cross Shock • LV10 Judgment Cross.</p>
-<div class="levelDots" id="crossDots"></div>
-<button id="crossButton"></button>
-</div>
+      <div class="upgrade">
+        <b>✕ ELECTRIC CROSS</b>
+        <p>
+          A → H → A crossing electric blade finisher.
+        </p>
+        <div class="levelDots" id="crossDots"></div>
+        <button id="crossButton"></button>
+      </div>
 
-<div class="upgrade">
-<b>⚡⚔ TWIN THUNDER</b>
-<p>H-A-H • LV5 Thunder Field • LV10 Storm Dominion.</p>
-<div class="levelDots" id="twinDots"></div>
-<button id="twinButton"></button>
-</div>
+      <div class="upgrade">
+        <b>⚡⚔ TWIN THUNDER</b>
+        <p>
+          H → A → H heavy electric finisher.
+        </p>
+        <div class="levelDots" id="twinDots"></div>
+        <button id="twinButton"></button>
+      </div>
 
-</div>
+    </div>
 
-<button id="continueButton">
-CONTINUE
-</button>
+    <button id="continueButton">
+      CONTINUE
+    </button>
 
-</div>
+  </div>
 
 </div>
 
 <div class="overlay" id="pauseMenu">
 
-<div class="card">
+  <div class="card">
 
-<div class="title">
-⚡ CHOSEN: POWER SURGE
-</div>
+    <div class="title">
+      ⚡ CHOSEN: POWER SURGE
+    </div>
 
-<div class="sub">
-PAUSED
-</div>
+    <div class="sub">
+      PAUSED
+    </div>
 
-<div class="tabs">
+    <div class="tabs">
 
-<button class="tab active" data-page="pauseHome">
-MENU
-</button>
+      <button class="tab active" data-page="pauseHome">
+        MENU
+      </button>
 
-<button class="tab" data-page="movesPage">
-MOVES
-</button>
+      <button class="tab" data-page="movesPage">
+        MOVES
+      </button>
 
-<button class="tab" data-page="audioPage">
-AUDIO
-</button>
+      <button class="tab" data-page="audioPage">
+        AUDIO
+      </button>
 
-<button class="tab" data-page="evoPage">
-EVOLUTION
-</button>
+      <button class="tab" data-page="evolutionPage">
+        EVOLUTION
+      </button>
 
-</div>
+    </div>
 
-<div class="page active" id="pauseHome">
+    <div class="page active" id="pauseHome">
 
-<button class="mainBtn primary" id="resumeButton">
-▶ RESUME
-</button>
+      <button class="mainBtn primary" id="resumeButton">
+        ▶ RESUME
+      </button>
 
-<button class="mainBtn" id="leaderButton">
-🏆 LOCAL LEADERBOARD
-</button>
+      <button class="mainBtn" id="leaderboardButton">
+        🏆 LOCAL LEADERBOARD
+      </button>
 
-<button class="mainBtn dangerBtn" id="restartButton">
-↻ RESTART RUN
-</button>
+      <button class="mainBtn dangerBtn" id="restartButton">
+        ↻ RESTART RUN
+      </button>
 
-</div>
+    </div>
 
-<div class="page" id="movesPage">
+    <div class="page" id="movesPage">
 
-<div class="moveCard">
-<div class="moveTitle">
-<span>THUNDER BURST</span>
-<span>S</span>
-</div>
-<p>
-LV5 Chain Burst. LV10 Heaven's Thunder replaces it.
-</p>
-</div>
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>SWORD SLASH</span>
+          <span>A</span>
+        </div>
+        <p>
+          Fast sword strike used to begin and extend combos.
+        </p>
+      </div>
 
-<div class="moveCard">
-<div class="moveTitle">
-<span>LIGHTNING DASH</span>
-<span>⚡</span>
-</div>
-<p>
-LV5 leaves a damaging Volt Trail. LV10 replaces it with Triple Surge.
-</p>
-</div>
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>HEAVY SLASH</span>
+          <span>H</span>
+        </div>
+        <p>
+          Slower electric strike with stronger damage and knockback.
+        </p>
+      </div>
 
-<div class="moveCard">
-<div class="moveTitle">
-<span>VOLT RUSH</span>
-<span>A → A → H</span>
-</div>
-<p>
-LV5 Double Rush. LV10 Royal Tempest.
-</p>
-</div>
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>THUNDER BURST</span>
+          <span>S</span>
+        </div>
+        <p>
+          Electric area attack centered around Chosen.
+        </p>
+      </div>
 
-<div class="moveCard">
-<div class="moveTitle">
-<span>ELECTRIC CROSS</span>
-<span>A → H → A</span>
-</div>
-<p>
-LV5 Cross Shock. LV10 Judgment Cross.
-</p>
-</div>
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>LIGHTNING DASH</span>
+          <span>⚡</span>
+        </div>
+        <p>
+          High-speed electric movement attack with temporary invulnerability.
+        </p>
+      </div>
 
-<div class="moveCard">
-<div class="moveTitle">
-<span>TWIN THUNDER</span>
-<span>H → A → H</span>
-</div>
-<p>
-LV5 Thunder Field. LV10 Storm Dominion.
-</p>
-</div>
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>VOLT RUSH</span>
+          <span>A → A → H</span>
+        </div>
+      </div>
 
-</div>
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>ELECTRIC CROSS</span>
+          <span>A → H → A</span>
+        </div>
+      </div>
 
-<div class="page" id="audioPage">
+      <div class="moveCard">
+        <div class="moveTitle">
+          <span>TWIN THUNDER</span>
+          <span>H → A → H</span>
+        </div>
+      </div>
 
-<div class="audioRow">
+    </div>
 
-<div class="audioTop">
-<span>🎵 MUSIC</span>
-<span id="musicValue">35%</span>
-</div>
+    <div class="page" id="audioPage">
 
-<div class="audioControls">
+      <div class="audioRow">
 
-<input
-id="musicSlider"
-type="range"
-min="0"
-max="100"
-value="35">
+        <div class="audioTop">
+          <span>🎵 MUSIC</span>
+          <span id="musicValue">35%</span>
+        </div>
 
-<button class="tab" id="musicMute">
-MUTE
-</button>
+        <div class="audioControls">
 
-</div>
+          <input
+            id="musicSlider"
+            type="range"
+            min="0"
+            max="100"
+            value="35"
+          >
 
-</div>
+          <button id="musicMute">
+            MUTE
+          </button>
 
-<div class="audioRow">
+        </div>
 
-<div class="audioTop">
-<span>⚔ SFX</span>
-<span id="sfxValue">35%</span>
-</div>
+      </div>
 
-<div class="audioControls">
+      <div class="audioRow">
 
-<input
-id="sfxSlider"
-type="range"
-min="0"
-max="100"
-value="35">
+        <div class="audioTop">
+          <span>⚔ SOUND EFFECTS</span>
+          <span id="sfxValue">35%</span>
+        </div>
 
-<button class="tab" id="sfxMute">
-MUTE
-</button>
+        <div class="audioControls">
 
-</div>
+          <input
+            id="sfxSlider"
+            type="range"
+            min="0"
+            max="100"
+            value="35"
+          >
 
-</div>
+          <button id="sfxMute">
+            MUTE
+          </button>
 
-</div>
+        </div>
 
-<div class="page" id="evoPage">
+      </div>
 
-<div class="moveCard">
+    </div>
 
-<div class="moveTitle">
-<span>10-LEVEL ELECTRIC EVOLUTION</span>
-<span>LV1–10</span>
-</div>
+    <div class="page" id="evolutionPage">
 
-<p>
-LV1 Pale Blue •
-LV2 Cyan •
-LV3 Yellow •
-LV4 Orange •
-<b>LV5 Green — Evolution I</b> •
-LV6 Red •
-LV7 Magenta •
-<b>LV8 Purple</b> •
-<b>LV9 White</b> •
-<b>LV10 Royal Blue — Evolution II</b>.
-<br><br>
-Royal Blue replaces the LV5 special mechanic rather than stacking it.
-</p>
+      <div class="moveCard">
 
-</div>
+        <div class="moveTitle">
+          <span>⚡ ELECTRIC EVOLUTION</span>
+          <span>LV. 1–10</span>
+        </div>
 
-<div class="moveCard">
-<p>
-Late game:
-health drops become rarer after Wave 30 •
-Double bosses begin at Wave 50 •
-Triple bosses begin at Wave 75.
-</p>
-</div>
+        <p>
+          LV.1 — ELECTRIC BLUE
+          <br>
+          LV.2 — YELLOW
+          <br>
+          LV.3 — PINK
+          <br>
+          LV.4 — ORANGE
+          <br>
+          LV.5 — GREEN — EVOLUTION I
+          <br>
+          LV.6 — CYAN
+          <br>
+          LV.7 — RED
+          <br>
+          LV.8 — PURPLE
+          <br>
+          LV.9 — WHITE
+          <br>
+          LV.10 — ROYAL BLUE — EVOLUTION II
+        </p>
 
-</div>
+        <p>
+          Level 5 Evolution I powers are replaced by the stronger Level 10
+          Evolution II powers once Royal Blue is unlocked.
+        </p>
 
-</div>
+      </div>
+
+      <div class="moveCard">
+
+        <div class="moveTitle">
+          <span>LATE GAME</span>
+          <span>BOSS ESCALATION</span>
+        </div>
+
+        <p>
+          Double boss battles begin at Wave 50.
+          Triple boss battles begin at Wave 75.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
 
 </div>
 
 <div class="overlay" id="leaderboard">
 
-<div class="card">
+  <div class="card">
 
-<div class="title">
-🏆 LOCAL TOP 10 RUNS
-</div>
+    <div class="title">
+      🏆 LOCAL LEADERBOARD
+    </div>
 
-<div class="sub">
-Stored only on this device
-</div>
+    <div class="sub">
+      SAVED ON THIS DEVICE
+    </div>
 
-<table id="leaderboardTable">
+    <table id="leaderboardTable">
 
-<thead>
-<tr>
-<th>#</th>
-<th>Score</th>
-<th>Wave</th>
-<th>Kills</th>
-<th>Voltage</th>
-</tr>
-</thead>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>SCORE</th>
+          <th>WAVE</th>
+          <th>KILLS</th>
+        </tr>
+      </thead>
 
-<tbody id="leaderBody"></tbody>
+      <tbody id="leaderboardBody"></tbody>
 
-</table>
+    </table>
 
-<button class="mainBtn primary" id="closeLeaderboard">
-CLOSE
-</button>
+    <button class="mainBtn primary" id="closeLeaderboard">
+      CLOSE
+    </button>
 
-</div>
+  </div>
 
 </div>
 
 <div class="overlay" id="gameOver">
 
-<div class="card">
+  <div class="card">
 
-<div class="title">
-⚡ CHOSEN: POWER SURGE ⚡
-</div>
+    <div class="overTitle">
+      GAME OVER
+    </div>
 
-<div class="overTitle">
-GAME OVER
-</div>
+    <div class="results">
 
-<div class="sub">
-CHOSEN HAS FALLEN
-</div>
+      <div class="result">
+        <small>WAVE REACHED</small>
+        <strong id="overWave">1</strong>
+      </div>
 
-<div class="results">
+      <div class="result">
+        <small>FINAL SCORE</small>
+        <strong id="overScore">0</strong>
+      </div>
 
-<div class="result">
-<small>WAVE REACHED</small>
-<strong id="overWave">1</strong>
-</div>
+      <div class="result">
+        <small>ENEMIES DEFEATED</small>
+        <strong id="overKills">0</strong>
+      </div>
 
-<div class="result">
-<small>FINAL SCORE</small>
-<strong id="overScore">0</strong>
-</div>
+      <div class="result">
+        <small>VOLTAGE EARNED</small>
+        <strong id="overVoltage">0</strong>
+      </div>
 
-<div class="result">
-<small>ENEMIES DEFEATED</small>
-<strong id="overKills">0</strong>
-</div>
+    </div>
 
-<div class="result">
-<small>VOLTAGE EARNED</small>
-<strong id="overVoltage">0</strong>
-</div>
+    <div class="records">
+      👑 BEST WAVE:
+      <span id="bestWave">1</span>
+      <br>
+      🏆 HIGH SCORE:
+      <span id="highScore">0</span>
+    </div>
 
-</div>
+    <button class="mainBtn" id="gameOverLeaderboard">
+      🏆 VIEW LEADERBOARD
+    </button>
 
-<div class="records">
-👑 BEST WAVE:
-<span id="bestWave">1</span>
-<br>
-🏆 HIGH SCORE:
-<span id="highScore">0</span>
-</div>
+    <button class="mainBtn primary" id="playAgainButton">
+      ⚡ PLAY AGAIN
+    </button>
 
-<button class="mainBtn" id="gameOverLeaderboard">
-🏆 VIEW LEADERBOARD
-</button>
-
-<button class="mainBtn primary" id="playAgainButton">
-⚡ PLAY AGAIN
-</button>
-
-</div>
+  </div>
 
 </div>
 
@@ -829,58 +1154,76 @@ CHOSEN HAS FALLEN
 "use strict";
 
 /* =====================================================
-MOBILE PROTECTION
+MOBILE / IOS ZOOM LOCK
 ===================================================== */
 
 document.addEventListener(
-"touchmove",
-event=>{
-if(!event.target.closest(".card")){
-event.preventDefault();
-}
-},
-{passive:false}
+  "touchmove",
+  event=>{
+    if(
+      !event.target.closest(".card")
+    ){
+      event.preventDefault();
+    }
+  },
+  {passive:false}
 );
 
 [
-"gesturestart",
-"gesturechange",
-"gestureend"
-].forEach(
-name=>{
+  "gesturestart",
+  "gesturechange",
+  "gestureend"
+].forEach(eventName=>{
+  document.addEventListener(
+    eventName,
+    event=>{
+      event.preventDefault();
+    },
+    {passive:false}
+  );
+});
+
+let lastTouchEnd=0;
+
 document.addEventListener(
-name,
-event=>event.preventDefault(),
-{passive:false}
-);
-}
+  "touchend",
+  event=>{
+    const now=Date.now();
+
+    if(now-lastTouchEnd<=350){
+      event.preventDefault();
+    }
+
+    lastTouchEnd=now;
+  },
+  {passive:false}
 );
 
 document.addEventListener(
-"dblclick",
-event=>event.preventDefault(),
-{passive:false}
+  "dblclick",
+  event=>{
+    event.preventDefault();
+  },
+  {passive:false}
 );
 
 document.addEventListener(
-"contextmenu",
-event=>event.preventDefault()
+  "contextmenu",
+  event=>{
+    event.preventDefault();
+  }
 );
 
-/* =====================================================
-GAME
-===================================================== */
+document.documentElement.style.touchAction="none";
+document.body.style.touchAction="none";
 
 (()=>{
+const $=id=>document.getElementById(id);
 
-const $=
-id=>document.getElementById(id);
+const canvas=$("game");
+const ctx=canvas.getContext("2d");
 
-const canvas=
-$("game");
-
-const ctx=
-canvas.getContext("2d");
+ctx.imageSmoothingEnabled=false;
 
 let W=0;
 let H=0;
@@ -888,635 +1231,586 @@ let DPR=1;
 
 function resize(){
 
-DPR=
-Math.min(
-devicePixelRatio||1,
-2
-);
+  DPR=Math.min(
+    window.devicePixelRatio||1,
+    2
+  );
 
-W=
-innerWidth;
+  W=window.innerWidth;
+  H=window.innerHeight;
 
-H=
-innerHeight;
+  canvas.width=
+    Math.floor(W*DPR);
 
-canvas.width=
-W*
-DPR;
+  canvas.height=
+    Math.floor(H*DPR);
 
-canvas.height=
-H*
-DPR;
+  ctx.setTransform(
+    DPR,
+    0,
+    0,
+    DPR,
+    0,
+    0
+  );
 
-ctx.setTransform(
-DPR,
-0,
-0,
-DPR,
-0,
-0
-);
+  ctx.imageSmoothingEnabled=false;
 
-positionBossHud();
-
+  positionBossHud();
 }
-
-addEventListener(
-"resize",
-resize
-);
 
 resize();
 
-const clamp=
-(v,a,b)=>
-Math.max(
-a,
-Math.min(
-b,
-v
-)
+window.addEventListener(
+  "resize",
+  resize
 );
 
-const rnd=
-(a,b)=>
-a+
-Math.random()*
-(b-a);
+const clamp=(value,min,max)=>
+  Math.max(min,Math.min(max,value));
 
-const dist=
-(a,b)=>
-Math.hypot(
-a.x-b.x,
-a.y-b.y
-);
+const rnd=(min,max)=>
+  min+Math.random()*(max-min);
 
-const lerp=
-(a,b,t)=>
-a+
-(b-a)*
-t;
+const dist=(a,b)=>
+  Math.hypot(
+    a.x-b.x,
+    a.y-b.y
+  );
 
-function readNum(
-key,
-fallback
-){
+const lerp=(a,b,t)=>
+  a+(b-a)*t;
 
-try{
+function readNum(key,fallback){
 
-const value=
-localStorage.getItem(
-key
-);
+  try{
 
-if(
-value===null
-){
+    const raw=
+      localStorage.getItem(key);
 
-return fallback;
+    if(raw===null){
+      return fallback;
+    }
 
+    const value=
+      Number(raw);
+
+    return Number.isFinite(value)
+      ? value
+      : fallback;
+
+  }catch(error){
+
+    return fallback;
+  }
 }
 
-const number=
-Number(
-value
-);
+function writeNum(key,value){
 
-return Number.isFinite(
-number
-)
-?
-number
-:
-fallback;
+  try{
 
-}catch{
+    localStorage.setItem(
+      key,
+      String(value)
+    );
 
-return fallback;
-
+  }catch(error){}
 }
 
-}
+/* =====================================================
+BOSS HUD POSITION
+===================================================== */
 
-function writeNum(
-key,
-value
-){
-
-try{
-
-localStorage.setItem(
-key,
-String(
-value
-)
-);
-
-}catch{}
-
-}
+let lastBossHudBottom=-1;
 
 function positionBossHud(){
 
-const bounds=
-$("topHud")
-.getBoundingClientRect();
+  const topHud=$("topHud");
+  const bossHud=$("bossHud");
 
-$("bossHud")
-.style.top=
-Math.ceil(
-bounds.bottom+
-7
-)+
-"px";
+  if(!topHud||!bossHud){
+    return;
+  }
 
+  const bottom=
+    Math.ceil(
+      topHud.getBoundingClientRect().bottom+7
+    );
+
+  if(bottom!==lastBossHudBottom){
+
+    bossHud.style.top=
+      bottom+"px";
+
+    lastBossHudBottom=
+      bottom;
+  }
 }
+
+/* =====================================================
+GAME STATE
+===================================================== */
+
+let wave=1;
+let score=0;
+let voltage=0;
+let earned=0;
+let combo=0;
+let comboTimer=0;
+let kills=0;
+let lives=3;
+
+let paused=false;
+let pauseOpen=false;
+let gameOver=false;
+let wavePending=false;
+let pending=0;
+
+let enemies=[];
+let pickups=[];
+let effects=[];
+
+let messageTimer=0;
+let pickupTimer=0;
+
+let cameraShake=0;
+let cameraStrength=0;
+
+let comboSequence=[];
+let comboSequenceTimer=0;
+
+let bestWave=
+  readNum(
+    "chosenPowerSurgeBestWave",
+    1
+  );
+
+let highScore=
+  readNum(
+    "chosenPowerSurgeHighScore",
+    0
+  );
 
 /* =====================================================
 AUDIO
 ===================================================== */
 
-const music=
-$("musicTrack");
+const music=$("musicTrack");
 
 let musicVol=
-clamp(
-readNum(
-"powerSurgeMusicVolume",
-.35
-),
-0,
-1
-);
+  clamp(
+    readNum(
+      "powerSurgeMusicVolume",
+      .35
+    ),
+    0,
+    1
+  );
 
 let sfxVol=
-clamp(
-readNum(
-"powerSurgeSfxVolume",
-.35
-),
-0,
-1
-);
+  clamp(
+    readNum(
+      "powerSurgeSfxVolume",
+      .35
+    ),
+    0,
+    1
+  );
 
 let musicMuted=
-!!readNum(
-"powerSurgeMusicMuted",
-0
-);
+  !!readNum(
+    "powerSurgeMusicMuted",
+    0
+  );
 
 let sfxMuted=
-!!readNum(
-"powerSurgeSfxMuted",
-0
-);
+  !!readNum(
+    "powerSurgeSfxMuted",
+    0
+  );
 
 let quickMuted=
-!!readNum(
-"powerSurgeQuickMuted",
-0
-);
+  !!readNum(
+    "powerSurgeQuickMuted",
+    0
+  );
 
-let ac=null;
+let audioCtx=null;
 let sfxGain=null;
 
 function ensureAudio(){
 
-if(
-!ac
-){
+  if(!audioCtx){
 
-const AudioCtx=
-window.AudioContext||
-window.webkitAudioContext;
+    const AC=
+      window.AudioContext||
+      window.webkitAudioContext;
 
-if(
-AudioCtx
-){
+    if(AC){
 
-ac=
-new AudioCtx();
+      audioCtx=
+        new AC();
 
-sfxGain=
-ac.createGain();
+      sfxGain=
+        audioCtx.createGain();
 
-sfxGain.connect(
-ac.destination
-);
+      sfxGain.connect(
+        audioCtx.destination
+      );
+    }
+  }
 
-}
+  if(
+    audioCtx &&
+    audioCtx.state==="suspended"
+  ){
+    audioCtx.resume().catch(()=>{});
+  }
 
-}
+  refreshAudio();
 
-if(
-ac &&
-ac.state==="suspended"
-){
+  if(
+    !paused &&
+    !gameOver &&
+    !musicMuted &&
+    !quickMuted &&
+    music.paused
+  ){
 
-ac.resume()
-.catch(()=>{});
-
-}
-
-refreshAudio();
-
-if(
-!document.hidden &&
-!gameOver
-){
-
-music.play()
-.catch(()=>{});
-
-}
-
+    music.play().catch(()=>{});
+  }
 }
 
 function refreshAudio(){
 
-music.volume=
-(
-quickMuted ||
-musicMuted
-)
-?
-0
-:
-musicVol;
+  const volume=
+    quickMuted||
+    musicMuted
+      ? 0
+      : musicVol;
 
-if(
-sfxGain &&
-ac
-){
+  music.volume=
+    clamp(
+      volume,
+      0,
+      1
+    );
 
-sfxGain.gain.value=
-(
-quickMuted ||
-sfxMuted
-)
-?
-0
-:
-sfxVol;
+  if(sfxGain&&audioCtx){
 
-}
-
+    sfxGain.gain.setValueAtTime(
+      quickMuted||
+      sfxMuted
+        ? 0
+        : sfxVol,
+      audioCtx.currentTime
+    );
+  }
 }
 
 function tone(
 frequency=440,
 duration=.1,
-volume=.06,
-type="triangle"
+volume=.05,
+type="sine"
 ){
 
-if(
-!ac ||
-!sfxGain
-){
+  if(
+    !audioCtx||
+    !sfxGain||
+    quickMuted||
+    sfxMuted
+  ){
+    return;
+  }
 
-return;
+  const oscillator=
+    audioCtx.createOscillator();
 
+  const gain=
+    audioCtx.createGain();
+
+  oscillator.type=
+    type;
+
+  oscillator.frequency.setValueAtTime(
+    frequency,
+    audioCtx.currentTime
+  );
+
+  gain.gain.setValueAtTime(
+    volume,
+    audioCtx.currentTime
+  );
+
+  gain.gain.exponentialRampToValueAtTime(
+    .0001,
+    audioCtx.currentTime+
+    duration
+  );
+
+  oscillator.connect(gain);
+  gain.connect(sfxGain);
+
+  oscillator.start();
+
+  oscillator.stop(
+    audioCtx.currentTime+
+    duration+
+    .02
+  );
 }
 
-const oscillator=
-ac.createOscillator();
+function sfx(kind,level=1){
 
-const gain=
-ac.createGain();
+  ensureAudio();
 
-const now=
-ac.currentTime;
+  if(kind==="slash"){
+    tone(
+      480,
+      .07,
+      .035,
+      "sawtooth"
+    );
+  }
 
-oscillator.type=
-type;
+  if(kind==="heavy"){
+    tone(
+      125,
+      .18,
+      .08,
+      "sawtooth"
+    );
+  }
 
-oscillator.frequency.value=
-frequency;
+  if(kind==="zap"){
+    tone(
+      760-level*35,
+      .13,
+      .07,
+      "sawtooth"
+    );
+  }
 
-gain.gain.setValueAtTime(
-volume,
-now
-);
+  if(kind==="boss"){
+    tone(
+      72,
+      .5,
+      .1,
+      "sawtooth"
+    );
+  }
 
-gain.gain.exponentialRampToValueAtTime(
-.0001,
-now+
-duration
-);
+  if(kind==="pickup"){
 
-oscillator.connect(
-gain
-);
+    tone(
+      620,
+      .09,
+      .05
+    );
 
-gain.connect(
-sfxGain
-);
-
-oscillator.start(
-now
-);
-
-oscillator.stop(
-now+
-duration+
-.02
-);
-
-}
-
-function sfx(
-kind,
-level=1
-){
-
-ensureAudio();
-
-if(
-kind==="slash"
-){
-
-tone(
-520,
-.08,
-.05
-);
-
-tone(
-190,
-.07,
-.035,
-"sawtooth"
-);
-
-}
-
-if(
-kind==="heavy"
-){
-
-tone(
-125,
-.18,
-.08,
-"sawtooth"
-);
-
-}
-
-if(
-kind==="zap"
-){
-
-tone(
-760-
-level*
-35,
-.13,
-.07,
-"sawtooth"
-);
-
-}
-
-if(
-kind==="boss"
-){
-
-tone(
-72,
-.5,
-.1,
-"sawtooth"
-);
-
-}
-
-if(
-kind==="pickup"
-){
-
-tone(
-620,
-.09,
-.05
-);
-
-setTimeout(
-()=>tone(
-900,
-.1,
-.04
-),
-60
-);
-
-}
-
+    setTimeout(
+      ()=>{
+        tone(
+          900,
+          .1,
+          .04
+        );
+      },
+      60
+    );
+  }
 }
 
 [
-"pointerdown",
-"touchstart"
+  "pointerdown",
+  "touchstart"
 ].forEach(
-name=>{
-
-document.addEventListener(
-name,
-ensureAudio,
-{
-once:true,
-passive:true
-}
-);
-
-}
+  eventName=>{
+    document.addEventListener(
+      eventName,
+      ensureAudio,
+      {
+        once:true,
+        passive:true
+      }
+    );
+  }
 );
 
 function updateAudioUI(){
 
-$("musicSlider").value=
-Math.round(
-musicVol*
-100
-);
+  $("musicSlider").value=
+    Math.round(
+      musicVol*100
+    );
 
-$("sfxSlider").value=
-Math.round(
-sfxVol*
-100
-);
+  $("sfxSlider").value=
+    Math.round(
+      sfxVol*100
+    );
 
-$("musicValue").textContent=
-Math.round(
-musicVol*
-100
-)+
-"%";
+  $("musicValue").textContent=
+    Math.round(
+      musicVol*100
+    )+"%";
 
-$("sfxValue").textContent=
-Math.round(
-sfxVol*
-100
-)+
-"%";
+  $("sfxValue").textContent=
+    Math.round(
+      sfxVol*100
+    )+"%";
 
-$("musicMute").textContent=
-musicMuted
-?
-"UNMUTE"
-:
-"MUTE";
+  $("musicMute").textContent=
+    musicMuted
+      ? "UNMUTE"
+      : "MUTE";
 
-$("sfxMute").textContent=
-sfxMuted
-?
-"UNMUTE"
-:
-"MUTE";
+  $("sfxMute").textContent=
+    sfxMuted
+      ? "UNMUTE"
+      : "MUTE";
 
-$("quickMuteButton").textContent=
-quickMuted
-?
-"🔇"
-:
-"🔊";
-
+  $("quickMuteButton").textContent=
+    quickMuted
+      ? "🔇"
+      : "🔊";
 }
 
 $("musicSlider").oninput=
 event=>{
 
-musicVol=
-Number(
-event.target.value
-)/
-100;
+  musicVol=
+    Number(
+      event.target.value
+    )/100;
 
-writeNum(
-"powerSurgeMusicVolume",
-musicVol
-);
+  writeNum(
+    "powerSurgeMusicVolume",
+    musicVol
+  );
 
-refreshAudio();
+  refreshAudio();
 
-updateAudioUI();
-
+  updateAudioUI();
 };
 
 $("sfxSlider").oninput=
 event=>{
 
-sfxVol=
-Number(
-event.target.value
-)/
-100;
+  sfxVol=
+    Number(
+      event.target.value
+    )/100;
 
-writeNum(
-"powerSurgeSfxVolume",
-sfxVol
-);
+  writeNum(
+    "powerSurgeSfxVolume",
+    sfxVol
+  );
 
-refreshAudio();
+  refreshAudio();
 
-updateAudioUI();
-
+  updateAudioUI();
 };
 
 $("musicMute").onclick=
 ()=>{
 
-musicMuted=
-!musicMuted;
+  ensureAudio();
 
-writeNum(
-"powerSurgeMusicMuted",
-musicMuted
-?
-1
-:
-0
-);
+  musicMuted=
+    !musicMuted;
 
-refreshAudio();
+  writeNum(
+    "powerSurgeMusicMuted",
+    musicMuted?1:0
+  );
 
-updateAudioUI();
+  refreshAudio();
 
+  if(
+    !musicMuted &&
+    !quickMuted &&
+    !paused &&
+    !gameOver
+  ){
+    music.play().catch(()=>{});
+  }
+
+  updateAudioUI();
 };
 
 $("sfxMute").onclick=
 ()=>{
 
-sfxMuted=
-!sfxMuted;
+  ensureAudio();
 
-writeNum(
-"powerSurgeSfxMuted",
-sfxMuted
-?
-1
-:
-0
-);
+  sfxMuted=
+    !sfxMuted;
 
-refreshAudio();
+  writeNum(
+    "powerSurgeSfxMuted",
+    sfxMuted?1:0
+  );
 
-updateAudioUI();
+  refreshAudio();
 
+  updateAudioUI();
 };
 
 $("quickMuteButton").onclick=
 ()=>{
 
-quickMuted=
-!quickMuted;
+  ensureAudio();
 
-writeNum(
-"powerSurgeQuickMuted",
-quickMuted
-?
-1
-:
-0
-);
+  quickMuted=
+    !quickMuted;
 
-refreshAudio();
+  writeNum(
+    "powerSurgeQuickMuted",
+    quickMuted?1:0
+  );
 
-updateAudioUI();
+  refreshAudio();
 
+  if(
+    !quickMuted &&
+    !musicMuted &&
+    !paused &&
+    !gameOver
+  ){
+    music.play().catch(()=>{});
+  }
+
+  updateAudioUI();
 };
 
 updateAudioUI();
 
 document.addEventListener(
-"visibilitychange",
-()=>{
+  "visibilitychange",
+  ()=>{
 
-if(
-document.hidden
-){
+    if(document.hidden){
 
-music.pause();
+      music.pause();
 
-}else if(
-!paused &&
-!gameOver &&
-!musicMuted &&
-!quickMuted
-){
+    }else if(
+      !paused &&
+      !gameOver &&
+      !musicMuted &&
+      !quickMuted
+    ){
 
-music.play()
-.catch(()=>{});
-
-}
-
-}
+      music.play().catch(()=>{});
+    }
+  }
 );
 
-addEventListener(
-"pagehide",
-()=>music.pause()
+window.addEventListener(
+  "pagehide",
+  ()=>{
+    music.pause();
+  }
 );
 
 /* =====================================================
@@ -1524,82 +1818,27 @@ ASSETS
 ===================================================== */
 
 const img={
-
-stage:new Image(),
-chosen:new Image(),
-voodoo:new Image(),
-mardi:new Image(),
-roux:new Image()
-
+  stage:new Image(),
+  chosen:new Image(),
+  voodoo:new Image(),
+  mardi:new Image(),
+  roux:new Image()
 };
 
 img.stage.src=
-"assets/bourbon_stage.jpg";
+  "assets/bourbon_stage.jpg";
 
 img.chosen.src=
-"assets/chosen_atlas.png";
+  "assets/chosen_atlas.png";
 
 img.voodoo.src=
-"assets/voodoo_atlas.png";
+  "assets/voodoo_atlas.png";
 
-/*
-This loader tries multiple capitalization/name variants.
-That prevents Rouxgaroux from silently becoming invisible
-if GitHub changes the capitalization of the upload.
-*/
+img.mardi.src=
+  "assets/mardi_gras_atlas.PNG";
 
-function loadWithFallback(
-image,
-urls
-){
-
-let index=0;
-
-const next=
-()=>{
-
-if(
-index>=
-urls.length
-){
-
-return;
-
-}
-
-image.src=
-urls[
-index++
-];
-
-};
-
-image.onerror=
-next;
-
-next();
-
-}
-
-loadWithFallback(
-img.mardi,
-[
-"assets/mardi_gras_atlas.PNG",
-"assets/mardi_gras_atlas.png",
-"assets/Mardi_Gras_Atlas.PNG"
-]
-);
-
-loadWithFallback(
-img.roux,
-[
-"assets/rouxgaroux_atlas.png",
-"assets/rouxgaroux_atlas.PNG",
-"assets/rouxgaroux_atlas_v2.png",
-"assets/Rouxgaroux_atlas.png",
-"assets/ROUXGAROUX_ATLAS.PNG"
-]
-);
+img.roux.src=
+  "assets/rouxgaroux_atlas.png";
 
 const BASIC_W=160;
 const BASIC_H=128;
@@ -1609,105 +1848,908 @@ const COLS=8;
 
 const animBase={
 
-idle:{
-row:0,
-frames:8,
-speed:10,
-loop:true
-},
+  idle:{
+    row:0,
+    frames:8,
+    speed:10,
+    loop:true
+  },
 
-walk:{
-row:1,
-frames:8,
-speed:6,
-loop:true
-},
+  walk:{
+    row:1,
+    frames:8,
+    speed:6,
+    loop:true
+  },
 
-light:{
-row:2,
-frames:8,
-speed:3
-},
+  light:{
+    row:2,
+    frames:8,
+    speed:3
+  },
 
-heavy:{
-row:3,
-frames:8,
-speed:4
-},
+  heavy:{
+    row:3,
+    frames:8,
+    speed:4
+  },
 
-special:{
-row:3,
-frames:8,
-speed:3
-},
+  special:{
+    row:3,
+    frames:8,
+    speed:3
+  },
 
-attack:{
-row:2,
-frames:8,
-speed:4
-}
-
+  attack:{
+    row:2,
+    frames:8,
+    speed:4
+  }
 };
 
 const bossAnim={
 
-idle:{
-row:0,
-frames:8,
-speed:10,
-loop:true
-},
+  idle:{
+    row:0,
+    frames:8,
+    speed:10,
+    loop:true
+  },
 
-walk:{
-row:1,
-frames:8,
-speed:6,
-loop:true
-},
+  walk:{
+    row:1,
+    frames:8,
+    speed:6,
+    loop:true
+  },
 
-attack:{
-row:2,
-frames:8,
-speed:3
-},
+  attack:{
+    row:2,
+    frames:8,
+    speed:3
+  },
 
-heavy:{
-row:3,
-frames:8,
-speed:3
-},
+  heavy:{
+    row:3,
+    frames:8,
+    speed:3
+  },
 
-special:{
-row:4,
-frames:8,
-speed:3
-},
+  special:{
+    row:4,
+    frames:8,
+    speed:3
+  },
 
-hit:{
-row:5,
-frames:8,
-speed:3
-},
+  hit:{
+    row:5,
+    frames:8,
+    speed:3
+  },
 
-knockback:{
-row:6,
-frames:8,
-speed:3
-},
+  knockback:{
+    row:6,
+    frames:8,
+    speed:3
+  },
 
-defeat:{
-row:7,
-frames:8,
-speed:5
-},
+  defeat:{
+    row:7,
+    frames:8,
+    speed:5
+  },
 
-entrance:{
-row:8,
-frames:8,
-speed:5
+  entrance:{
+    row:8,
+    frames:8,
+    speed:5
+  }
+};
+
+/* =====================================================
+ABILITY COLORS — 10 LEVELS
+===================================================== */
+
+const colors={
+
+  1:{
+    main:"#66e7ff",
+    glow:"#25bfff",
+    core:"#eaffff",
+    name:"ELECTRIC BLUE"
+  },
+
+  2:{
+    main:"#ffe85b",
+    glow:"#ffbd18",
+    core:"#fffbd4",
+    name:"YELLOW"
+  },
+
+  3:{
+    main:"#ff5cd8",
+    glow:"#ff23ad",
+    core:"#ffe5fa",
+    name:"PINK"
+  },
+
+  4:{
+    main:"#ff9a3d",
+    glow:"#ff6700",
+    core:"#fff0dd",
+    name:"ORANGE"
+  },
+
+  5:{
+    main:"#57f77c",
+    glow:"#12ca49",
+    core:"#e0ffe8",
+    name:"GREEN"
+  },
+
+  6:{
+    main:"#48f1ed",
+    glow:"#00bbb7",
+    core:"#e4ffff",
+    name:"CYAN"
+  },
+
+  7:{
+    main:"#ff4141",
+    glow:"#ff1010",
+    core:"#ffe5e5",
+    name:"RED"
+  },
+
+  8:{
+    main:"#bb64ff",
+    glow:"#8032ff",
+    core:"#f3e6ff",
+    name:"PURPLE"
+  },
+
+  9:{
+    main:"#ffffff",
+    glow:"#bcd8ff",
+    core:"#ffffff",
+    name:"WHITE"
+  },
+
+  10:{
+    main:"#286dff",
+    glow:"#003cff",
+    core:"#f2f7ff",
+    name:"ROYAL BLUE"
+  }
+};
+
+function col(level){
+
+  return colors[
+    clamp(
+      level,
+      1,
+      10
+    )
+  ];
 }
 
+/* =====================================================
+ROAD
+===================================================== */
+
+function roadTop(){
+  return H*.55;
+}
+
+function roadBottom(){
+  return H*.86;
+}
+
+function depth(y){
+
+  return .67+
+  clamp(
+    (
+      y-roadTop()
+    )/
+    (
+      roadBottom()-
+      roadTop()
+    ),
+    0,
+    1
+  )*.37;
+}
+
+function constrain(entity){
+
+  entity.x=
+    clamp(
+      entity.x,
+      W*.025,
+      W*.975
+    );
+
+  entity.y=
+    clamp(
+      entity.y,
+      roadTop(),
+      roadBottom()
+    );
+}
+
+/* =====================================================
+PLAYER + UPGRADES
+===================================================== */
+
+const upgrades={
+  power:1,
+  speed:1,
+  vitality:0,
+  thunderBurst:1,
+  lightningDash:1,
+  voltRush:1,
+  electricCross:1,
+  twinThunder:1
 };
+
+const vitHp=[
+  100,
+  115,
+  130,
+  150,
+  175,
+  200
+];
+
+const vitCost=[
+  0,
+  1500,
+  3000,
+  5000,
+  8000,
+  12000
+];
+
+const player={
+  x:0,
+  y:0,
+  vx:0,
+  vy:0,
+  hp:100,
+  maxHp:100,
+  energy:100,
+  maxEnergy:100,
+  facing:1,
+  state:"idle",
+  frame:0,
+  ft:0,
+  locked:0,
+  lightCd:0,
+  heavyCd:0,
+  specialCd:0,
+  dashCd:0,
+  inv:0,
+  electric:0,
+  electricLevel:1
+};
+
+const input={
+  x:0,
+  y:0,
+  light:false,
+  heavy:false,
+  special:false,
+  dash:false
+};
+
+let lightHeld=false;
+let heavyHeld=false;
+let specialHeld=false;
+let dashHeld=false;
+
+/* =====================================================
+MESSAGES
+===================================================== */
+
+function msg(text){
+
+  $("message").textContent=
+    text;
+
+  $("message").style.opacity=
+    1;
+
+  messageTimer=
+    90;
+}
+
+function pickmsg(text){
+
+  $("pickupMessage").textContent=
+    text;
+
+  $("pickupMessage").style.opacity=
+    1;
+
+  pickupTimer=
+    80;
+}
+
+function camera(
+strength=3,
+frames=6
+){
+
+  cameraStrength=
+    Math.max(
+      cameraStrength,
+      strength
+    );
+
+  cameraShake=
+    Math.max(
+      cameraShake,
+      frames
+    );
+}
+
+/* =====================================================
+PAUSE MENU
+===================================================== */
+
+function setPage(id){
+
+  document.querySelectorAll(
+    ".page"
+  ).forEach(
+    page=>{
+      page.classList.remove(
+        "active"
+      );
+    }
+  );
+
+  document.querySelectorAll(
+    ".tab"
+  ).forEach(
+    tab=>{
+      tab.classList.remove(
+        "active"
+      );
+    }
+  );
+
+  $(id).classList.add(
+    "active"
+  );
+
+  const tab=
+    document.querySelector(
+      `[data-page="${id}"]`
+    );
+
+  if(tab){
+    tab.classList.add(
+      "active"
+    );
+  }
+}
+
+function openPause(){
+
+  if(
+    gameOver||
+    pauseOpen||
+    $("shop").style.display==="flex"
+  ){
+    return;
+  }
+
+  ensureAudio();
+
+  paused=true;
+  pauseOpen=true;
+
+  clearInput();
+
+  $("pauseMenu").style.display=
+    "flex";
+
+  setPage(
+    "pauseHome"
+  );
+}
+
+function closePause(){
+
+  pauseOpen=false;
+  paused=false;
+
+  $("pauseMenu").style.display=
+    "none";
+
+  refreshAudio();
+
+  if(
+    !musicMuted &&
+    !quickMuted
+  ){
+    music.play().catch(()=>{});
+  }
+}
+
+$("pauseButton").onclick=
+()=>{
+
+  ensureAudio();
+
+  if(pauseOpen){
+    closePause();
+  }else{
+    openPause();
+  }
+};
+
+$("resumeButton").onclick=
+  closePause;
+
+$("restartButton").onclick=
+()=>{
+
+  closePause();
+
+  resetRun();
+};
+
+document.querySelectorAll(
+  ".tab"
+).forEach(
+  tab=>{
+
+    tab.onclick=
+    ()=>{
+      setPage(
+        tab.dataset.page
+      );
+    };
+  }
+);
+
+/* =====================================================
+LEADERBOARD
+===================================================== */
+
+function getLeaderboard(){
+
+  try{
+
+    const raw=
+      localStorage.getItem(
+        "chosenPowerSurgeLeaderboard"
+      );
+
+    if(!raw){
+      return [];
+    }
+
+    const data=
+      JSON.parse(raw);
+
+    return Array.isArray(data)
+      ? data
+      : [];
+
+  }catch(error){
+
+    return [];
+  }
+}
+
+function saveRun(){
+
+  const board=
+    getLeaderboard();
+
+  board.push({
+    score,
+    wave,
+    kills,
+    timestamp:Date.now()
+  });
+
+  board.sort(
+    (a,b)=>
+      b.score-a.score||
+      b.wave-a.wave||
+      b.kills-a.kills
+  );
+
+  const top=
+    board.slice(
+      0,
+      10
+    );
+
+  try{
+
+    localStorage.setItem(
+      "chosenPowerSurgeLeaderboard",
+      JSON.stringify(top)
+    );
+
+  }catch(error){}
+}
+
+function renderLeaderboard(){
+
+  const body=
+    $("leaderboardBody");
+
+  body.innerHTML="";
+
+  const board=
+    getLeaderboard();
+
+  if(!board.length){
+
+    body.innerHTML=
+      `<tr>
+        <td colspan="4" style="text-align:center">
+          No completed runs yet.
+        </td>
+      </tr>`;
+
+    return;
+  }
+
+  board.forEach(
+    (entry,index)=>{
+
+      const row=
+        document.createElement(
+          "tr"
+        );
+
+      row.innerHTML=
+        `<td>${index+1}</td>
+         <td>${Number(entry.score||0).toLocaleString()}</td>
+         <td>${entry.wave||1}</td>
+         <td>${entry.kills||0}</td>`;
+
+      body.appendChild(row);
+    }
+  );
+}
+
+function openLeaderboard(){
+
+  renderLeaderboard();
+
+  $("leaderboard").style.display=
+    "flex";
+}
+
+function closeLeaderboard(){
+
+  $("leaderboard").style.display=
+    "none";
+}
+
+$("leaderboardButton").onclick=
+  openLeaderboard;
+
+$("gameOverLeaderboard").onclick=
+  openLeaderboard;
+
+$("closeLeaderboard").onclick=
+  closeLeaderboard;
+
+/* =====================================================
+JOYSTICK
+===================================================== */
+
+const joystick=
+  $("joystick");
+
+const stick=
+  $("stick");
+
+let joyPointer=null;
+
+function clearInput(){
+
+  input.x=0;
+  input.y=0;
+
+  input.light=false;
+  input.heavy=false;
+  input.special=false;
+  input.dash=false;
+
+  stick.style.transform=
+    "translate(-50%,-50%)";
+}
+
+function moveJoystick(
+clientX,
+clientY
+){
+
+  if(
+    paused||
+    gameOver
+  ){
+    return;
+  }
+
+  const rect=
+    joystick.getBoundingClientRect();
+
+  const cx=
+    rect.left+
+    rect.width/2;
+
+  const cy=
+    rect.top+
+    rect.height/2;
+
+  let dx=
+    clientX-cx;
+
+  let dy=
+    clientY-cy;
+
+  const max=
+    rect.width*.31;
+
+  const magnitude=
+    Math.hypot(
+      dx,
+      dy
+    );
+
+  if(magnitude>max){
+
+    dx=
+      dx/magnitude*
+      max;
+
+    dy=
+      dy/magnitude*
+      max;
+  }
+
+  input.x=
+    dx/max;
+
+  input.y=
+    dy/max;
+
+  if(
+    Math.abs(input.x)<.09
+  ){
+    input.x=0;
+  }
+
+  if(
+    Math.abs(input.y)<.09
+  ){
+    input.y=0;
+  }
+
+  stick.style.transform=
+    `translate(
+      calc(-50% + ${dx}px),
+      calc(-50% + ${dy}px)
+    )`;
+}
+
+joystick.addEventListener(
+  "pointerdown",
+  event=>{
+
+    event.preventDefault();
+
+    ensureAudio();
+
+    joyPointer=
+      event.pointerId;
+
+    joystick.setPointerCapture(
+      event.pointerId
+    );
+
+    moveJoystick(
+      event.clientX,
+      event.clientY
+    );
+  }
+);
+
+joystick.addEventListener(
+  "pointermove",
+  event=>{
+
+    if(
+      event.pointerId===
+      joyPointer
+    ){
+
+      event.preventDefault();
+
+      moveJoystick(
+        event.clientX,
+        event.clientY
+      );
+    }
+  }
+);
+
+function releaseJoy(event){
+
+  if(
+    joyPointer===null||
+    event.pointerId===
+    joyPointer
+  ){
+
+    joyPointer=null;
+
+    input.x=0;
+    input.y=0;
+
+    stick.style.transform=
+      "translate(-50%,-50%)";
+  }
+}
+
+joystick.addEventListener(
+  "pointerup",
+  releaseJoy
+);
+
+joystick.addEventListener(
+  "pointercancel",
+  releaseJoy
+);
+
+/* =====================================================
+ACTION BUTTONS
+===================================================== */
+
+function bindButton(
+id,
+property
+){
+
+  const button=$(id);
+
+  button.addEventListener(
+    "pointerdown",
+    event=>{
+
+      event.preventDefault();
+
+      ensureAudio();
+
+      if(
+        paused||
+        gameOver
+      ){
+        return;
+      }
+
+      input[property]=true;
+    }
+  );
+
+  const release=
+  event=>{
+
+    event.preventDefault();
+
+    input[property]=false;
+  };
+
+  button.addEventListener(
+    "pointerup",
+    release
+  );
+
+  button.addEventListener(
+    "pointercancel",
+    release
+  );
+
+  button.addEventListener(
+    "pointerleave",
+    release
+  );
+}
+
+bindButton(
+  "lightBtn",
+  "light"
+);
+
+bindButton(
+  "heavyBtn",
+  "heavy"
+);
+
+bindButton(
+  "specialBtn",
+  "special"
+);
+
+bindButton(
+  "dashBtn",
+  "dash"
+);
+
+/* =====================================================
+ANIMATION
+===================================================== */
+
+function state(
+entity,
+newState
+){
+
+  if(
+    entity.state===
+    newState
+  ){
+    return;
+  }
+
+  entity.state=
+    newState;
+
+  entity.frame=0;
+  entity.ft=0;
+}
+
+function anim(
+entity,
+map
+){
+
+  const animation=
+    map[
+      entity.state
+    ]||
+    map.idle;
+
+  entity.ft++;
+
+  if(
+    entity.ft>=
+    animation.speed
+  ){
+
+    entity.ft=0;
+    entity.frame++;
+
+    if(
+      entity.frame>=
+      animation.frames
+    ){
+
+      if(animation.loop){
+
+        entity.frame=0;
+
+      }else{
+
+        entity.frame=
+          animation.frames-1;
+      }
+    }
+  }
+}
 
 function drawAtlas(
 image,
@@ -1718,86 +2760,65 @@ cellWidth=BASIC_W,
 cellHeight=BASIC_H
 ){
 
-if(
-!image.complete ||
-!image.naturalWidth
-){
+  if(
+    !image.complete||
+    !image.naturalWidth
+  ){
+    return;
+  }
 
-return;
+  const animation=
+    map[
+      entity.state
+    ]||
+    map.idle;
 
-}
+  const frame=
+    Math.min(
+      entity.frame,
+      animation.frames-1
+    );
 
-const animation=
-map[
-entity.state
-]||
-map.idle;
+  const s=
+    depth(entity.y)*
+    scale;
 
-const frame=
-Math.min(
-entity.frame,
-animation.frames-
-1
-);
+  const drawWidth=
+    cellWidth*s;
 
-const spriteScale=
-depth(
-entity.y
-)*
-scale;
+  const drawHeight=
+    cellHeight*s;
 
-const drawWidth=
-cellWidth*
-spriteScale;
+  ctx.save();
 
-const drawHeight=
-cellHeight*
-spriteScale;
+  ctx.translate(
+    entity.x,
+    entity.y+
+    6*s
+  );
 
-ctx.save();
+  if(
+    entity.facing<0
+  ){
+    ctx.scale(
+      -1,
+      1
+    );
+  }
 
-ctx.translate(
-entity.x,
-entity.y+
-6*
-spriteScale
-);
+  ctx.drawImage(
+    image,
+    frame*cellWidth,
+    animation.row*cellHeight,
+    cellWidth,
+    cellHeight,
+    -drawWidth/2,
+    -drawHeight,
+    drawWidth,
+    drawHeight
+  );
 
-if(
-entity.facing<
-0
-){
-
-ctx.scale(
--1,
-1
-);
-
-}
-
-ctx.drawImage(
-image,
-
-frame*
-cellWidth,
-
-animation.row*
-cellHeight,
-
-cellWidth,
-cellHeight,
-
--drawWidth/
-2,
-
--drawHeight,
-
-drawWidth,
-drawHeight
-);
-
-ctx.restore();
-
+  ctx.restore();
 }
 
 function drawBossAtlas(
@@ -1806,1027 +2827,105 @@ entity,
 scale
 ){
 
-const cellWidth=
-image.naturalWidth/
-COLS;
+  if(
+    !image.complete||
+    !image.naturalWidth
+  ){
+    return;
+  }
 
-const cellHeight=
-image.naturalHeight/
-ROWS;
+  const cellWidth=
+    image.naturalWidth/
+    COLS;
 
-drawAtlas(
-image,
-entity,
-bossAnim,
-scale,
-cellWidth,
-cellHeight
-);
+  const cellHeight=
+    image.naturalHeight/
+    ROWS;
 
+  drawAtlas(
+    image,
+    entity,
+    bossAnim,
+    scale,
+    cellWidth,
+    cellHeight
+  );
 }
 
 /* =====================================================
-10 ELECTRIC LEVELS
+COMBAT HELPERS
 ===================================================== */
 
-const colors={
+function atkMult(){
 
-1:{
-main:"#9be7ff",
-glow:"#4bcfff",
-name:"PALE BLUE"
-},
-
-2:{
-main:"#38ddff",
-glow:"#00aeea",
-name:"CYAN"
-},
-
-3:{
-main:"#ffe85b",
-glow:"#ffbd18",
-name:"YELLOW"
-},
-
-4:{
-main:"#ff9d35",
-glow:"#ff6418",
-name:"ORANGE"
-},
-
-5:{
-main:"#57f77c",
-glow:"#12ca49",
-name:"GREEN — EVOLUTION I"
-},
-
-6:{
-main:"#ff4141",
-glow:"#ff1010",
-name:"RED"
-},
-
-7:{
-main:"#ff5cd8",
-glow:"#ff23ad",
-name:"MAGENTA"
-},
-
-8:{
-main:"#bb64ff",
-glow:"#8032ff",
-name:"PURPLE"
-},
-
-9:{
-main:"#ffffff",
-glow:"#a8e9ff",
-name:"WHITE"
-},
-
-10:{
-main:"#286dff",
-glow:"#003cff",
-name:"ROYAL BLUE — EVOLUTION II"
+  return 1+
+  (
+    upgrades.power-1
+  )*.14;
 }
 
-};
+function speedMult(){
 
-const col=
-level=>
-colors[
-clamp(
-level,
-1,
-10
-)
-];
-
-/* =====================================================
-GAME STATE
-===================================================== */
-
-let wave=1;
-
-let score=0;
-
-let voltage=0;
-
-let earned=0;
-
-let combo=0;
-
-let comboTimer=0;
-
-let kills=0;
-
-let lives=3;
-
-let paused=false;
-
-let pauseOpen=false;
-
-let gameOver=false;
-
-/*
-CRITICAL LIFE FIX:
-While this is true, player.hp can sit at zero without
-calling down() every frame and burning multiple lives.
-*/
-
-let respawning=false;
-
-let wavePending=false;
-
-let pending=0;
-
-let enemies=[];
-
-let pickups=[];
-
-let effects=[];
-
-let messageTimer=0;
-
-let pickupTimer=0;
-
-let shake=0;
-
-let shakePower=0;
-
-let comboSeq=[];
-
-let comboSeqTimer=0;
-
-let bestWave=
-readNum(
-"chosenPowerSurgeBestWave",
-1
-);
-
-let highScore=
-readNum(
-"chosenPowerSurgeHighScore",
-0
-);
-
-const upgrades={
-
-power:1,
-speed:1,
-
-vitality:0,
-
-thunderBurst:1,
-lightningDash:1,
-voltRush:1,
-electricCross:1,
-twinThunder:1
-
-};
-
-const vitHp=[
-100,
-115,
-130,
-150,
-175,
-200
-];
-
-const vitCost=[
-0,
-1500,
-3000,
-5000,
-8000,
-12000
-];
-
-const player={
-
-x:0,
-y:0,
-
-vx:0,
-vy:0,
-
-hp:100,
-maxHp:100,
-
-energy:100,
-maxEnergy:100,
-
-facing:1,
-
-state:"idle",
-
-frame:0,
-ft:0,
-
-locked:0,
-
-lightCd:0,
-heavyCd:0,
-specialCd:0,
-dashCd:0,
-
-inv:0,
-
-electric:0,
-electricLevel:1
-
-};
-
-const input={
-
-x:0,
-y:0,
-
-light:false,
-heavy:false,
-special:false,
-dash:false
-
-};
-
-let held={
-
-light:false,
-heavy:false,
-special:false,
-dash:false
-
-};
-
-const roadTop=
-()=>H*.55;
-
-const roadBottom=
-()=>H*.86;
-
-const depth=
-y=>
-.67+
-clamp(
-(
-y-
-roadTop()
-)/
-(
-roadBottom()-
-roadTop()
-),
-0,
-1
-)*
-.37;
-
-function constrain(
-entity
-){
-
-entity.x=
-clamp(
-entity.x,
-W*.025,
-W*.975
-);
-
-entity.y=
-clamp(
-entity.y,
-roadTop(),
-roadBottom()
-);
-
+  return Math.max(
+    .45,
+    1-
+    (
+      upgrades.speed-1
+    )*.075
+  );
 }
 
-function state(
-entity,
-next
-){
+function nearestEnemy(){
 
-if(
-entity.state===
-next
-){
+  let target=null;
+  let closest=Infinity;
 
-return;
+  enemies.forEach(
+    enemy=>{
 
+      if(
+        enemy.dead||
+        enemy.entering
+      ){
+        return;
+      }
+
+      const d=
+        dist(
+          player,
+          enemy
+        );
+
+      if(d<closest){
+
+        closest=d;
+        target=enemy;
+      }
+    }
+  );
+
+  return target;
 }
 
-entity.state=
-next;
+function faceCombatTarget(){
 
-entity.frame=0;
+  const enemy=
+    nearestEnemy();
 
-entity.ft=0;
+  if(
+    enemy&&
+    Math.abs(
+      enemy.x-player.x
+    )<220
+  ){
 
+    player.facing=
+      Math.sign(
+        enemy.x-player.x
+      )||
+      player.facing;
+  }
 }
-
-function anim(
-entity,
-map
-){
-
-const animation=
-map[
-entity.state
-]||
-map.idle;
-
-entity.ft++;
-
-if(
-entity.ft>=
-animation.speed
-){
-
-entity.ft=0;
-
-entity.frame++;
-
-if(
-entity.frame>=
-animation.frames
-){
-
-entity.frame=
-animation.loop
-?
-0
-:
-animation.frames-
-1;
-
-}
-
-}
-
-}
-
-function msg(
-text
-){
-
-$("message").textContent=
-text;
-
-$("message").style.opacity=
-1;
-
-messageTimer=90;
-
-}
-
-function pickmsg(
-text
-){
-
-$("pickupMessage").textContent=
-text;
-
-$("pickupMessage").style.opacity=
-1;
-
-pickupTimer=80;
-
-}
-
-function camera(
-strength=3,
-frames=7
-){
-
-shake=
-Math.max(
-shake,
-frames
-);
-
-shakePower=
-Math.max(
-shakePower,
-strength
-);
-
-}
-
-/* =====================================================
-LOCAL LEADERBOARD
-===================================================== */
-
-function getBoard(){
-
-try{
-
-return JSON.parse(
-localStorage.getItem(
-"chosenLocalTop10"
-)||
-"[]"
-);
-
-}catch{
-
-return [];
-
-}
-
-}
-
-function saveRun(){
-
-let board=
-getBoard();
-
-board.push({
-
-score,
-wave,
-kills,
-voltage:earned,
-time:Date.now()
-
-});
-
-board.sort(
-(a,b)=>
-b.score-
-a.score||
-b.wave-
-a.wave
-);
-
-board=
-board.slice(
-0,
-10
-);
-
-try{
-
-localStorage.setItem(
-"chosenLocalTop10",
-JSON.stringify(
-board
-)
-);
-
-}catch{}
-
-renderBoard();
-
-}
-
-function renderBoard(){
-
-const board=
-getBoard();
-
-const body=
-$("leaderBody");
-
-body.innerHTML=
-board.length
-?
-board.map(
-(run,index)=>
-`
-<tr>
-<td>${index+1}</td>
-<td>${run.score.toLocaleString()}</td>
-<td>${run.wave}</td>
-<td>${run.kills}</td>
-<td>${run.voltage.toLocaleString()}</td>
-</tr>
-`
-).join("")
-:
-`
-<tr>
-<td colspan="5" style="text-align:center">
-No completed runs yet.
-</td>
-</tr>
-`;
-
-}
-
-let leaderReturn=
-"none";
-
-function openBoard(){
-
-renderBoard();
-
-/*
-Remember where the leaderboard was opened from.
-*/
-
-leaderReturn=
-gameOver
-?
-"gameOver"
-:
-pauseOpen
-?
-"pause"
-:
-"none";
-
-/*
-Hide the screen underneath it instead of leaving
-the leaderboard behind another overlay.
-*/
-
-if(
-leaderReturn===
-"pause"
-){
-
-$("pauseMenu").style.display=
-"none";
-
-}
-
-if(
-leaderReturn===
-"gameOver"
-){
-
-$("gameOver").style.display=
-"none";
-
-}
-
-$("leaderboard").style.display=
-"flex";
-
-}
-
-function closeBoard(){
-
-$("leaderboard").style.display=
-"none";
-
-if(
-leaderReturn===
-"pause" &&
-pauseOpen
-){
-
-$("pauseMenu").style.display=
-"flex";
-
-}
-
-if(
-leaderReturn===
-"gameOver" &&
-gameOver
-){
-
-$("gameOver").style.display=
-"flex";
-
-}
-
-leaderReturn=
-"none";
-
-}
-
-$("leaderButton").onclick=
-openBoard;
-
-$("gameOverLeaderboard").onclick=
-openBoard;
-
-$("closeLeaderboard").onclick=
-closeBoard;
-
-/* =====================================================
-PAUSE
-===================================================== */
-
-function page(
-id
-){
-
-document
-.querySelectorAll(
-".page"
-)
-.forEach(
-item=>
-item.classList.remove(
-"active"
-)
-);
-
-document
-.querySelectorAll(
-".tab[data-page]"
-)
-.forEach(
-item=>
-item.classList.remove(
-"active"
-)
-);
-
-$(id)
-.classList.add(
-"active"
-);
-
-const tab=
-document.querySelector(
-`[data-page="${id}"]`
-);
-
-if(
-tab
-){
-
-tab.classList.add(
-"active"
-);
-
-}
-
-}
-
-document
-.querySelectorAll(
-".tab[data-page]"
-)
-.forEach(
-tab=>{
-
-tab.onclick=
-()=>page(
-tab.dataset.page
-);
-
-}
-);
-
-function openPause(){
-
-if(
-gameOver ||
-paused
-){
-
-return;
-
-}
-
-paused=true;
-
-pauseOpen=true;
-
-clearInput();
-
-$("pauseMenu").style.display=
-"flex";
-
-page(
-"pauseHome"
-);
-
-}
-
-function closePause(){
-
-pauseOpen=false;
-
-paused=false;
-
-$("pauseMenu").style.display=
-"none";
-
-if(
-!document.hidden &&
-!musicMuted &&
-!quickMuted
-){
-
-music.play()
-.catch(()=>{});
-
-}
-
-}
-
-$("pauseButton").onclick=
-()=>{
-
-if(
-pauseOpen
-){
-
-closePause();
-
-}else{
-
-openPause();
-
-}
-
-};
-
-$("resumeButton").onclick=
-closePause;
-
-$("restartButton").onclick=
-()=>{
-
-closePause();
-
-resetRun();
-
-};
-
-/* =====================================================
-INPUT
-===================================================== */
-
-const joy=
-$("joystick");
-
-const stick=
-$("stick");
-
-let joyId=null;
-
-function clearInput(){
-
-input.x=0;
-
-input.y=0;
-
-input.light=false;
-
-input.heavy=false;
-
-input.special=false;
-
-input.dash=false;
-
-stick.style.transform=
-"translate(-50%,-50%)";
-
-}
-
-function joyMove(
-x,
-y
-){
-
-if(
-paused ||
-gameOver ||
-respawning
-){
-
-return;
-
-}
-
-const rect=
-joy.getBoundingClientRect();
-
-let dx=
-x-
-(
-rect.left+
-rect.width/
-2
-);
-
-let dy=
-y-
-(
-rect.top+
-rect.height/
-2
-);
-
-const max=
-rect.width*
-.31;
-
-const magnitude=
-Math.hypot(
-dx,
-dy
-);
-
-if(
-magnitude>
-max
-){
-
-dx=
-dx/
-magnitude*
-max;
-
-dy=
-dy/
-magnitude*
-max;
-
-}
-
-input.x=
-Math.abs(
-dx/
-max
-)<
-.09
-?
-0
-:
-dx/
-max;
-
-input.y=
-Math.abs(
-dy/
-max
-)<
-.09
-?
-0
-:
-dy/
-max;
-
-stick.style.transform=
-`translate(
-calc(-50% + ${dx}px),
-calc(-50% + ${dy}px)
-)`;
-
-}
-
-joy.onpointerdown=
-event=>{
-
-event.preventDefault();
-
-joyId=
-event.pointerId;
-
-joy.setPointerCapture(
-event.pointerId
-);
-
-joyMove(
-event.clientX,
-event.clientY
-);
-
-};
-
-joy.onpointermove=
-event=>{
-
-if(
-event.pointerId===
-joyId
-){
-
-joyMove(
-event.clientX,
-event.clientY
-);
-
-}
-
-};
-
-joy.onpointerup=
-joy.onpointercancel=
-event=>{
-
-if(
-joyId===null ||
-event.pointerId===
-joyId
-){
-
-joyId=null;
-
-input.x=0;
-
-input.y=0;
-
-stick.style.transform=
-"translate(-50%,-50%)";
-
-}
-
-};
-
-function bind(
-id,
-key
-){
-
-const button=
-$(id);
-
-button.onpointerdown=
-event=>{
-
-event.preventDefault();
-
-ensureAudio();
-
-if(
-!paused &&
-!gameOver &&
-!respawning
-){
-
-input[key]=true;
-
-}
-
-};
-
-[
-"pointerup",
-"pointercancel",
-"pointerleave"
-].forEach(
-name=>{
-
-button.addEventListener(
-name,
-event=>{
-
-event.preventDefault();
-
-input[key]=false;
-
-}
-);
-
-}
-);
-
-}
-
-bind(
-"lightBtn",
-"light"
-);
-
-bind(
-"heavyBtn",
-"heavy"
-);
-
-bind(
-"specialBtn",
-"special"
-);
-
-bind(
-"dashBtn",
-"dash"
-);
-
-/* =====================================================
-COMBAT
-===================================================== */
-
-const atkMult=
-()=>1+
-(
-upgrades.power-
-1
-)*
-.14;
-
-const cdMult=
-()=>Math.max(
-.45,
-1-
-(
-upgrades.speed-
-1
-)*
-.075
-);
 
 function effect(
 type,
@@ -2837,836 +2936,618 @@ life=18,
 extra={}
 ){
 
-effects.push({
-
-type,
-x,
-y,
-level,
-
-life,
-maxLife:life,
-
-...extra
-
-});
-
+  effects.push({
+    type,
+    x,
+    y,
+    level,
+    life,
+    maxLife:life,
+    ...extra
+  });
 }
 
-function hit(
+function hitEnemies(
 range,
 damage,
 knockback,
-electric=false,
-key=null
+ability=null,
+vertical=.45
 ){
 
-let hits=0;
-
-enemies.forEach(
-enemy=>{
-
-if(
-enemy.dead ||
-enemy.entering
-){
-
-return;
-
-}
-
-const dx=
-enemy.x-
-player.x;
-
-const dy=
-enemy.y-
-player.y;
-
-if(
-Math.abs(
-dx
-)<
-range &&
-Math.abs(
-dy
-)<
-range*
-.48
-){
-
-enemy.hp-=
-damage*
-atkMult();
-
-enemy.stun=
-enemy.boss
-?
-(
-electric
-?
-15
-:
-9
-)
-:
-(
-electric
-?
-22
-:
-14
-);
-
-enemy.vx+=
-(
-Math.sign(
-dx
-)||
-player.facing
-)*
-knockback*
-(
-enemy.boss
-?
-.55
-:
-1
-);
-
-enemy.hit=8;
-
-hits++;
-
-effect(
-electric
-?
-"electricHit"
-:
-"hit",
-enemy.x,
-enemy.y-42,
-key
-?
-upgrades[
-key
-]
-:
-1,
-14
-);
-
-if(
-enemy.hp<=0
-){
-
-kill(
-enemy,
-key
-);
-
-}
-
-}
-
-}
-);
-
-if(
-hits
-){
-
-combo+=
-hits;
-
-comboTimer=110;
-
-score+=
-hits*
-combo*
-5;
-
-camera(
-2+
-damage/
-25,
-6
-);
-
-}
-
-return hits;
-
-}
-
-function kill(
-enemy,
-key
-){
-
-if(
-enemy.dead
-){
-
-return;
-
-}
-
-enemy.dead=true;
-
-kills++;
-
-const reward=
-enemy.boss
-?
-Math.floor(
-(
-enemy.name===
-"ROUXGAROUX"
-?
-800
-:
-enemy.name===
-"MARDI GRAS"
-?
-650
-:
-750
-)*
-(
-1+
-(
-enemy.tier-
-1
-)*
-.55
-)
-)
-:
-(
-enemy.elite
-?
-60
-:
-25
-);
-
-voltage+=
-reward;
-
-earned+=
-reward;
-
-score+=
-enemy.boss
-?
-reward*
-2
-:
-(
-enemy.elite
-?
-220
-:
-100
-);
-
-drop(
-enemy
-);
-
-if(
-enemy.boss
-){
-
-msg(
-enemy.name+
-" DEFEATED!"
-);
-
-}
-
-if(
-key &&
-upgrades[
-key
-]===
-10 &&
-key===
-"lightningDash"
-){
-
-tripleSurge(
-enemy
-);
-
-}
-
-}
-
-function register(
-key
-){
-
-comboSeq.push(
-key
-);
-
-if(
-comboSeq.length>
-3
-){
-
-comboSeq.shift();
-
-}
-
-comboSeqTimer=46;
-
-const code=
-comboSeq.join(
-""
-);
-
-if(
-code===
-"AAH"
-){
-
-finisher(
-"voltRush",
-"VOLT RUSH"
-);
-
-comboSeq=[];
-
-}else if(
-code===
-"AHA"
-){
-
-finisher(
-"electricCross",
-"ELECTRIC CROSS"
-);
-
-comboSeq=[];
-
-}else if(
-code===
-"HAH"
-){
-
-finisher(
-"twinThunder",
-"TWIN THUNDER"
-);
-
-comboSeq=[];
-
-}
-
-}
-
-function finisher(
-key,
-name
-){
-
-const level=
-upgrades[
-key
-];
-
-const base=
-key===
-"voltRush"
-?
-34
-:
-key===
-"electricCross"
-?
-42
-:
-53;
-
-const range=
-key===
-"voltRush"
-?
-110
-:
-key===
-"electricCross"
-?
-125
-:
-140;
-
-const damage=
-base+
-(
-level-
-1
-)*
-9;
-
-player.electric=
-45+
-level*
-8;
-
-player.electricLevel=
-level;
-
-sfx(
-"zap",
-level
-);
-
-effect(
-key,
-player.x+
-player.facing*
-25,
-player.y-42,
-level,
-22,
-{
-facing:player.facing,
-radius:
-range+
-level*
-10
-}
-);
-
-hit(
-range+
-level*
-10,
-damage,
-18+
-level*
-2,
-true,
-key
-);
-
-/* LV5 EVOLUTION */
-
-if(
-level===
-5
-){
-
-if(
-key===
-"voltRush"
-){
-
-setTimeout(
-()=>hit(
-range,
-damage*
-.6,
-13,
-true,
-key
-),
-100
-);
-
-}
-
-if(
-key===
-"electricCross"
-){
-
-effect(
-"shockwave",
-player.x,
-player.y,
-level,
-32,
-{
-radius:155
-}
-);
-
-}
-
-if(
-key===
-"twinThunder"
-){
-
-effect(
-"field",
-player.x,
-player.y,
-level,
-120,
-{
-radius:125,
-damageTick:0
-}
-);
-
-}
-
-}
-
-/*
-LV10 mechanics replace LV5 mechanics because
-these blocks only run at their exact level.
-*/
-
-if(
-level===
-10
-){
-
-if(
-key===
-"voltRush"
-){
-
-effect(
-"royalWave",
-player.x,
-player.y-40,
-level,
-35,
-{
-facing:player.facing
-}
-);
-
-}
-
-if(
-key===
-"electricCross"
-){
-
-effect(
-"judgmentCross",
-player.x,
-player.y-42,
-level,
-35
-);
-
-setTimeout(
-()=>hit(
-205,
-damage*
-.8,
-25,
-true,
-key
-),
-130
-);
-
-}
-
-if(
-key===
-"twinThunder"
-){
-
-effect(
-"storm",
-player.x,
-player.y-50,
-level,
-150,
-{
-damageTick:0
-}
-);
-
-}
-
-}
-
-msg(
-name+
-" LV."+
-level
-);
-
-}
-
-function tripleSurge(
-defeated
-){
-
-const targets=
-enemies
-.filter(
-enemy=>
-!enemy.dead &&
-enemy!==
-defeated
-)
-.sort(
-(a,b)=>
-dist(
-a,
-player
-)-
-dist(
-b,
-player
-)
-)
-.slice(
-0,
-3
-);
-
-targets.forEach(
-(target,index)=>{
-
-setTimeout(
-()=>{
-
-if(
-target.dead ||
-gameOver ||
-respawning
-){
-
-return;
-
-}
-
-player.x=
-clamp(
-target.x+
-(
-target.x>
-W/
-2
-?
--42
-:
-42
-),
-15,
-W-15
-);
-
-player.y=
-target.y;
-
-effect(
-"teleport",
-player.x,
-player.y-40,
-10,
-18
-);
-
-target.hp-=
-50*
-atkMult();
-
-if(
-target.hp<=0
-){
-
-kill(
-target,
-null
-);
-
-}
-
-},
-120+
-index*
-140
-);
-
-}
-);
-
-if(
-targets.length
-){
-
-msg(
-"⚡ TRIPLE SURGE ⚡"
-);
-
-}
-
+  let hits=0;
+
+  enemies.forEach(
+    enemy=>{
+
+      if(
+        enemy.dead||
+        enemy.entering
+      ){
+        return;
+      }
+
+      const dx=
+        enemy.x-
+        player.x;
+
+      const dy=
+        enemy.y-
+        player.y;
+
+      if(
+        Math.abs(dx)<range&&
+        Math.abs(dy)<range*vertical
+      ){
+
+        enemy.hp-=
+          damage*
+          atkMult();
+
+        enemy.hit=9;
+
+        enemy.stun=
+          enemy.boss
+            ? 12
+            : 20;
+
+        enemy.vx+=
+          (
+            Math.sign(dx)||
+            player.facing
+          )*
+          knockback*
+          (
+            enemy.boss
+              ? .6
+              : 1
+          );
+
+        effect(
+          ability
+            ? "electricHit"
+            : "hit",
+          enemy.x,
+          enemy.y-40,
+          ability
+            ? upgrades[ability]
+            : 1,
+          14
+        );
+
+        hits++;
+
+        if(
+          enemy.hp<=0
+        ){
+          kill(
+            enemy,
+            ability
+          );
+        }
+      }
+    }
+  );
+
+  if(hits){
+
+    combo+=hits;
+
+    comboTimer=110;
+
+    score+=
+      hits*
+      combo*
+      5;
+  }
+
+  return hits;
 }
 
 /* =====================================================
-EVOLUTION MECHANICS
+LEVEL 5 / LEVEL 10 EVOLUTIONS
 ===================================================== */
 
-function chainBurst(){
-
-const targets=
-enemies
-.filter(
-enemy=>
-!enemy.dead &&
-dist(
-enemy,
-player
-)<
-190
-)
-.slice(
-0,
-4
-);
-
-targets.forEach(
-(enemy,index)=>{
-
-setTimeout(
-()=>{
-
-if(
-enemy.dead
+function activeEvolutionLevel(
+abilityKey
 ){
 
-return;
+  const level=
+    upgrades[
+      abilityKey
+    ];
 
+  if(level>=10){
+    return 10;
+  }
+
+  if(level>=5){
+    return 5;
+  }
+
+  return 0;
 }
 
-enemy.hp-=
-18*
-atkMult();
+function triggerThunderEvolution(){
 
-effect(
-"arcHit",
-enemy.x,
-enemy.y-40,
-5,
-15
-);
+  const evolution=
+    activeEvolutionLevel(
+      "thunderBurst"
+    );
 
-if(
-enemy.hp<=0
-){
+  if(evolution===5){
 
-kill(
-enemy,
-"thunderBurst"
-);
+    effect(
+      "field",
+      player.x,
+      player.y,
+      5,
+      180,
+      {
+        radius:125
+      }
+    );
 
+    msg(
+      "🟢 STATIC FIELD!"
+    );
+
+  }else if(evolution===10){
+
+    effect(
+      "storm",
+      player.x,
+      player.y,
+      10,
+      210,
+      {
+        radius:175
+      }
+    );
+
+    msg(
+      "👑 ROYAL THUNDERSTORM!"
+    );
+  }
 }
 
-},
-index*
-55
-);
+function triggerDashEvolution(){
 
+  const evolution=
+    activeEvolutionLevel(
+      "lightningDash"
+    );
+
+  if(evolution===5){
+
+    effect(
+      "dashWave",
+      player.x,
+      player.y-35,
+      5,
+      22,
+      {
+        radius:95
+      }
+    );
+
+    hitEnemies(
+      105,
+      18,
+      13,
+      "lightningDash"
+    );
+
+  }else if(evolution===10){
+
+    const targets=
+      enemies
+      .filter(
+        enemy=>
+        !enemy.dead&&
+        !enemy.entering
+      )
+      .sort(
+        (a,b)=>
+        dist(player,a)-
+        dist(player,b)
+      )
+      .slice(
+        0,
+        3
+      );
+
+    targets.forEach(
+      (enemy,index)=>{
+
+        setTimeout(
+          ()=>{
+
+            if(
+              gameOver||
+              enemy.dead
+            ){
+              return;
+            }
+
+            player.x=
+              clamp(
+                enemy.x-
+                player.facing*42,
+                W*.025,
+                W*.975
+              );
+
+            player.y=
+              clamp(
+                enemy.y,
+                roadTop(),
+                roadBottom()
+              );
+
+            player.facing=
+              Math.sign(
+                enemy.x-
+                player.x
+              )||
+              player.facing;
+
+            effect(
+              "teleport",
+              player.x,
+              player.y-40,
+              10,
+              18
+            );
+
+            enemy.hp-=
+              38*
+              atkMult();
+
+            enemy.stun=
+              enemy.boss
+                ? 14
+                : 28;
+
+            if(
+              enemy.hp<=0
+            ){
+              kill(
+                enemy,
+                "lightningDash"
+              );
+            }
+
+          },
+          index*100
+        );
+      }
+    );
+  }
 }
-);
 
+function triggerVoltEvolution(){
+
+  const evolution=
+    activeEvolutionLevel(
+      "voltRush"
+    );
+
+  if(evolution===5){
+
+    effect(
+      "swordWave",
+      player.x+
+      player.facing*45,
+      player.y-40,
+      5,
+      20,
+      {
+        radius:115,
+        facing:player.facing
+      }
+    );
+
+  }else if(evolution===10){
+
+    for(
+      let i=0;
+      i<3;
+      i++
+    ){
+
+      effect(
+        "swordWave",
+        player.x+
+        player.facing*
+        (
+          35+
+          i*32
+        ),
+        player.y-
+        42+
+        i*3,
+        10,
+        24+
+        i*2,
+        {
+          radius:150+
+          i*20,
+          facing:player.facing
+        }
+      );
+    }
+  }
 }
 
-function heavenThunder(){
+function triggerCrossEvolution(){
 
-enemies
-.filter(
-enemy=>
-!enemy.dead &&
-dist(
-enemy,
-player
-)<
-245
-)
-.slice(
-0,
-5
-)
-.forEach(
-(enemy,index)=>{
+  const evolution=
+    activeEvolutionLevel(
+      "electricCross"
+    );
 
-setTimeout(
-()=>{
+  if(evolution===5){
 
-if(
-enemy.dead
-){
+    effect(
+      "crossRing",
+      player.x+
+      player.facing*40,
+      player.y-43,
+      5,
+      28,
+      {
+        radius:110
+      }
+    );
 
-return;
+  }else if(evolution===10){
 
+    effect(
+      "crossRing",
+      player.x,
+      player.y-40,
+      10,
+      35,
+      {
+        radius:185
+      }
+    );
+
+    hitEnemies(
+      190,
+      40,
+      30,
+      "electricCross",
+      .65
+    );
+  }
 }
 
-effect(
-"sky",
-enemy.x,
-enemy.y,
-10,
-28
-);
+function triggerTwinEvolution(){
 
-enemy.hp-=
-32*
-atkMult();
+  const evolution=
+    activeEvolutionLevel(
+      "twinThunder"
+    );
 
-if(
-enemy.hp<=0
-){
+  if(evolution===5){
 
-kill(
-enemy,
-"thunderBurst"
-);
+    effect(
+      "shockFloor",
+      player.x,
+      player.y,
+      5,
+      28,
+      {
+        radius:135
+      }
+    );
 
+  }else if(evolution===10){
+
+    effect(
+      "storm",
+      player.x,
+      player.y,
+      10,
+      150,
+      {
+        radius:165
+      }
+    );
+
+    msg(
+      "👑 TWIN TEMPEST!"
+    );
+  }
 }
 
-},
-100+
-index*
-80
-);
+/* =====================================================
+COMBOS
+===================================================== */
 
-}
-);
+function registerCombo(letter){
 
-}
+  comboSequence.push(letter);
 
-function addVoltTrail(){
+  if(
+    comboSequence.length>3
+  ){
+    comboSequence.shift();
+  }
 
-for(
-let i=0;
-i<4;
-i++
-){
+  comboSequenceTimer=
+    45;
 
-effect(
-"field",
-player.x-
-player.facing*
-i*
-35,
-player.y,
-5,
-80,
-{
-radius:48,
-damageTick:0
-}
-);
+  const code=
+    comboSequence.join("");
 
-}
+  if(code==="AAH"){
 
+    comboSequence=[];
+
+    faceCombatTarget();
+
+    const level=
+      upgrades.voltRush;
+
+    player.electric=
+      40+
+      level*8;
+
+    player.electricLevel=
+      level;
+
+    effect(
+      "swordWave",
+      player.x,
+      player.y-40,
+      level,
+      20,
+      {
+        radius:90+
+        level*10,
+        facing:player.facing
+      }
+    );
+
+    hitEnemies(
+      115+
+      level*10,
+      34+
+      level*8,
+      16+
+      level*2,
+      "voltRush"
+    );
+
+    triggerVoltEvolution();
+
+    msg(
+      "⚡ VOLT RUSH LV."+
+      level
+    );
+
+    sfx(
+      "zap",
+      level
+    );
+  }
+
+  else if(
+    code==="AHA"
+  ){
+
+    comboSequence=[];
+
+    faceCombatTarget();
+
+    const level=
+      upgrades.electricCross;
+
+    player.electric=
+      45+
+      level*8;
+
+    player.electricLevel=
+      level;
+
+    effect(
+      "cross",
+      player.x+
+      player.facing*35,
+      player.y-45,
+      level,
+      23,
+      {
+        radius:60+
+        level*9
+      }
+    );
+
+    hitEnemies(
+      125+
+      level*11,
+      42+
+      level*8,
+      20+
+      level*2.4,
+      "electricCross"
+    );
+
+    triggerCrossEvolution();
+
+    msg(
+      "✕ ELECTRIC CROSS LV."+
+      level
+    );
+
+    sfx(
+      "zap",
+      level
+    );
+  }
+
+  else if(
+    code==="HAH"
+  ){
+
+    comboSequence=[];
+
+    faceCombatTarget();
+
+    const level=
+      upgrades.twinThunder;
+
+    player.electric=
+      50+
+      level*9;
+
+    player.electricLevel=
+      level;
+
+    effect(
+      "twin",
+      player.x,
+      player.y-45,
+      level,
+      28,
+      {
+        radius:80+
+        level*10
+      }
+    );
+
+    hitEnemies(
+      140+
+      level*12,
+      52+
+      level*9,
+      24+
+      level*2.8,
+      "twinThunder",
+      .55
+    );
+
+    triggerTwinEvolution();
+
+    msg(
+      "⚡⚔ TWIN THUNDER LV."+
+      level
+    );
+
+    sfx(
+      "zap",
+      level
+    );
+
+    camera(
+      3+
+      level*.4,
+      7
+    );
+  }
 }
 
 /* =====================================================
@@ -3675,1096 +3556,855 @@ PLAYER UPDATE
 
 function updatePlayer(){
 
-/*
-Freeze Chosen while waiting to respawn.
-*/
-
-if(
-respawning
-){
-
-player.vx*=
-.8;
-
-player.vy*=
-.8;
-
-return;
-
-}
-
-let mx=
-input.x;
-
-let my=
-input.y;
-
-const magnitude=
-Math.hypot(
-mx,
-my
-);
-
-if(
-magnitude>
-1
-){
-
-mx/=
-magnitude;
-
-my/=
-magnitude;
-
-}
-
-const speed=
-player.locked
-?
-1
-:
-4.3;
-
-player.vx=
-lerp(
-player.vx,
-mx*
-speed,
-.18
-);
-
-player.vy=
-lerp(
-player.vy,
-my*
-speed*
-.67,
-.18
-);
-
-if(
-Math.abs(
-mx
-)<
-.05
-){
-
-player.vx*=
-.8;
-
-}
-
-if(
-Math.abs(
-my
-)<
-.05
-){
-
-player.vy*=
-.8;
-
-}
-
-player.x+=
-player.vx;
-
-player.y+=
-player.vy;
-
-constrain(
-player
-);
-
-/*
-COMBAT FACING FIX:
-Do not flip Chosen from momentum/knockback while an
-attack is locked. Only intentional horizontal movement
-changes his facing while he is free.
-*/
-
-if(
-player.locked<=0 &&
-Math.abs(
-mx
-)>
-.15
-){
-
-player.facing=
-Math.sign(
-mx
-);
-
-}
-
-if(
-player.locked>
-0
-){
-
-player.locked--;
-
-}else{
-
-state(
-player,
-Math.hypot(
-player.vx,
-player.vy
-)>
-.3
-?
-"walk"
-:
-"idle"
-);
-
-}
-
-function attackPress(
-key,
-heldKey,
-cooldownKey,
-callback
-){
-
-if(
-input[
-key
-] &&
-!held[
-heldKey
-] &&
-player[
-cooldownKey
-]<=0
-){
-
-held[
-heldKey
-]=true;
-
-callback();
-
-}
-
-if(
-!input[
-key
-]
-){
-
-held[
-heldKey
-]=false;
-
-}
-
-}
-
-/* LIGHT */
-
-attackPress(
-"light",
-"light",
-"lightCd",
-()=>{
-
-player.locked=15;
-
-state(
-player,
-"light"
-);
-
-sfx(
-"slash"
-);
-
-player.lightCd=
-Math.max(
-8,
-Math.floor(
-19*
-cdMult()
-)
-);
-
-effect(
-"slash",
-player.x+
-player.facing*
-30,
-player.y-40,
-1,
-10,
-{
-facing:player.facing
-}
-);
-
-setTimeout(
-()=>{
-
-if(
-!gameOver &&
-!respawning
-){
-
-hit(
-86,
-15,
-9
-);
-
-}
-
-},
-55
-);
-
-register(
-"A"
-);
-
-}
-);
-
-/* HEAVY */
-
-attackPress(
-"heavy",
-"heavy",
-"heavyCd",
-()=>{
-
-player.locked=21;
-
-state(
-player,
-"heavy"
-);
-
-sfx(
-"heavy"
-);
-
-player.heavyCd=
-Math.max(
-14,
-Math.floor(
-38*
-cdMult()
-)
-);
-
-player.electric=20;
-
-player.electricLevel=1;
-
-effect(
-"slash",
-player.x+
-player.facing*
-32,
-player.y-43,
-1,
-13,
-{
-facing:player.facing
-}
-);
-
-setTimeout(
-()=>{
-
-if(
-!gameOver &&
-!respawning
-){
-
-hit(
-105,
-29,
-18,
-true
-);
-
-}
-
-},
-70
-);
-
-register(
-"H"
-);
-
-}
-);
-
-/* THUNDER BURST */
-
-attackPress(
-"special",
-"special",
-"specialCd",
-()=>{
-
-const level=
-upgrades.thunderBurst;
-
-if(
-player.energy<
-35
-){
-
-return;
-
-}
-
-player.energy-=
-Math.max(
-20,
-35-
-(
-level-
-1
-)*
-1.5
-);
-
-player.specialCd=
-Math.max(
-35,
-90-
-level*
-4
-);
-
-player.locked=26;
-
-player.electric=
-55+
-level*
-8;
-
-player.electricLevel=
-level;
-
-state(
-player,
-"special"
-);
-
-sfx(
-"zap",
-level
-);
-
-effect(
-"burst",
-player.x,
-player.y-35,
-level,
-32,
-{
-radius:
-145+
-level*
-16
-}
-);
-
-setTimeout(
-()=>{
-
-if(
-gameOver ||
-respawning
-){
-
-return;
-
-}
-
-hit(
-145+
-level*
-16,
-31+
-level*
-7,
-18+
-level*
-2,
-true,
-"thunderBurst"
-);
-
-if(
-level===
-5
-){
-
-chainBurst();
-
-}
-
-if(
-level===
-10
-){
-
-heavenThunder();
-
-}
-
-},
-85
-);
-
-msg(
-"THUNDER BURST LV."+
-level
-);
-
-}
-);
-
-/* DASH */
-
-attackPress(
-"dash",
-"dash",
-"dashCd",
-()=>{
-
-const level=
-upgrades.lightningDash;
-
-player.dashCd=
-Math.max(
-16,
-48-
-level*
-3
-);
-
-player.inv=
-18+
-level*
-2;
-
-player.electric=
-35+
-level*
-6;
-
-player.electricLevel=
-level;
-
-let dx=
-mx;
-
-let dy=
-my;
-
-if(
-Math.hypot(
-dx,
-dy
-)<
-.2
-){
-
-dx=
-player.facing;
-
-dy=0;
-
-}
-
-player.vx+=
-dx*
-(
-11+
-level*
-1.8
-);
-
-player.vy+=
-dy*
-(
-6+
-level*
-.7
-);
-
-sfx(
-"zap",
-level
-);
-
-effect(
-"dash",
-player.x,
-player.y,
-level,
-18,
-{
-facing:player.facing
-}
-);
-
-hit(
-80+
-level*
-6,
-14+
-level*
-6,
-12+
-level*
-2,
-true,
-"lightningDash"
-);
-
-if(
-level===
-5
-){
-
-addVoltTrail();
-
-}
-
-}
-);
-
-[
-"lightCd",
-"heavyCd",
-"specialCd",
-"dashCd",
-"inv",
-"electric"
-].forEach(
-key=>{
-
-if(
-player[
-key
-]>
-0
-){
-
-player[
-key
-]--;
-
-}
-
-}
-);
-
-player.energy=
-Math.min(
-100,
-player.energy+
-.15
-);
-
-anim(
-player,
-animBase
-);
-
+  let ix=
+    input.x;
+
+  let iy=
+    input.y;
+
+  const magnitude=
+    Math.hypot(
+      ix,
+      iy
+    );
+
+  if(magnitude>1){
+
+    ix/=magnitude;
+    iy/=magnitude;
+  }
+
+  const maxSpeed=
+    4.3;
+
+  let targetX=
+    ix*
+    maxSpeed;
+
+  let targetY=
+    iy*
+    maxSpeed*
+    .67;
+
+  if(player.locked>0){
+
+    targetX*=.18;
+    targetY*=.18;
+
+  }else if(
+    Math.abs(ix)>.12
+  ){
+
+    player.facing=
+      Math.sign(ix);
+  }
+
+  player.vx=
+    lerp(
+      player.vx,
+      targetX,
+      .18
+    );
+
+  player.vy=
+    lerp(
+      player.vy,
+      targetY,
+      .18
+    );
+
+  if(
+    Math.abs(ix)<.05
+  ){
+    player.vx*=.8;
+  }
+
+  if(
+    Math.abs(iy)<.05
+  ){
+    player.vy*=.8;
+  }
+
+  player.x+=
+    player.vx;
+
+  player.y+=
+    player.vy;
+
+  constrain(player);
+
+  if(player.locked>0){
+    player.locked--;
+  }
+
+  if(player.lightCd>0){
+    player.lightCd--;
+  }
+
+  if(player.heavyCd>0){
+    player.heavyCd--;
+  }
+
+  if(player.specialCd>0){
+    player.specialCd--;
+  }
+
+  if(player.dashCd>0){
+    player.dashCd--;
+  }
+
+  if(player.inv>0){
+    player.inv--;
+  }
+
+  if(player.electric>0){
+    player.electric--;
+  }
+
+  player.energy=
+    Math.min(
+      player.maxEnergy,
+      player.energy+.15
+    );
+
+  if(
+    player.locked<=0
+  ){
+
+    state(
+      player,
+      Math.hypot(
+        player.vx,
+        player.vy
+      )>.3
+        ? "walk"
+        : "idle"
+    );
+  }
+
+  if(
+    input.light&&
+    !lightHeld&&
+    player.lightCd<=0
+  ){
+
+    lightHeld=true;
+
+    faceCombatTarget();
+
+    player.locked=
+      18;
+
+    player.lightCd=
+      Math.max(
+        8,
+        Math.floor(
+          19*
+          speedMult()
+        )
+      );
+
+    state(
+      player,
+      "light"
+    );
+
+    effect(
+      "slash",
+      player.x+
+      player.facing*30,
+      player.y-42,
+      1,
+      10,
+      {
+        facing:player.facing
+      }
+    );
+
+    sfx("slash");
+
+    setTimeout(
+      ()=>{
+
+        if(
+          !gameOver
+        ){
+          hitEnemies(
+            86,
+            15,
+            9
+          );
+        }
+
+      },
+      55
+    );
+
+    registerCombo("A");
+  }
+
+  if(!input.light){
+    lightHeld=false;
+  }
+
+  if(
+    input.heavy&&
+    !heavyHeld&&
+    player.heavyCd<=0
+  ){
+
+    heavyHeld=true;
+
+    faceCombatTarget();
+
+    player.locked=
+      26;
+
+    player.heavyCd=
+      Math.max(
+        14,
+        Math.floor(
+          38*
+          speedMult()
+        )
+      );
+
+    player.electric=
+      20;
+
+    player.electricLevel=
+      1;
+
+    state(
+      player,
+      "heavy"
+    );
+
+    effect(
+      "heavy",
+      player.x+
+      player.facing*34,
+      player.y-45,
+      1,
+      14,
+      {
+        facing:player.facing
+      }
+    );
+
+    sfx("heavy");
+
+    setTimeout(
+      ()=>{
+
+        if(
+          !gameOver
+        ){
+
+          const hits=
+            hitEnemies(
+              106,
+              29,
+              18
+            );
+
+          if(hits){
+            camera(3,5);
+          }
+        }
+
+      },
+      75
+    );
+
+    registerCombo("H");
+  }
+
+  if(!input.heavy){
+    heavyHeld=false;
+  }
+
+  if(
+    input.special&&
+    !specialHeld&&
+    player.specialCd<=0&&
+    player.energy>=35
+  ){
+
+    specialHeld=true;
+
+    faceCombatTarget();
+
+    const level=
+      upgrades.thunderBurst;
+
+    const cost=
+      Math.max(
+        20,
+        35-
+        (
+          level-1
+        )*1.5
+      );
+
+    player.energy-=
+      cost;
+
+    player.specialCd=
+      Math.max(
+        35,
+        88-
+        level*4
+      );
+
+    player.locked=
+      26;
+
+    player.electric=
+      45+
+      level*10;
+
+    player.electricLevel=
+      level;
+
+    state(
+      player,
+      "special"
+    );
+
+    effect(
+      "burst",
+      player.x,
+      player.y-35,
+      level,
+      30,
+      {
+        radius:
+          135+
+          level*16
+      }
+    );
+
+    sfx(
+      "zap",
+      level
+    );
+
+    setTimeout(
+      ()=>{
+
+        if(
+          !gameOver
+        ){
+
+          const hits=
+            hitEnemies(
+              145+
+              level*15,
+              31+
+              level*7,
+              17+
+              level*2.5,
+              "thunderBurst"
+            );
+
+          if(hits){
+            camera(
+              2+
+              level*.4,
+              6
+            );
+          }
+
+          triggerThunderEvolution();
+        }
+
+      },
+      85
+    );
+
+    msg(
+      "🌩 THUNDER BURST LV."+
+      level
+    );
+  }
+
+  if(!input.special){
+    specialHeld=false;
+  }
+
+  if(
+    input.dash&&
+    !dashHeld&&
+    player.dashCd<=0
+  ){
+
+    dashHeld=true;
+
+    const level=
+      upgrades.lightningDash;
+
+    player.dashCd=
+      Math.max(
+        16,
+        46-
+        level*3
+      );
+
+    player.inv=
+      18+
+      level*2;
+
+    player.electric=
+      28+
+      level*7;
+
+    player.electricLevel=
+      level;
+
+    let dx=ix;
+    let dy=iy;
+
+    if(
+      Math.hypot(
+        dx,
+        dy
+      )<.2
+    ){
+
+      dx=
+        player.facing;
+
+      dy=0;
+    }
+
+    if(
+      Math.abs(dx)>.12
+    ){
+      player.facing=
+        Math.sign(dx);
+    }
+
+    const distance=
+      10+
+      level*1.9;
+
+    player.vx+=
+      dx*
+      distance;
+
+    player.vy+=
+      dy*
+      (
+        5.5+
+        level*.65
+      );
+
+    effect(
+      "dash",
+      player.x,
+      player.y-35,
+      level,
+      18,
+      {
+        facing:
+          player.facing
+      }
+    );
+
+    hitEnemies(
+      80+
+      level*6,
+      14+
+      level*6,
+      12+
+      level*2,
+      "lightningDash"
+    );
+
+    triggerDashEvolution();
+
+    sfx(
+      "zap",
+      level
+    );
+  }
+
+  if(!input.dash){
+    dashHeld=false;
+  }
+
+  anim(
+    player,
+    animBase
+  );
 }
 
 /* =====================================================
-BOSSES / ENEMIES
+ENEMIES
 ===================================================== */
 
-const bossNames=[
-"MARDI GRAS",
-"ROUXGAROUX",
-"KOOSHMA"
-];
-
-function voodoo(
+function makeVoodoo(
 elite=false
 ){
 
-const side=
-Math.random()<
-.5
-?
--1
-:
-1;
+  const side=
+    Math.random()<.5
+      ? -1
+      : 1;
 
-const y=
-rnd(
-roadTop()+20,
-roadBottom()-15
-);
+  const y=
+    rnd(
+      roadTop()+20,
+      roadBottom()-15
+    );
 
-const x=
-side<
-0
-?
--75
-:
-W+
-75;
+  const x=
+    side<0
+      ? -75
+      : W+75;
 
-return{
-
-boss:false,
-
-elite,
-
-entering:true,
-
-x,
-y,
-
-vx:0,
-vy:0,
-
-hp:
-elite
-?
-135
-:
-72,
-
-maxHp:
-elite
-?
-135
-:
-72,
-
-damage:
-elite
-?
-14
-:
-8,
-
-speed:
-elite
-?
-1.6
-:
-rnd(
-1.25,
-1.48
-),
-
-attackCd:
-rnd(
-45,
-75
-),
-
-specialCd:0,
-
-stun:0,
-
-hit:0,
-
-dead:false,
-
-facing:
-side<
-0
-?
-1
-:
--1,
-
-state:"walk",
-
-frame:0,
-
-ft:0
-
-};
-
+  return{
+    boss:false,
+    elite,
+    entering:true,
+    x,
+    y,
+    vx:0,
+    vy:0,
+    hp:
+      elite
+        ? 135
+        : 72,
+    maxHp:
+      elite
+        ? 135
+        : 72,
+    damage:
+      elite
+        ? 14
+        : 8,
+    speed:
+      elite
+        ? 1.6
+        : rnd(
+            1.25,
+            1.48
+          ),
+    attackCd:
+      rnd(
+        45,
+        75
+      ),
+    specialCd:0,
+    stun:0,
+    hit:0,
+    dead:false,
+    facing:
+      side<0
+        ? 1
+        : -1,
+    state:"walk",
+    frame:0,
+    ft:0
+  };
 }
 
-function boss(
+const bossNames=[
+  "MARDI GRAS",
+  "ROUXGAROUX",
+  "KOOSHMA"
+];
+
+function makeBoss(
 name,
-mode=1,
+multi=false,
 side=1
 ){
 
-const tier=
-Math.floor(
-(
-wave-
-5
-)/
-15
-)+
-1;
+  const tier=
+    Math.floor(
+      (
+        wave-5
+      )/15
+    )+1;
 
-let hp=
-name===
-"ROUXGAROUX"
-?
-850
-:
-name===
-"KOOSHMA"
-?
-720
-:
-540;
+  let hp=540;
+  let damage=14;
+  let speed=1.55;
 
-const speed=
-name===
-"ROUXGAROUX"
-?
-1.4
-:
-1.55;
+  if(name==="ROUXGAROUX"){
 
-let damage=
-name===
-"ROUXGAROUX"
-?
-21
-:
-name===
-"KOOSHMA"
-?
-17
-:
-14;
+    hp=850;
+    damage=21;
+    speed=1.4;
+  }
 
-hp=
-Math.floor(
-hp*
-(
-1+
-(
-tier-
-1
-)*
-.42
-)*
-(
-mode===
-2
-?
-.88
-:
-mode===
-3
-?
-.78
-:
-1
-)
-);
+  if(name==="KOOSHMA"){
 
-damage=
-Math.floor(
-damage*
-(
-mode===
-2
-?
-.92
-:
-mode===
-3
-?
-.86
-:
-1
-)
-);
+    hp=720;
+    damage=17;
+    speed=1.55;
+  }
 
-const x=
-side<
-0
-?
--115
-:
-W+
-115;
+  hp=
+    Math.floor(
+      hp*
+      (
+        1+
+        (
+          tier-1
+        )*.42
+      )
+    );
 
-const y=
-rnd(
-roadTop()+40,
-roadBottom()-35
-);
+  if(multi){
 
-return{
+    hp=
+      Math.floor(
+        hp*.88
+      );
 
-boss:true,
+    damage=
+      Math.floor(
+        damage*.92
+      );
+  }
 
-elite:true,
+  const x=
+    side<0
+      ? -115
+      : W+115;
 
-name,
+  const y=
+    rnd(
+      roadTop()+40,
+      roadBottom()-35
+    );
 
-tier,
-
-entering:true,
-
-x,
-y,
-
-vx:0,
-vy:0,
-
-hp,
-maxHp:hp,
-
-damage,
-
-speed,
-
-attackCd:60,
-
-specialCd:120,
-
-stun:0,
-
-hit:0,
-
-dead:false,
-
-facing:
-side<
-0
-?
-1
-:
--1,
-
-state:"walk",
-
-frame:0,
-
-ft:0
-
-};
-
+  return{
+    boss:true,
+    elite:true,
+    name,
+    tier,
+    entering:true,
+    x,
+    y,
+    vx:0,
+    vy:0,
+    hp,
+    maxHp:hp,
+    damage,
+    speed,
+    attackCd:60,
+    specialCd:120,
+    stun:0,
+    hit:0,
+    dead:false,
+    facing:
+      side<0
+        ? 1
+        : -1,
+    state:"walk",
+    frame:0,
+    ft:0
+  };
 }
 
-function bossCount(){
+/* =====================================================
+BOSS SPAWNING
+===================================================== */
 
-if(
-wave>=75
-){
+function isBossWave(){
 
-return 3;
-
+  return wave%5===0;
 }
 
-if(
-wave>=50
-){
+function spawnBossWave(){
 
-return 2;
+  const primaryIndex=
+    (
+      Math.floor(
+        wave/5
+      )-1
+    )%3;
 
-}
+  const first=
+    bossNames[
+      primaryIndex
+    ];
 
-return 1;
+  if(wave>=75){
 
-}
+    const names=[
+      first,
+      bossNames[
+        (
+          primaryIndex+1
+        )%3
+      ],
+      bossNames[
+        (
+          primaryIndex+2
+        )%3
+      ]
+    ];
 
-function spawnBoss(){
+    enemies.push(
+      makeBoss(
+        names[0],
+        true,
+        -1
+      )
+    );
 
-const count=
-bossCount();
+    enemies.push(
+      makeBoss(
+        names[1],
+        true,
+        1
+      )
+    );
 
-const index=
-(
-Math.floor(
-wave/
-5
-)-
-1
-)%
-3;
+    enemies.push(
+      makeBoss(
+        names[2],
+        true,
+        -1
+      )
+    );
 
-const names=[];
+    $("enemyText").textContent=
+      "TRIPLE BOSS";
 
-for(
-let i=0;
-i<count;
-i++
-){
+    msg(
+      "☠ TRIPLE BOSS WAVE ☠"
+    );
 
-names.push(
-bossNames[
-(
-index+
-i
-)%
-3
-]
-);
+    sfx("boss");
 
-}
+    return;
+  }
 
-const sides=
-count===
-3
-?
-[
--1,
-1,
--1
-]
-:
-count===
-2
-?
-[
--1,
-1
-]
-:
-[
-1
-];
+  if(wave>=50){
 
-names.forEach(
-(name,index)=>{
+    const second=
+      bossNames[
+        (
+          primaryIndex+1+
+          Math.floor(
+            Math.random()*2
+          )
+        )%3
+      ];
 
-enemies.push(
-boss(
-name,
-count,
-sides[
-index
-]
-)
-);
+    enemies.push(
+      makeBoss(
+        first,
+        true,
+        -1
+      )
+    );
 
-}
-);
+    enemies.push(
+      makeBoss(
+        second,
+        true,
+        1
+      )
+    );
 
-$("enemyText").textContent=
-count===
-3
-?
-"TRIPLE BOSS"
-:
-count===
-2
-?
-"DOUBLE BOSS"
-:
-"BOSS WAVE";
+    $("enemyText").textContent=
+      "DOUBLE BOSS";
 
-msg(
-count===
-3
-?
-"☠ TRIPLE BOSS WAVE ☠"
-:
-count===
-2
-?
-"⚠ DOUBLE BOSS WAVE ⚠"
-:
-names[
-0
-]+
-" APPROACHES"
-);
+    msg(
+      "⚠ DOUBLE BOSS WAVE ⚠"
+    );
 
-sfx(
-"boss"
-);
+    sfx("boss");
 
+    return;
+  }
+
+  enemies.push(
+    makeBoss(
+      first,
+      false,
+      1
+    )
+  );
+
+  $("enemyText").textContent=
+    "BOSS WAVE";
+
+  msg(
+    first+
+    " APPROACHES"
+  );
+
+  sfx("boss");
 }
 
 function spawnWave(){
 
-enemies=[];
+  enemies=[];
+  pending=0;
 
-pending=0;
+  if(isBossWave()){
 
-if(
-wave%
-5===
-0
-){
+    spawnBossWave();
 
-spawnBoss();
+    return;
+  }
 
-return;
+  $("enemyText").textContent=
+    "VOODOO CLAN";
 
+  const count=
+    Math.min(
+      3+
+      Math.floor(
+        wave*.95
+      ),
+      12
+    );
+
+  pending=count;
+
+  for(
+    let i=0;
+    i<count;
+    i++
+  ){
+
+    setTimeout(
+      ()=>{
+
+        if(gameOver){
+          return;
+        }
+
+        enemies.push(
+          makeVoodoo(
+            wave>=4&&
+            i%5===0
+          )
+        );
+
+        pending--;
+
+      },
+      i*210
+    );
+  }
+
+  msg(
+    "VOODOO CLAN APPROACHING"
+  );
 }
-
-$("enemyText").textContent=
-"VOODOO CLAN";
-
-const amount=
-Math.min(
-3+
-Math.floor(
-wave*
-.95
-),
-12
-);
-
-pending=
-amount;
-
-for(
-let i=0;
-i<amount;
-i++
-){
-
-setTimeout(
-()=>{
-
-if(
-gameOver
-){
-
-return;
-
-}
-
-enemies.push(
-voodoo(
-wave>=4 &&
-i%
-5===
-0
-)
-);
-
-pending--;
-
-},
-i*
-210
-);
-
-}
-
-msg(
-"VOODOO CLAN APPROACHING"
-);
-
-}
+/* =====================================================
+BOSS ATTACKS
+===================================================== */
 
 function bossSpecial(
 enemy,
@@ -4773,833 +4413,1277 @@ dy,
 distanceToPlayer
 ){
 
-if(
-enemy.name===
-"MARDI GRAS"
+  if(
+    enemy.specialCd>0||
+    enemy.stun>0||
+    enemy.entering
+  ){
+    return false;
+  }
+
+  if(
+    enemy.name==="MARDI GRAS"
+  ){
+
+    enemy.specialCd=
+      125;
+
+    enemy.locked=
+      48;
+
+    state(
+      enemy,
+      "special"
+    );
+
+    msg(
+      "🎉 CONFETTI STORM!"
+    );
+
+    effect(
+      "mardiRing",
+      enemy.x,
+      enemy.y-40,
+      1,
+      42,
+      {
+        radius:120
+      }
+    );
+
+    for(
+      let i=0;
+      i<22;
+      i++
+    ){
+
+      effects.push({
+        type:"confetti",
+        x:
+          enemy.x+
+          rnd(
+            -90,
+            90
+          ),
+        y:
+          enemy.y-
+          rnd(
+            30,
+            135
+          ),
+        vx:
+          rnd(
+            -1.8,
+            1.8
+          ),
+        vy:
+          rnd(
+            .5,
+            2.4
+          ),
+        spin:
+          rnd(
+            -.18,
+            .18
+          ),
+        angle:
+          rnd(
+            0,
+            Math.PI*2
+          ),
+        color:
+          [
+            "#7b39c8",
+            "#2cba62",
+            "#f5c842"
+          ][
+            Math.floor(
+              Math.random()*3
+            )
+          ],
+        size:
+          rnd(
+            3,
+            6
+          ),
+        life:75,
+        maxLife:75
+      });
+    }
+
+    setTimeout(
+      ()=>{
+
+        if(
+          gameOver||
+          enemy.dead
+        ){
+          return;
+        }
+
+        if(
+          dist(
+            enemy,
+            player
+          )<190&&
+          player.inv<=0
+        ){
+
+          damagePlayer(
+            enemy.damage+3,
+            enemy
+          );
+        }
+
+      },
+      260
+    );
+
+    return true;
+  }
+
+  if(
+    enemy.name==="ROUXGAROUX"
+  ){
+
+    enemy.specialCd=
+      108;
+
+    enemy.locked=
+      30;
+
+    state(
+      enemy,
+      "special"
+    );
+
+    msg(
+      "🐺 SWAMP LEAP!"
+    );
+
+    const targetX=
+      player.x;
+
+    const targetY=
+      player.y;
+
+    effect(
+      "rouxCharge",
+      enemy.x,
+      enemy.y-45,
+      1,
+      20
+    );
+
+    setTimeout(
+      ()=>{
+
+        if(
+          gameOver||
+          enemy.dead
+        ){
+          return;
+        }
+
+        enemy.x=
+          clamp(
+            targetX+
+            rnd(
+              -25,
+              25
+            ),
+            W*.025,
+            W*.975
+          );
+
+        enemy.y=
+          clamp(
+            targetY+
+            rnd(
+              -12,
+              12
+            ),
+            roadTop(),
+            roadBottom()
+          );
+
+        enemy.facing=
+          Math.sign(
+            player.x-
+            enemy.x
+          )||
+          enemy.facing;
+
+        state(
+          enemy,
+          "heavy"
+        );
+
+        effect(
+          "swampImpact",
+          enemy.x,
+          enemy.y,
+          1,
+          25,
+          {
+            radius:100
+          }
+        );
+
+        camera(
+          6,
+          10
+        );
+
+        if(
+          dist(
+            enemy,
+            player
+          )<105&&
+          player.inv<=0
+        ){
+
+          damagePlayer(
+            enemy.damage+7,
+            enemy
+          );
+        }
+
+      },
+      220
+    );
+
+    return true;
+  }
+
+  if(
+    enemy.name==="KOOSHMA"
+  ){
+
+    enemy.specialCd=
+      118;
+
+    enemy.locked=
+      38;
+
+    state(
+      enemy,
+      "special"
+    );
+
+    msg(
+      "👁 NIGHT TERROR!"
+    );
+
+    effect(
+      "terror",
+      player.x,
+      player.y-40,
+      1,
+      34,
+      {
+        radius:105
+      }
+    );
+
+    setTimeout(
+      ()=>{
+
+        if(
+          gameOver||
+          enemy.dead
+        ){
+          return;
+        }
+
+        enemy.x=
+          clamp(
+            player.x+
+            rnd(
+              -95,
+              95
+            ),
+            W*.025,
+            W*.975
+          );
+
+        enemy.y=
+          clamp(
+            player.y+
+            rnd(
+              -28,
+              28
+            ),
+            roadTop(),
+            roadBottom()
+          );
+
+        enemy.facing=
+          Math.sign(
+            player.x-
+            enemy.x
+          )||
+          enemy.facing;
+
+        effect(
+          "teleport",
+          enemy.x,
+          enemy.y-45,
+          8,
+          18
+        );
+
+        if(
+          dist(
+            enemy,
+            player
+          )<110&&
+          player.inv<=0
+        ){
+
+          damagePlayer(
+            enemy.damage+5,
+            enemy
+          );
+        }
+
+      },
+      250
+    );
+
+    return true;
+  }
+
+  return false;
+}
+
+/* =====================================================
+PLAYER DAMAGE + LIVES
+===================================================== */
+
+let respawning=false;
+let respawnTimer=0;
+
+function damagePlayer(
+amount,
+source=null
 ){
 
-enemy.vx=
-dx/
-(
-distanceToPlayer||
-1
-)*
-7;
+  if(
+    player.inv>0||
+    respawning||
+    gameOver
+  ){
+    return;
+  }
 
-enemy.vy=
-dy/
-(
-distanceToPlayer||
-1
-)*
-3.8;
+  player.hp-=
+    amount;
 
-state(
-enemy,
-"heavy"
-);
+  player.inv=
+    24;
 
-msg(
-"🎭 MASQUERADE SPIN!"
-);
+  effect(
+    "hit",
+    player.x,
+    player.y-45,
+    1,
+    14
+  );
 
-effect(
-"bossRing",
-enemy.x,
-enemy.y-35,
-1,
-40,
-{
-radius:80
-}
-);
+  if(source){
 
-}
+    const direction=
+      Math.sign(
+        player.x-
+        source.x
+      )||1;
 
-else if(
-enemy.name===
-"ROUXGAROUX"
-){
+    player.vx+=
+      direction*5.5;
+  }
 
-state(
-enemy,
-"special"
-);
+  camera(
+    3,
+    6
+  );
 
-enemy.vx=
-dx/
-(
-distanceToPlayer||
-1
-)*
-10;
+  if(
+    player.hp<=0
+  ){
 
-enemy.vy=
-dy/
-(
-distanceToPlayer||
-1
-)*
-5.5;
-
-msg(
-"🐺 SWAMP LEAP!"
-);
-
-effect(
-"mud",
-enemy.x,
-enemy.y,
-1,
-45,
-{
-radius:90
-}
-);
-
-camera(
-5,
-10
-);
-
+    handlePlayerDown();
+  }
 }
 
-else{
+function handlePlayerDown(){
 
-enemy.x=
-clamp(
-player.x+
-rnd(
--90,
-90
-),
-W*.025,
-W*.975
-);
+  if(
+    respawning||
+    gameOver
+  ){
+    return;
+  }
 
-enemy.y=
-clamp(
-player.y+
-rnd(
--35,
-35
-),
-roadTop(),
-roadBottom()
-);
+  player.hp=0;
 
-msg(
-"NIGHT TERROR!"
-);
+  lives--;
 
-effect(
-"teleport",
-enemy.x,
-enemy.y-40,
-1,
-20
-);
+  clearInput();
 
+  comboSequence=[];
+  comboSequenceTimer=0;
+
+  player.vx=0;
+  player.vy=0;
+
+  player.locked=0;
+
+  state(
+    player,
+    "idle"
+  );
+
+  music.volume=
+    quickMuted||
+    musicMuted
+      ? 0
+      : musicVol*.18;
+
+  if(
+    lives<=0
+  ){
+
+    endGame();
+
+    return;
+  }
+
+  respawning=true;
+
+  respawnTimer=
+    95;
+
+  msg(
+    "CHOSEN DOWN — "+
+    lives+
+    (
+      lives===1
+        ? " LIFE REMAINING"
+        : " LIVES REMAINING"
+    )
+  );
 }
 
+function updateRespawn(){
+
+  if(!respawning){
+    return;
+  }
+
+  respawnTimer--;
+
+  if(respawnTimer<=0){
+
+    player.x=
+      W*.5;
+
+    player.y=
+      H*.73;
+
+    constrain(player);
+
+    player.vx=0;
+    player.vy=0;
+
+    player.hp=
+      player.maxHp;
+
+    player.energy=
+      player.maxEnergy;
+
+    player.inv=
+      150;
+
+    player.lightCd=0;
+    player.heavyCd=0;
+    player.specialCd=0;
+    player.dashCd=0;
+
+    player.locked=0;
+
+    respawning=false;
+
+    state(
+      player,
+      "idle"
+    );
+
+    msg(
+      "⚡ CHOSEN RISES ⚡"
+    );
+
+    sfx(
+      "zap",
+      1
+    );
+
+    refreshAudio();
+  }
 }
+
+/* =====================================================
+ENEMY AI
+===================================================== */
 
 function updateEnemies(){
 
-enemies.forEach(
-enemy=>{
+  enemies.forEach(
+    enemy=>{
+
+      if(enemy.dead){
+        return;
+      }
+
+      if(enemy.attackCd>0){
+        enemy.attackCd--;
+      }
+
+      if(enemy.specialCd>0){
+        enemy.specialCd--;
+      }
 
-if(
-enemy.dead
-){
+      if(enemy.stun>0){
+        enemy.stun--;
+      }
 
-return;
+      if(enemy.hit>0){
+        enemy.hit--;
+      }
 
-}
+      if(enemy.locked>0){
+        enemy.locked--;
+      }
+
+      if(enemy.entering){
 
-if(
-enemy.hit>
-0
-){
+        const targetX=
+          enemy.x<0
+            ? 65
+            : W-65;
+
+        const direction=
+          Math.sign(
+            targetX-
+            enemy.x
+          );
 
-enemy.hit--;
+        enemy.facing=
+          direction||
+          enemy.facing;
 
-}
+        enemy.vx=
+          lerp(
+            enemy.vx,
+            direction*
+            enemy.speed*
+            1.45,
+            .13
+          );
+
+        enemy.x+=
+          enemy.vx;
 
-if(
-enemy.attackCd>
-0
-){
+        if(
+          enemy.x>=0&&
+          enemy.x<=W
+        ){
 
-enemy.attackCd--;
+          enemy.entering=false;
+
+          constrain(enemy);
+        }
+
+        state(
+          enemy,
+          "walk"
+        );
+
+        anim(
+          enemy,
+          enemy.boss
+            ? bossAnim
+            : animBase
+        );
+
+        return;
+      }
+
+      if(respawning){
+
+        enemy.vx*=.82;
+        enemy.vy*=.82;
+
+        state(
+          enemy,
+          "idle"
+        );
+
+        anim(
+          enemy,
+          enemy.boss
+            ? bossAnim
+            : animBase
+        );
+
+        return;
+      }
+
+      if(enemy.stun>0){
+
+        enemy.vx*=.87;
+        enemy.vy*=.87;
+
+        enemy.x+=
+          enemy.vx;
 
-}
-
-if(
-enemy.specialCd>
-0
-){
-
-enemy.specialCd--;
-
-}
-
-if(
-enemy.stun>
-0
-){
-
-enemy.stun--;
-
-enemy.vx*=
-.88;
-
-enemy.vy*=
-.88;
-
-enemy.x+=
-enemy.vx;
-
-enemy.y+=
-enemy.vy;
-
-constrain(
-enemy
-);
-
-return;
-
-}
-
-if(
-enemy.entering
-){
-
-const targetX=
-enemy.x<
-0
-?
-65
-:
-W-
-65;
-
-const dx=
-targetX-
-enemy.x;
-
-enemy.facing=
-Math.sign(
-dx
-);
-
-enemy.x+=
-Math.sign(
-dx
-)*
-enemy.speed*
-1.5;
-
-if(
-enemy.x>=0 &&
-enemy.x<=W
-){
-
-enemy.entering=false;
-
-constrain(
-enemy
-);
-
-}
-
-state(
-enemy,
-"walk"
-);
-
-anim(
-enemy,
-enemy.boss
-?
-bossAnim
-:
-animBase
-);
-
-return;
-
-}
-
-const dx=
-player.x-
-enemy.x;
-
-const dy=
-player.y-
-enemy.y;
-
-const distanceToPlayer=
-Math.hypot(
-dx,
-dy
-);
-
-enemy.facing=
-Math.sign(
-dx
-)||
-enemy.facing;
-
-if(
-enemy.boss &&
-enemy.specialCd<=0 &&
-distanceToPlayer>
-90
-){
-
-bossSpecial(
-enemy,
-dx,
-dy,
-distanceToPlayer
-);
-
-enemy.specialCd=
-120;
-
-}
-
-const targetVx=
-Math.abs(
-dx
-)>
-62
-?
-Math.sign(
-dx
-)*
-enemy.speed
-:
-0;
-
-const targetVy=
-Math.abs(
-dy
-)>
-16
-?
-Math.sign(
-dy
-)*
-enemy.speed*
-.55
-:
-0;
-
-enemy.vx=
-lerp(
-enemy.vx,
-targetVx,
-.1
-);
-
-enemy.vy=
-lerp(
-enemy.vy,
-targetVy,
-.1
-);
-
-if(
-Math.abs(
-dx
-)<
-60 &&
-Math.abs(
-dy
-)<
-28 &&
-enemy.attackCd<=0
-){
-
-enemy.attackCd=
-enemy.boss
-?
-62
-:
-rnd(
-55,
-80
-);
-
-state(
-enemy,
-"attack"
-);
-
-/*
-Do not damage Chosen while he is waiting to respawn.
-*/
-
-if(
-!respawning &&
-player.inv<=0
-){
-
-player.hp-=
-enemy.damage;
-
-player.inv=22;
-
-player.vx+=
-(
-Math.sign(
-player.x-
-enemy.x
-)||
-1
-)*
-4;
-
-effect(
-"hit",
-player.x,
-player.y-42,
-1,
-13
-);
-
-camera(
-enemy.boss
-?
-4
-:
-2,
-6
-);
-
-}
-
-}else if(
-enemy.state!=="attack" ||
-enemy.frame>=7
-){
-
-state(
-enemy,
-Math.hypot(
-enemy.vx,
-enemy.vy
-)>
-.2
-?
-"walk"
-:
-"idle"
-);
-
-}
-
-enemy.x+=
-enemy.vx;
-
-enemy.y+=
-enemy.vy;
-
-constrain(
-enemy
-);
-
-anim(
-enemy,
-enemy.boss
-?
-bossAnim
-:
-animBase
-);
-
-}
-);
-
-enemies=
-enemies.filter(
-enemy=>
-!enemy.dead
-);
-
-if(
-enemies.length===
-0 &&
-pending===
-0 &&
-!wavePending &&
-!gameOver
-){
-
-wavePending=true;
-
-setTimeout(
-()=>{
-
-if(
-gameOver
-){
-
-return;
-
-}
-
-if(
-shouldShop(
-wave
-)
-){
-
-openShop();
-
-}else{
-
-wave++;
-
-wavePending=false;
-
-spawnWave();
-
-}
-
-},
-650
-);
-
-}
-
-/*
-This may run every frame while HP is zero,
-but down() now has a respawning guard.
-*/
-
-if(
-player.hp<=0
-){
-
-down();
-
-}
-
+        enemy.y+=
+          enemy.vy;
+
+        constrain(enemy);
+
+        if(
+          enemy.boss
+        ){
+
+          if(
+            enemy.hit>0
+          ){
+
+            state(
+              enemy,
+              "hit"
+            );
+
+          }else{
+
+            state(
+              enemy,
+              "idle"
+            );
+          }
+
+        }else{
+
+          state(
+            enemy,
+            "idle"
+          );
+        }
+
+        anim(
+          enemy,
+          enemy.boss
+            ? bossAnim
+            : animBase
+        );
+
+        return;
+      }
+
+      if(enemy.locked>0){
+
+        enemy.vx*=.82;
+        enemy.vy*=.82;
+
+        anim(
+          enemy,
+          enemy.boss
+            ? bossAnim
+            : animBase
+        );
+
+        return;
+      }
+
+      const dx=
+        player.x-
+        enemy.x;
+
+      const dy=
+        player.y-
+        enemy.y;
+
+      const d=
+        Math.hypot(
+          dx,
+          dy
+        );
+
+      enemy.facing=
+        Math.sign(dx)||
+        enemy.facing;
+
+      if(
+        enemy.boss&&
+        enemy.specialCd<=0&&
+        d>85
+      ){
+
+        if(
+          bossSpecial(
+            enemy,
+            dx,
+            dy,
+            d
+          )
+        ){
+
+          return;
+        }
+      }
+
+      let targetVx=0;
+      let targetVy=0;
+
+      if(
+        Math.abs(dx)>58
+      ){
+
+        targetVx=
+          Math.sign(dx)*
+          enemy.speed;
+      }
+
+      if(
+        Math.abs(dy)>16
+      ){
+
+        targetVy=
+          Math.sign(dy)*
+          enemy.speed*
+          .54;
+      }
+
+      enemy.vx=
+        lerp(
+          enemy.vx,
+          targetVx,
+          .10
+        );
+
+      enemy.vy=
+        lerp(
+          enemy.vy,
+          targetVy,
+          .10
+        );
+
+      if(
+        Math.abs(dx)<62&&
+        Math.abs(dy)<28&&
+        enemy.attackCd<=0
+      ){
+
+        enemy.attackCd=
+          enemy.boss
+            ? 62
+            : rnd(
+                55,
+                80
+              );
+
+        enemy.locked=
+          enemy.boss
+            ? 22
+            : 18;
+
+        state(
+          enemy,
+          "attack"
+        );
+
+        if(
+          player.inv<=0
+        ){
+
+          damagePlayer(
+            enemy.damage,
+            enemy
+          );
+        }
+
+      }else{
+
+        state(
+          enemy,
+          Math.hypot(
+            enemy.vx,
+            enemy.vy
+          )>.22
+            ? "walk"
+            : "idle"
+        );
+      }
+
+      enemy.x+=
+        enemy.vx;
+
+      enemy.y+=
+        enemy.vy;
+
+      constrain(enemy);
+
+      anim(
+        enemy,
+        enemy.boss
+          ? bossAnim
+          : animBase
+      );
+
+    }
+  );
+
+  enemies=
+    enemies.filter(
+      enemy=>
+      !enemy.dead
+    );
+
+  if(
+    enemies.length===0&&
+    pending===0&&
+    !wavePending&&
+    !gameOver
+  ){
+
+    wavePending=true;
+
+    if(
+      shouldShop(
+        wave
+      )
+    ){
+
+      setTimeout(
+        ()=>{
+
+          if(!gameOver){
+
+            openShop();
+          }
+
+        },
+        600
+      );
+
+    }else{
+
+      setTimeout(
+        ()=>{
+
+          if(gameOver){
+            return;
+          }
+
+          wave++;
+
+          wavePending=false;
+
+          spawnWave();
+
+        },
+        700
+      );
+    }
+  }
 }
 
 /* =====================================================
 PICKUPS
 ===================================================== */
 
-const pickupData={
+const pickupTypes={
 
-handGrenade:{
-name:"HAND GRENADE",
-heal:100,
-emoji:"🧪"
-},
+  handGrenade:{
+    name:"HAND GRENADE",
+    heal:100,
+    emoji:"🧪",
+    color:"#71ff4d"
+  },
 
-kingCake:{
-name:"KING CAKE",
-heal:60,
-emoji:"🍰"
-},
+  kingCake:{
+    name:"KING CAKE",
+    heal:60,
+    emoji:"🍰",
+    color:"#b95cff"
+  },
 
-crawfish:{
-name:"CRAWFISH",
-heal:45,
-emoji:"🦞"
-},
+  crawfish:{
+    name:"CRAWFISH",
+    heal:45,
+    emoji:"🦞",
+    color:"#ff5749"
+  },
 
-boudin:{
-name:"BOUDIN",
-heal:40,
-emoji:"🌭"
-},
+  boudin:{
+    name:"BOUDIN",
+    heal:40,
+    emoji:"🌭",
+    color:"#ffb14b"
+  },
 
-daiquiri:{
-name:"DAIQUIRI",
-heal:30,
-emoji:"🥤"
-},
+  daiquiri:{
+    name:"DAIQUIRI",
+    heal:30,
+    emoji:"🥤",
+    color:"#ff4ca0"
+  },
 
-beignets:{
-name:"BEIGNETS",
-heal:25,
-emoji:"🍩"
-},
+  beignets:{
+    name:"BEIGNETS",
+    heal:25,
+    emoji:"🍩",
+    color:"#fff0b0"
+  },
 
-beads:{
-name:"MARDI GRAS BEADS",
-points:250,
-voltage:1,
-emoji:"📿"
-}
-
+  beads:{
+    name:"MARDI GRAS BEADS",
+    score:250,
+    voltage:1,
+    emoji:"📿",
+    color:"#b858ff"
+  }
 };
 
-function scarcity(){
+function dropMultiplier(){
 
-if(
-wave<=30
-){
+  if(wave<=30){
+    return 1;
+  }
 
-return 1;
+  if(wave<=40){
+    return .72;
+  }
 
+  if(wave<=50){
+    return .52;
+  }
+
+  if(wave<=60){
+    return .38;
+  }
+
+  return .27;
 }
 
-if(
-wave<=40
-){
+function dropPickup(enemy){
 
-return .7;
+  const mult=
+    dropMultiplier();
 
-}
+  const beadChance=
+    enemy.boss
+      ? .28
+      : .04;
 
-if(
-wave<=50
-){
+  if(
+    Math.random()<
+    beadChance
+  ){
 
-return .5;
+    pickups.push({
+      type:"beads",
+      x:
+        clamp(
+          enemy.x,
+          40,
+          W-40
+        ),
+      y:enemy.y,
+      bob:
+        rnd(
+          0,
+          Math.PI*2
+        ),
+      life:900
+    });
 
-}
+    return;
+  }
 
-if(
-wave<=60
-){
+  const roll=
+    Math.random();
 
-return .35;
+  let type=null;
 
-}
+  if(enemy.boss){
 
-return .25;
+    if(
+      roll<
+      .065*mult
+    ){
+      type=
+        "handGrenade";
 
-}
+    }else if(
+      roll<
+      .18*mult
+    ){
+      type=
+        "kingCake";
 
-function drop(
-enemy
-){
+    }else if(
+      roll<
+      .30*mult
+    ){
+      type=
+        "crawfish";
+    }
 
-if(
-Math.random()<
-(
-enemy.boss
-?
-.24
-:
-.038
-)
-){
+  }else{
 
-pickups.push({
+    if(
+      roll<
+      .005*mult
+    ){
+      type=
+        "handGrenade";
 
-type:"beads",
+    }else if(
+      roll<
+      .018*mult
+    ){
+      type=
+        "kingCake";
 
-x:enemy.x,
+    }else if(
+      roll<
+      .038*mult
+    ){
+      type=
+        "crawfish";
 
-y:enemy.y,
+    }else if(
+      roll<
+      .058*mult
+    ){
+      type=
+        "boudin";
 
-life:1000,
+    }else if(
+      roll<
+      .083*mult
+    ){
+      type=
+        "daiquiri";
 
-bob:0
+    }else if(
+      roll<
+      .112*mult
+    ){
+      type=
+        "beignets";
+    }
+  }
 
-});
+  if(!type){
+    return;
+  }
 
-return;
-
-}
-
-const multiplier=
-scarcity();
-
-const roll=
-Math.random();
-
-let type=null;
-
-const limits=
-enemy.boss
-?
-[
-[
-.07,
-"handGrenade"
-],
-[
-.19,
-"kingCake"
-],
-[
-.29,
-"crawfish"
-]
-]
-:
-[
-[
-.005,
-"handGrenade"
-],
-[
-.018,
-"kingCake"
-],
-[
-.038,
-"crawfish"
-],
-[
-.058,
-"boudin"
-],
-[
-.083,
-"daiquiri"
-],
-[
-.112,
-"beignets"
-]
-];
-
-for(
-const [
-chance,
-name
-]
-of limits
-){
-
-if(
-roll<
-chance*
-multiplier
-){
-
-type=
-name;
-
-break;
-
-}
-
-}
-
-if(
-type
-){
-
-pickups.push({
-
-type,
-
-x:enemy.x,
-
-y:enemy.y,
-
-life:1000,
-
-bob:0
-
-});
-
-}
-
+  pickups.push({
+    type,
+    x:
+      clamp(
+        enemy.x,
+        40,
+        W-40
+      ),
+    y:enemy.y,
+    bob:
+      rnd(
+        0,
+        Math.PI*2
+      ),
+    life:900
+  });
 }
 
 function updatePickups(){
 
-pickups.forEach(
-pickup=>{
+  pickups.forEach(
+    pickup=>{
 
-pickup.life--;
+      pickup.life--;
 
-pickup.bob+=
-.055;
+      pickup.bob+=
+        .055;
 
-if(
-!respawning &&
-dist(
-player,
-pickup
-)<
-42
+      if(
+        !respawning&&
+        dist(
+          player,
+          pickup
+        )<42
+      ){
+
+        const data=
+          pickupTypes[
+            pickup.type
+          ];
+
+        if(data.heal){
+
+          const before=
+            player.hp;
+
+          player.hp=
+            Math.min(
+              player.maxHp,
+              player.hp+
+              data.heal
+            );
+
+          const healed=
+            Math.round(
+              player.hp-
+              before
+            );
+
+          pickmsg(
+            data.name+
+            " +"+
+            healed+
+            " HP"
+          );
+        }
+
+        if(data.score){
+
+          score+=
+            data.score;
+
+          voltage+=
+            data.voltage;
+
+          earned+=
+            data.voltage;
+
+          pickmsg(
+            data.name+
+            " +"+
+            data.score+
+            " PTS"
+          );
+        }
+
+        pickup.life=0;
+
+        sfx(
+          "pickup"
+        );
+      }
+    }
+  );
+
+  pickups=
+    pickups.filter(
+      pickup=>
+      pickup.life>0
+    );
+}
+
+/* =====================================================
+KILLS
+===================================================== */
+
+function kill(
+enemy,
+ability=null
 ){
 
-const data=
-pickupData[
-pickup.type
-];
+  if(enemy.dead){
+    return;
+  }
 
-if(
-data.heal
-){
+  enemy.dead=true;
 
-const before=
-player.hp;
+  kills++;
 
-player.hp=
-Math.min(
-player.maxHp,
-player.hp+
-data.heal
-);
+  dropPickup(
+    enemy
+  );
 
-pickmsg(
-data.name+
-" +"+
-Math.round(
-player.hp-
-before
-)+
-" HP"
-);
+  if(enemy.boss){
 
-}
+    const base=
+      enemy.name==="MARDI GRAS"
+        ? 650
+        :
+        enemy.name==="ROUXGAROUX"
+          ? 800
+          : 750;
 
-if(
-data.points
-){
+    const reward=
+      Math.floor(
+        base*
+        (
+          1+
+          (
+            enemy.tier-1
+          )*.55
+        )
+      );
 
-score+=
-data.points;
+    voltage+=
+      reward;
 
-voltage+=
-data.voltage;
+    earned+=
+      reward;
 
-earned+=
-data.voltage;
+    score+=
+      reward*2;
 
-pickmsg(
-data.name+
-" +"+
-data.points+
-" PTS"
-);
+    msg(
+      enemy.name+
+      " DEFEATED!"
+    );
 
-}
+    effect(
+      "bossDeath",
+      enemy.x,
+      enemy.y-45,
+      ability
+        ? upgrades[
+            ability
+          ]||1
+        : 1,
+      30
+    );
 
-pickup.life=0;
+    camera(
+      6,
+      12
+    );
 
-sfx(
-"pickup"
-);
+  }else{
 
-}
+    const reward=
+      enemy.elite
+        ? 60
+        : 25;
 
-}
-);
+    voltage+=
+      reward;
 
-pickups=
-pickups.filter(
-pickup=>
-pickup.life>
-0
-);
+    earned+=
+      reward;
 
+    score+=
+      enemy.elite
+        ? 220
+        : 100;
+  }
 }
 
 /* =====================================================
@@ -5608,937 +5692,1193 @@ EFFECT UPDATE
 
 function updateEffects(){
 
-effects.forEach(
-item=>{
+  effects.forEach(
+    e=>{
 
-if(
-[
-"field",
-"storm"
-].includes(
-item.type
-)
-){
+      if(
+        e.type==="confetti"
+      ){
 
-item.damageTick=
-(
-item.damageTick||
-0
-)+
-1;
+        e.x+=
+          e.vx||0;
 
-if(
-item.damageTick>=
-18
-){
+        e.y+=
+          e.vy||0;
 
-item.damageTick=0;
+        e.vy=
+          (
+            e.vy||0
+          )+
+          .015;
 
-const radius=
-item.radius||
-120;
+        e.angle+=
+          e.spin||0;
+      }
 
-enemies.forEach(
-enemy=>{
+      if(
+        e.type==="field"&&
+        e.life%28===0
+      ){
 
-if(
-!enemy.dead &&
-dist(
-enemy,
-item
-)<
-radius
-){
+        enemies.forEach(
+          enemy=>{
 
-enemy.hp-=
-(
-item.type===
-"storm"
-?
-11
-:
-7
-)*
-atkMult();
+            if(
+              enemy.dead||
+              enemy.entering
+            ){
+              return;
+            }
 
-if(
-enemy.hp<=0
-){
+            if(
+              Math.hypot(
+                enemy.x-e.x,
+                enemy.y-e.y
+              )<
+              (
+                e.radius||125
+              )
+            ){
 
-kill(
-enemy,
-item.type===
-"storm"
-?
-"twinThunder"
-:
-null
-);
+              enemy.hp-=
+                7*
+                atkMult();
 
-}
+              enemy.stun=
+                Math.max(
+                  enemy.stun,
+                  enemy.boss
+                    ? 6
+                    : 12
+                );
 
-}
+              effect(
+                "electricHit",
+                enemy.x,
+                enemy.y-40,
+                5,
+                10
+              );
 
-}
-);
+              if(
+                enemy.hp<=0
+              ){
+                kill(
+                  enemy,
+                  "thunderBurst"
+                );
+              }
+            }
+          }
+        );
+      }
 
-}
+      if(
+        e.type==="storm"&&
+        e.life%22===0
+      ){
 
-}
+        const living=
+          enemies.filter(
+            enemy=>
+            !enemy.dead&&
+            !enemy.entering
+          );
 
-item.life--;
+        if(living.length){
 
-}
-);
+          const target=
+            living[
+              Math.floor(
+                Math.random()*
+                living.length
+              )
+            ];
 
-effects=
-effects.filter(
-item=>
-item.life>
-0
-);
+          effect(
+            "lightningStrike",
+            target.x,
+            target.y,
+            10,
+            16
+          );
 
+          target.hp-=
+            16*
+            atkMult();
+
+          target.stun=
+            target.boss
+              ? 8
+              : 18;
+
+          if(
+            target.hp<=0
+          ){
+            kill(
+              target,
+              "thunderBurst"
+            );
+          }
+        }
+      }
+
+      e.life--;
+    }
+  );
+
+  effects=
+    effects.filter(
+      e=>
+      e.life>0
+    );
 }
 
 /* =====================================================
 SHOP
 ===================================================== */
 
-const shouldShop=
-completedWave=>
-completedWave<=20
-?
-completedWave%
-5===
-0
-:
-completedWave%
-10===
-0;
-
-const coreCost=
-key=>
-Math.floor(
-220*
-Math.pow(
-1.42,
-upgrades[
-key
-]-
-1
-)
-);
-
-function abilityCost(
-key
+function shouldShop(
+completedWave
 ){
 
-const level=
-upgrades[
-key
-];
+  if(
+    completedWave<=20
+  ){
 
-return Math.floor(
-260+
-120*
-level+
-45*
-level*
-level
-);
+    return(
+      completedWave%5===0
+    );
+  }
 
+  return(
+    completedWave%10===0
+  );
 }
 
-function dots(
-level
+function coreCost(type){
+
+  return Math.floor(
+    220*
+    Math.pow(
+      1.42,
+      upgrades[type]-1
+    )
+  );
+}
+
+function abilityCost(type){
+
+  const level=
+    upgrades[type];
+
+  return Math.floor(
+    240+
+    level*
+    125+
+    Math.pow(
+      level,
+      1.45
+    )*
+    23
+  );
+}
+
+function dots(level){
+
+  let text="";
+
+  for(
+    let i=1;
+    i<=10;
+    i++
+  ){
+
+    text+=
+      i<=level
+        ? "●"
+        : "○";
+  }
+
+  return text;
+}
+
+function setUpgradeDisabled(
+button,
+disabled
 ){
 
-return Array
-.from(
-{
-length:10
-},
-(
-_,
-index
-)=>
-index<
-level
-?
-"●"
-:
-"○"
-)
-.join(
-""
-);
+  button.disabled=
+    disabled;
 
+  const parent=
+    button.closest(
+      ".upgrade"
+    );
+
+  if(parent){
+
+    parent.style.opacity=
+      disabled
+        ? ".48"
+        : "1";
+
+    parent.style.filter=
+      disabled
+        ? "grayscale(.18)"
+        : "none";
+  }
 }
 
-function updateAbility(
-key,
-dotId,
+function updateAbilityCard(
+type,
+dotsId,
 buttonId
 ){
 
-const level=
-upgrades[
-key
-];
+  const level=
+    upgrades[type];
 
-const dot=
-$(dotId);
+  const dotEl=
+    $(dotsId);
 
-const button=
-$(buttonId);
+  const button=
+    $(buttonId);
 
-dot.textContent=
-dots(
-level
-);
+  const color=
+    col(level);
 
-dot.style.color=
-col(
-level
-).main;
+  dotEl.textContent=
+    dots(level);
 
-dot.style.textShadow=
-`0 0 9px ${
-col(
-level
-).glow
-}`;
+  dotEl.style.color=
+    color.main;
 
-if(
-level>=10
-){
+  dotEl.style.textShadow=
+    `0 0 9px ${color.glow}`;
 
-button.textContent=
-"👑 ROYAL BLUE — MAX";
+  if(level>=10){
 
-button.disabled=
-true;
+    button.textContent=
+      "👑 ROYAL BLUE — MAX";
 
-return;
+    setUpgradeDisabled(
+      button,
+      true
+    );
 
+    return;
+  }
+
+  const price=
+    abilityCost(type);
+
+  const next=
+    col(
+      level+1
+    );
+
+  button.textContent=
+    "⚡ "+
+    price.toLocaleString()+
+    " → "+
+    next.name;
+
+  setUpgradeDisabled(
+    button,
+    voltage<price
+  );
 }
 
-const price=
-abilityCost(
-key
-);
+function updateVitality(){
 
-const next=
-col(
-level+
-1
-);
+  $("vitalityLevel").textContent=
+    upgrades.vitality;
 
-button.textContent=
-"⚡ "+
-price.toLocaleString()+
-" → "+
-next.name;
+  $("vitalityHp").textContent=
+    player.maxHp;
 
-button.disabled=
-voltage<
-price;
+  const button=
+    $("vitalityButton");
 
+  if(
+    upgrades.vitality>=5
+  ){
+
+    button.textContent=
+      "♥ MAX HP — 200";
+
+    setUpgradeDisabled(
+      button,
+      true
+    );
+
+    return;
+  }
+
+  const next=
+    upgrades.vitality+1;
+
+  const price=
+    vitCost[next];
+
+  button.textContent=
+    "♥ "+
+    price.toLocaleString()+
+    " → "+
+    vitHp[next]+
+    " HP";
+
+  setUpgradeDisabled(
+    button,
+    voltage<price
+  );
 }
 
 function updateShop(){
 
-$("shopVoltage").textContent=
-voltage.toLocaleString();
+  $("shopVoltage").textContent=
+    voltage.toLocaleString();
 
-$("powerLevel").textContent=
-upgrades.power;
+  $("powerLevel").textContent=
+    upgrades.power;
 
-$("speedLevel").textContent=
-upgrades.speed;
+  $("speedLevel").textContent=
+    upgrades.speed;
 
-[
-"power",
-"speed"
-].forEach(
-key=>{
+  [
+    [
+      "power",
+      "powerButton"
+    ],
+    [
+      "speed",
+      "speedButton"
+    ]
+  ].forEach(
+    pair=>{
 
-const button=
-$(
-key+
-"Button"
-);
+      const type=
+        pair[0];
 
-const price=
-coreCost(
-key
-);
+      const id=
+        pair[1];
 
-button.textContent=
-"⚡ "+
-price.toLocaleString();
+      const price=
+        coreCost(type);
 
-button.disabled=
-voltage<
-price;
+      const button=
+        $(id);
 
-}
-);
+      button.textContent=
+        "⚡ "+
+        price.toLocaleString()+
+        " VOLTAGE";
 
-$("vitalityLevel").textContent=
-upgrades.vitality;
+      setUpgradeDisabled(
+        button,
+        voltage<price
+      );
+    }
+  );
 
-$("vitalityHp").textContent=
-player.maxHp;
+  updateVitality();
 
-const vitalityButton=
-$("vitalityButton");
+  updateAbilityCard(
+    "thunderBurst",
+    "thunderDots",
+    "thunderButton"
+  );
 
-if(
-upgrades.vitality>=5
-){
+  updateAbilityCard(
+    "lightningDash",
+    "dashDots",
+    "dashUpgradeButton"
+  );
 
-vitalityButton.textContent=
-"♥ MAX HP — 200";
+  updateAbilityCard(
+    "voltRush",
+    "voltDots",
+    "voltButton"
+  );
 
-vitalityButton.disabled=
-true;
+  updateAbilityCard(
+    "electricCross",
+    "crossDots",
+    "crossButton"
+  );
 
-}else{
-
-const next=
-upgrades.vitality+
-1;
-
-const price=
-vitCost[
-next
-];
-
-vitalityButton.textContent=
-"♥ "+
-price.toLocaleString()+
-" → "+
-vitHp[
-next
-]+
-" HP";
-
-vitalityButton.disabled=
-voltage<
-price;
-
-}
-
-updateAbility(
-"thunderBurst",
-"thunderDots",
-"thunderButton"
-);
-
-updateAbility(
-"lightningDash",
-"dashDots",
-"dashUpgradeButton"
-);
-
-updateAbility(
-"voltRush",
-"voltDots",
-"voltButton"
-);
-
-updateAbility(
-"electricCross",
-"crossDots",
-"crossButton"
-);
-
-updateAbility(
-"twinThunder",
-"twinDots",
-"twinButton"
-);
-
+  updateAbilityCard(
+    "twinThunder",
+    "twinDots",
+    "twinButton"
+  );
 }
 
 function openShop(){
 
-paused=true;
+  paused=true;
 
-clearInput();
+  clearInput();
 
-updateShop();
+  updateShop();
 
-$("shop").style.display=
-"flex";
+  $("shop").style.display=
+    "flex";
 
+  music.volume=
+    quickMuted||
+    musicMuted
+      ? 0
+      : musicVol*.35;
 }
 
-function buyCore(
-key
-){
+function buyCore(type){
 
-const price=
-coreCost(
-key
-);
+  const price=
+    coreCost(type);
 
-if(
-voltage<
-price
-){
+  if(
+    voltage<price
+  ){
+    return;
+  }
 
-return;
+  voltage-=
+    price;
 
+  upgrades[type]++;
+
+  sfx(
+    "pickup"
+  );
+
+  updateShop();
 }
 
-voltage-=
-price;
+function buyVitality(){
 
-upgrades[
-key
-]++;
+  if(
+    upgrades.vitality>=5
+  ){
+    return;
+  }
 
-sfx(
-"pickup"
-);
+  const next=
+    upgrades.vitality+1;
 
-updateShop();
+  const price=
+    vitCost[next];
 
+  if(
+    voltage<price
+  ){
+    return;
+  }
+
+  const old=
+    player.maxHp;
+
+  const nextHp=
+    vitHp[next];
+
+  voltage-=
+    price;
+
+  upgrades.vitality=
+    next;
+
+  player.maxHp=
+    nextHp;
+
+  player.hp=
+    Math.min(
+      player.maxHp,
+      player.hp+
+      (
+        nextHp-old
+      )
+    );
+
+  msg(
+    "♥ VITALITY UPGRADED — "+
+    nextHp+
+    " MAX HP"
+  );
+
+  sfx(
+    "pickup"
+  );
+
+  updateShop();
 }
 
-function buyAbility(
-key
-){
+function buyAbility(type){
 
-if(
-upgrades[
-key
-]>=10
-){
+  if(
+    upgrades[type]>=10
+  ){
+    return;
+  }
 
-return;
+  const price=
+    abilityCost(type);
 
-}
+  if(
+    voltage<price
+  ){
+    return;
+  }
 
-const price=
-abilityCost(
-key
-);
+  voltage-=
+    price;
 
-if(
-voltage<
-price
-){
+  upgrades[type]++;
 
-return;
+  const level=
+    upgrades[type];
 
-}
+  const color=
+    col(level);
 
-voltage-=
-price;
+  sfx(
+    "zap",
+    level
+  );
 
-upgrades[
-key
-]++;
+  if(level===5){
 
-const level=
-upgrades[
-key
-];
+    msg(
+      "🟢 "+
+      type.toUpperCase()+
+      " — EVOLUTION I!"
+    );
 
-if(
-level===
-5
-){
+  }else if(level===10){
 
-msg(
-"🟢 EVOLUTION I UNLOCKED!"
-);
+    msg(
+      "👑 "+
+      type.toUpperCase()+
+      " — ROYAL BLUE!"
+    );
 
-}else if(
-level===
-9
-){
+  }else{
 
-msg(
-"⚪ WHITE LIGHTNING!"
-);
+    msg(
+      color.name+
+      " LIGHTNING!"
+    );
+  }
 
-}else if(
-level===
-10
-){
-
-msg(
-"👑 ROYAL BLUE — EVOLUTION II!"
-);
-
-}else{
-
-msg(
-col(
-level
-).name+
-" LIGHTNING!"
-);
-
-}
-
-sfx(
-"zap",
-level
-);
-
-updateShop();
-
+  updateShop();
 }
 
 $("powerButton").onclick=
 ()=>buyCore(
-"power"
+  "power"
 );
 
 $("speedButton").onclick=
 ()=>buyCore(
-"speed"
+  "speed"
 );
 
 $("vitalityButton").onclick=
-()=>{
+  buyVitality;
 
-if(
-upgrades.vitality>=5
-){
-
-return;
-
-}
-
-const next=
-upgrades.vitality+
-1;
-
-const price=
-vitCost[
-next
-];
-
-if(
-voltage<
-price
-){
-
-return;
-
-}
-
-voltage-=
-price;
-
-const gained=
-vitHp[
-next
-]-
-player.maxHp;
-
-upgrades.vitality=
-next;
-
-player.maxHp=
-vitHp[
-next
-];
-
-player.hp=
-Math.min(
-player.maxHp,
-player.hp+
-gained
-);
-
-updateShop();
-
-};
-
-[
-[
-"thunderButton",
-"thunderBurst"
-],
-[
-"dashUpgradeButton",
-"lightningDash"
-],
-[
-"voltButton",
-"voltRush"
-],
-[
-"crossButton",
-"electricCross"
-],
-[
-"twinButton",
-"twinThunder"
-]
-].forEach(
-([
-id,
-key
-])=>{
-
-$(id).onclick=
+$("thunderButton").onclick=
 ()=>buyAbility(
-key
+  "thunderBurst"
 );
 
-}
+$("dashUpgradeButton").onclick=
+()=>buyAbility(
+  "lightningDash"
+);
+
+$("voltButton").onclick=
+()=>buyAbility(
+  "voltRush"
+);
+
+$("crossButton").onclick=
+()=>buyAbility(
+  "electricCross"
+);
+
+$("twinButton").onclick=
+()=>buyAbility(
+  "twinThunder"
 );
 
 $("continueButton").onclick=
 ()=>{
 
-$("shop").style.display=
-"none";
+  $("shop").style.display=
+    "none";
 
-paused=false;
+  paused=false;
 
-wave++;
+  wave++;
 
-wavePending=false;
+  wavePending=false;
 
-player.hp=
-Math.min(
-player.maxHp,
-player.hp+
-player.maxHp*
-.25
-);
+  player.hp=
+    Math.min(
+      player.maxHp,
+      player.hp+
+      player.maxHp*.25
+    );
 
-player.energy=
-100;
+  player.energy=
+    player.maxEnergy;
 
-spawnWave();
+  refreshAudio();
 
+  if(
+    !musicMuted&&
+    !quickMuted
+  ){
+    music.play().catch(()=>{});
+  }
+
+  spawnWave();
 };
 
 /* =====================================================
-LIVES / GAME OVER
+GAME OVER
 ===================================================== */
-
-function down(){
-
-/*
-THIS is the Rouxgaroux / multi-life fix.
-Without this guard, player.hp stayed at zero for several
-frames and down() could remove all remaining lives.
-*/
-
-if(
-respawning ||
-gameOver
-){
-
-return;
-
-}
-
-respawning=true;
-
-lives--;
-
-player.hp=0;
-
-player.vx=0;
-
-player.vy=0;
-
-clearInput();
-
-if(
-lives<=0
-){
-
-respawning=false;
-
-endGame();
-
-return;
-
-}
-
-msg(
-"CHOSEN DOWN — "+
-lives+
-" "+
-(
-lives===
-1
-?
-"LIFE"
-:
-"LIVES"
-)+
-" REMAINING"
-);
-
-setTimeout(
-()=>{
-
-if(
-gameOver
-){
-
-return;
-
-}
-
-player.x=
-W*
-.5;
-
-player.y=
-H*
-.73;
-
-player.hp=
-player.maxHp;
-
-player.energy=
-100;
-
-player.inv=
-120;
-
-respawning=false;
-
-},
-1000
-);
-
-}
 
 function endGame(){
 
-gameOver=true;
+  if(gameOver){
+    return;
+  }
 
-paused=true;
+  gameOver=true;
 
-respawning=false;
+  paused=true;
 
-clearInput();
+  pauseOpen=false;
 
-bestWave=
-Math.max(
-bestWave,
-wave
-);
+  clearInput();
 
-highScore=
-Math.max(
-highScore,
-score
-);
+  $("pauseMenu").style.display=
+    "none";
 
-writeNum(
-"chosenPowerSurgeBestWave",
-bestWave
-);
+  saveRun();
 
-writeNum(
-"chosenPowerSurgeHighScore",
-highScore
-);
+  if(
+    wave>bestWave
+  ){
 
-saveRun();
+    bestWave=
+      wave;
 
-$("overWave").textContent=
-wave;
+    writeNum(
+      "chosenPowerSurgeBestWave",
+      bestWave
+    );
+  }
 
-$("overScore").textContent=
-score.toLocaleString();
+  if(
+    score>highScore
+  ){
 
-$("overKills").textContent=
-kills;
+    highScore=
+      score;
 
-$("overVoltage").textContent=
-earned.toLocaleString();
+    writeNum(
+      "chosenPowerSurgeHighScore",
+      highScore
+    );
+  }
 
-$("bestWave").textContent=
-bestWave;
+  $("overWave").textContent=
+    wave;
 
-$("highScore").textContent=
-highScore.toLocaleString();
+  $("overScore").textContent=
+    score.toLocaleString();
 
-$("gameOver").style.display=
-"flex";
+  $("overKills").textContent=
+    kills;
 
-music.pause();
+  $("overVoltage").textContent=
+    earned.toLocaleString();
 
-}
+  $("bestWave").textContent=
+    bestWave;
 
-function resetRun(){
+  $("highScore").textContent=
+    highScore.toLocaleString();
 
-/*
-Explicitly close leaderboard when a new run starts.
-*/
+  $("gameOver").style.display=
+    "flex";
 
-$("leaderboard").style.display=
-"none";
-
-$("pauseMenu").style.display=
-"none";
-
-$("shop").style.display=
-"none";
-
-leaderReturn=
-"none";
-
-wave=1;
-
-score=0;
-
-voltage=0;
-
-earned=0;
-
-combo=0;
-
-comboTimer=0;
-
-kills=0;
-
-lives=3;
-
-paused=false;
-
-pauseOpen=false;
-
-gameOver=false;
-
-respawning=false;
-
-wavePending=false;
-
-pending=0;
-
-enemies=[];
-
-pickups=[];
-
-effects=[];
-
-comboSeq=[];
-
-comboSeqTimer=0;
-
-Object.assign(
-upgrades,
-{
-
-power:1,
-
-speed:1,
-
-vitality:0,
-
-thunderBurst:1,
-
-lightningDash:1,
-
-voltRush:1,
-
-electricCross:1,
-
-twinThunder:1
-
-}
-);
-
-Object.assign(
-player,
-{
-
-x:W*.5,
-
-y:H*.72,
-
-vx:0,
-
-vy:0,
-
-hp:100,
-
-maxHp:100,
-
-energy:100,
-
-maxEnergy:100,
-
-facing:1,
-
-state:"idle",
-
-frame:0,
-
-ft:0,
-
-locked:0,
-
-lightCd:0,
-
-heavyCd:0,
-
-specialCd:0,
-
-dashCd:0,
-
-inv:90,
-
-electric:0,
-
-electricLevel:1
-
-}
-);
-
-clearInput();
-
-$("gameOver").style.display=
-"none";
-
-music.currentTime=
-0;
-
-if(
-!musicMuted &&
-!quickMuted
-){
-
-music.play()
-.catch(()=>{});
-
-}
-
-spawnWave();
-
-msg(
-"⚡ CHOSEN: POWER SURGE ⚡"
-);
-
+  music.pause();
 }
 
 $("playAgainButton").onclick=
-resetRun;
+()=>{
+
+  ensureAudio();
+
+  $("gameOver").style.display=
+    "none";
+
+  $("leaderboard").style.display=
+    "none";
+
+  resetRun();
+};
+
+/* =====================================================
+RESET RUN
+===================================================== */
+
+function resetRun(){
+
+  gameOver=false;
+
+  paused=false;
+
+  pauseOpen=false;
+
+  wavePending=false;
+
+  pending=0;
+
+  wave=1;
+
+  score=0;
+
+  voltage=0;
+
+  earned=0;
+
+  combo=0;
+
+  comboTimer=0;
+
+  kills=0;
+
+  lives=3;
+
+  enemies=[];
+  pickups=[];
+  effects=[];
+
+  messageTimer=0;
+  pickupTimer=0;
+
+  cameraShake=0;
+  cameraStrength=0;
+
+  comboSequence=[];
+  comboSequenceTimer=0;
+
+  respawning=false;
+  respawnTimer=0;
+
+  upgrades.power=1;
+  upgrades.speed=1;
+  upgrades.vitality=0;
+
+  upgrades.thunderBurst=1;
+  upgrades.lightningDash=1;
+  upgrades.voltRush=1;
+  upgrades.electricCross=1;
+  upgrades.twinThunder=1;
+
+  player.x=
+    W*.5;
+
+  player.y=
+    H*.72;
+
+  player.vx=0;
+  player.vy=0;
+
+  player.maxHp=100;
+  player.hp=100;
+
+  player.maxEnergy=100;
+  player.energy=100;
+
+  player.facing=1;
+
+  player.state=
+    "idle";
+
+  player.frame=0;
+  player.ft=0;
+
+  player.locked=0;
+
+  player.lightCd=0;
+  player.heavyCd=0;
+  player.specialCd=0;
+  player.dashCd=0;
+
+  player.inv=90;
+
+  player.electric=0;
+  player.electricLevel=1;
+
+  clearInput();
+
+  constrain(player);
+
+  try{
+    music.currentTime=0;
+  }catch(error){}
+
+  refreshAudio();
+
+  if(
+    !quickMuted&&
+    !musicMuted
+  ){
+    music.play().catch(()=>{});
+  }
+
+  spawnWave();
+
+  msg(
+    "⚡ CHOSEN: POWER SURGE ⚡"
+  );
+}
 
 /* =====================================================
 STAGE
 ===================================================== */
 
-function drawStreetReflection(
+function drawStage(){
+
+  ctx.fillStyle=
+    "#050912";
+
+  ctx.fillRect(
+    0,
+    0,
+    W,
+    H
+  );
+
+  if(
+    img.stage.complete&&
+    img.stage.naturalWidth
+  ){
+
+    const iw=
+      img.stage.naturalWidth;
+
+    const ih=
+      img.stage.naturalHeight;
+
+    const sourceHeight=
+      ih*.69;
+
+    ctx.drawImage(
+      img.stage,
+      0,
+      0,
+      iw,
+      sourceHeight,
+      0,
+      0,
+      W,
+      H*.50
+    );
+  }
+
+  /* SIDEWALK */
+
+  const sidewalkTop=
+    H*.50;
+
+  const sidewalkBottom=
+    roadTop();
+
+  const sidewalk=
+    ctx.createLinearGradient(
+      0,
+      sidewalkTop,
+      0,
+      sidewalkBottom
+    );
+
+  sidewalk.addColorStop(
+    0,
+    "#484044"
+  );
+
+  sidewalk.addColorStop(
+    1,
+    "#342f33"
+  );
+
+  ctx.fillStyle=
+    sidewalk;
+
+  ctx.fillRect(
+    0,
+    sidewalkTop,
+    W,
+    sidewalkBottom-
+    sidewalkTop
+  );
+
+  ctx.strokeStyle=
+    "rgba(220,210,205,.14)";
+
+  ctx.lineWidth=1;
+
+  for(
+    let x=0;
+    x<W;
+    x+=48
+  ){
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      x,
+      sidewalkTop
+    );
+
+    ctx.lineTo(
+      x+3,
+      sidewalkBottom
+    );
+
+    ctx.stroke();
+  }
+
+  /* CURB */
+
+  ctx.fillStyle=
+    "#696064";
+
+  ctx.fillRect(
+    0,
+    roadTop()-5,
+    W,
+    5
+  );
+
+  ctx.fillStyle=
+    "#262124";
+
+  ctx.fillRect(
+    0,
+    roadTop(),
+    W,
+    5
+  );
+
+  /* STREET */
+
+  const street=
+    ctx.createLinearGradient(
+      0,
+      roadTop(),
+      0,
+      H
+    );
+
+  street.addColorStop(
+    0,
+    "#242126"
+  );
+
+  street.addColorStop(
+    .45,
+    "#18171b"
+  );
+
+  street.addColorStop(
+    1,
+    "#0e0e12"
+  );
+
+  ctx.fillStyle=
+    street;
+
+  ctx.fillRect(
+    0,
+    roadTop()+5,
+    W,
+    H-roadTop()
+  );
+
+  /* ROAD TEXTURE */
+
+  ctx.strokeStyle=
+    "rgba(180,170,165,.06)";
+
+  ctx.lineWidth=1;
+
+  let row=0;
+
+  for(
+    let y=
+      roadTop()+16;
+    y<H;
+    y+=24
+  ){
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      0,
+      y
+    );
+
+    ctx.lineTo(
+      W,
+      y
+    );
+
+    ctx.stroke();
+
+    const spacing=
+      55;
+
+    const offset=
+      row%2
+        ? spacing/2
+        : 0;
+
+    for(
+      let x=
+        -spacing+
+        offset;
+      x<W+
+      spacing;
+      x+=spacing
+    ){
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        x,
+        y
+      );
+
+      ctx.lineTo(
+        x+2,
+        y+20
+      );
+
+      ctx.stroke();
+    }
+
+    row++;
+  }
+
+  /* PUDDLES */
+
+  drawPuddle(
+    W*.21,
+    H*.73,
+    47,
+    10
+  );
+
+  drawPuddle(
+    W*.47,
+    H*.68,
+    36,
+    8
+  );
+
+  drawPuddle(
+    W*.74,
+    H*.78,
+    50,
+    11
+  );
+
+  /* LIGHT REFLECTION */
+
+  drawReflection(
+    W*.13,
+    roadTop()+28,
+    "#ff3ab7",
+    36,
+    70
+  );
+
+  drawReflection(
+    W*.38,
+    roadTop()+36,
+    "#f4b74b",
+    24,
+    55
+  );
+
+  drawReflection(
+    W*.69,
+    roadTop()+28,
+    "#398cff",
+    35,
+    72
+  );
+
+  drawReflection(
+    W*.87,
+    roadTop()+42,
+    "#b64bff",
+    27,
+    58
+  );
+
+  /* LIGHT RAIN */
+
+  const now=
+    performance.now();
+
+  ctx.strokeStyle=
+    "rgba(185,215,235,.09)";
+
+  ctx.lineWidth=1;
+
+  for(
+    let i=0;
+    i<28;
+    i++
+  ){
+
+    const x=
+      (
+        i*107+
+        now*.09
+      )%W;
+
+    const y=
+      (
+        i*71+
+        now*.22
+      )%H;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      x,
+      y
+    );
+
+    ctx.lineTo(
+      x-2,
+      y+10
+    );
+
+    ctx.stroke();
+  }
+}
+
+function drawReflection(
 x,
 y,
 color,
@@ -6546,1675 +6886,1787 @@ width,
 height
 ){
 
-ctx.save();
+  ctx.save();
 
-const gradient=
-ctx.createLinearGradient(
-0,
-y,
-0,
-y+
-height
-);
+  const gradient=
+    ctx.createLinearGradient(
+      0,
+      y,
+      0,
+      y+height
+    );
 
-gradient.addColorStop(
-0,
-color
-);
+  gradient.addColorStop(
+    0,
+    color
+  );
 
-gradient.addColorStop(
-.22,
-color
-);
+  gradient.addColorStop(
+    1,
+    "rgba(0,0,0,0)"
+  );
 
-gradient.addColorStop(
-.60,
-"rgba(0,0,0,0)"
-);
+  ctx.globalAlpha=
+    .065;
 
-gradient.addColorStop(
-1,
-"rgba(0,0,0,0)"
-);
+  ctx.fillStyle=
+    gradient;
 
-ctx.globalAlpha=
-.075;
+  ctx.beginPath();
 
-ctx.fillStyle=
-gradient;
+  ctx.moveTo(
+    x-width*.15,
+    y
+  );
 
-ctx.beginPath();
+  ctx.lineTo(
+    x+width*.15,
+    y
+  );
 
-ctx.moveTo(
-x-
-width*
-.18,
-y
-);
+  ctx.lineTo(
+    x+width*.40,
+    y+height
+  );
 
-ctx.lineTo(
-x+
-width*
-.18,
-y
-);
+  ctx.lineTo(
+    x-width*.35,
+    y+height
+  );
 
-ctx.lineTo(
-x+
-width*
-.38,
-y+
-height
-);
+  ctx.closePath();
 
-ctx.lineTo(
-x-
-width*
-.34,
-y+
-height
-);
+  ctx.fill();
 
-ctx.closePath();
-
-ctx.fill();
-
-ctx.restore();
-
+  ctx.restore();
 }
 
 function drawPuddle(
 x,
 y,
-width,
-height
+w,
+h
 ){
 
-ctx.save();
-
-ctx.fillStyle=
-"rgba(85,105,120,.065)";
-
-ctx.beginPath();
-
-ctx.ellipse(
-x,
-y,
-width,
-height,
--.08,
-0,
-Math.PI*
-2
-);
-
-ctx.fill();
-
-ctx.strokeStyle=
-"rgba(180,205,220,.09)";
-
-ctx.lineWidth=
-1;
-
-ctx.beginPath();
-
-ctx.ellipse(
-x,
-y,
-width*
-.88,
-height*
-.68,
--.08,
-0,
-Math.PI*
-2
-);
-
-ctx.stroke();
-
-ctx.restore();
-
-}
-
-function stage(){
-
-ctx.fillStyle=
-"#050912";
-
-ctx.fillRect(
-0,
-0,
-W,
-H
-);
-
-/* BUILDING / BACKDROP */
-
-if(
-img.stage.complete &&
-img.stage.naturalWidth
-){
-
-const imageWidth=
-img.stage.naturalWidth;
-
-const imageHeight=
-img.stage.naturalHeight;
-
-ctx.drawImage(
-img.stage,
-0,
-0,
-imageWidth,
-imageHeight*
-.69,
-0,
-0,
-W,
-H*
-.60
-);
-
-}
-
-/*
-RESTORED SIDEWALK:
-It is intentionally lighter than the street.
-*/
-
-const sidewalkTop=
-H*
-.50;
-
-const sidewalkBottom=
-roadTop();
-
-const sidewalkGradient=
-ctx.createLinearGradient(
-0,
-sidewalkTop,
-0,
-sidewalkBottom
-);
-
-sidewalkGradient.addColorStop(
-0,
-"rgba(43,39,43,.94)"
-);
-
-sidewalkGradient.addColorStop(
-1,
-"#302b30"
-);
-
-ctx.fillStyle=
-sidewalkGradient;
-
-ctx.fillRect(
-0,
-sidewalkTop,
-W,
-sidewalkBottom-
-sidewalkTop
-);
-
-/* SIDEWALK SLABS */
-
-ctx.strokeStyle=
-"rgba(255,255,255,.07)";
-
-ctx.lineWidth=
-1;
-
-for(
-let x=0;
-x<W;
-x+=46
-){
-
-ctx.beginPath();
-
-ctx.moveTo(
-x,
-sidewalkTop
-);
-
-ctx.lineTo(
-x+
-5,
-sidewalkBottom
-);
-
-ctx.stroke();
-
-}
-
-/*
-CURB:
-Thicker line creates an obvious sidewalk/street border.
-*/
-
-ctx.strokeStyle=
-"#62585c";
-
-ctx.lineWidth=
-6;
-
-ctx.beginPath();
-
-ctx.moveTo(
-0,
-roadTop()
-);
-
-ctx.lineTo(
-W,
-roadTop()
-);
-
-ctx.stroke();
-
-ctx.strokeStyle=
-"rgba(205,190,190,.18)";
-
-ctx.lineWidth=
-1;
-
-ctx.beginPath();
-
-ctx.moveTo(
-0,
-roadTop()-
-4
-);
-
-ctx.lineTo(
-W,
-roadTop()-
-4
-);
-
-ctx.stroke();
-
-/* STREET */
-
-const road=
-ctx.createLinearGradient(
-0,
-roadTop(),
-0,
-H
-);
-
-road.addColorStop(
-0,
-"#211d20"
-);
-
-road.addColorStop(
-.55,
-"#171519"
-);
-
-road.addColorStop(
-1,
-"#0e0e13"
-);
-
-ctx.fillStyle=
-road;
-
-ctx.fillRect(
-0,
-roadTop(),
-W,
-H-
-roadTop()
-);
-
-/* STREET TEXTURE */
-
-let row=0;
-
-for(
-let y=
-roadTop()+
-8;
-y<H;
-y+=22
-){
-
-const roadDepth=
-(
-y-
-roadTop()
-)/
-(
-H-
-roadTop()
-);
-
-const alpha=
-.04+
-roadDepth*
-.04;
-
-ctx.strokeStyle=
-`rgba(190,170,160,${alpha})`;
-
-ctx.lineWidth=
-1;
-
-ctx.beginPath();
-
-ctx.moveTo(
-0,
-y
-);
-
-ctx.lineTo(
-W,
-y
-);
-
-ctx.stroke();
-
-const spacing=
-48+
-roadDepth*
-20;
-
-const offset=
-row%
-2
-?
-spacing/
-2
-:
-0;
-
-for(
-let x=
--spacing+
-offset;
-x<
-W+
-spacing;
-x+=spacing
-){
-
-ctx.strokeStyle=
-`rgba(180,165,155,${alpha*.65})`;
-
-ctx.beginPath();
-
-ctx.moveTo(
-x,
-y
-);
-
-ctx.lineTo(
-x+
-2,
-y+
-20
-);
-
-ctx.stroke();
-
-}
-
-row++;
-
-}
-
-/* REFLECTIONS */
-
-drawStreetReflection(
-W*.12,
-roadTop()+24,
-"#ff3ab7",
-38,
-68
-);
-
-drawStreetReflection(
-W*.35,
-roadTop()+32,
-"#f0ad4d",
-24,
-54
-);
-
-drawStreetReflection(
-W*.69,
-roadTop()+25,
-"#398cff",
-34,
-72
-);
-
-drawStreetReflection(
-W*.86,
-roadTop()+40,
-"#b64bff",
-27,
-58
-);
-
-/* PUDDLES */
-
-drawPuddle(
-W*.20,
-H*.73,
-48,
-11
-);
-
-drawPuddle(
-W*.47,
-H*.68,
-36,
-8
-);
-
-drawPuddle(
-W*.72,
-H*.78,
-50,
-11
-);
-
-ctx.strokeStyle=
-"rgba(5,6,9,.8)";
-
-ctx.lineWidth=
-5;
-
-ctx.beginPath();
-
-ctx.ellipse(
-W*.59,
-H*.79,
-36,
-13,
-0,
-0,
-Math.PI*
-2
-);
-
-ctx.stroke();
-
-/* LIGHT RAIN */
-
-const now=
-performance.now();
-
-ctx.strokeStyle=
-"rgba(175,215,240,.11)";
-
-ctx.lineWidth=
-1;
-
-for(
-let i=0;
-i<42;
-i++
-){
-
-const x=
-(
-i*
-93+
-now*
-.11
-)%
-W;
-
-const y=
-(
-i*
-61+
-now*
-.30
-)%
-H;
-
-ctx.beginPath();
-
-ctx.moveTo(
-x,
-y
-);
-
-ctx.lineTo(
-x-
-3,
-y+
-12
-);
-
-ctx.stroke();
-
-}
-
+  ctx.save();
+
+  ctx.fillStyle=
+    "rgba(100,125,145,.06)";
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    x,
+    y,
+    w,
+    h,
+    -.08,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  ctx.strokeStyle=
+    "rgba(185,210,225,.08)";
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    x,
+    y,
+    w*.85,
+    h*.65,
+    -.08,
+    0,
+    Math.PI*2
+  );
+
+  ctx.stroke();
+
+  ctx.restore();
 }
 
 /* =====================================================
-CHARACTER DRAWING
+SHADOWS
 ===================================================== */
 
 function shadow(
 entity,
-multiplier=1
+size=1
 ){
 
-const scale=
-depth(
-entity.y
-);
+  const s=
+    depth(
+      entity.y
+    );
 
-ctx.fillStyle=
-"#0007";
+  ctx.fillStyle=
+    "rgba(0,0,0,.43)";
 
-ctx.beginPath();
+  ctx.beginPath();
 
-ctx.ellipse(
-entity.x,
-entity.y+
-2,
-27*
-scale*
-multiplier,
-8*
-scale,
-0,
-0,
-Math.PI*
-2
-);
+  ctx.ellipse(
+    entity.x,
+    entity.y+2,
+    27*
+    s*
+    size,
+    8*s,
+    0,
+    0,
+    Math.PI*2
+  );
 
-ctx.fill();
-
+  ctx.fill();
 }
 
-/* SUBTLE SS2-STYLE ELECTRIC AURA */
+/* =====================================================
+SUBTLE ELECTRIC AURA
+===================================================== */
 
-function aura(){
+function drawPlayerAura(){
 
-if(
-player.electric<=0
-){
+  if(
+    player.electric<=0
+  ){
+    return;
+  }
 
-return;
+  const level=
+    player.electricLevel;
 
+  const color=
+    col(level);
+
+  const s=
+    depth(
+      player.y
+    );
+
+  const time=
+    performance.now()*
+    .012;
+
+  ctx.save();
+
+  ctx.strokeStyle=
+    color.main;
+
+  ctx.shadowColor=
+    color.glow;
+
+  ctx.shadowBlur=
+    6+
+    level*.55;
+
+  ctx.lineWidth=
+    1+
+    level*.10;
+
+  ctx.globalAlpha=
+    .42;
+
+  /* Thin vertical lightning wisps */
+
+  const boltCount=
+    level>=10
+      ? 5
+      :
+      level>=8
+        ? 4
+        : 3;
+
+  for(
+    let i=0;
+    i<boltCount;
+    i++
+  ){
+
+    const side=
+      i%2===0
+        ? -1
+        : 1;
+
+    const baseX=
+      player.x+
+      side*
+      (
+        14+
+        i*3
+      )*
+      s;
+
+    const baseY=
+      player.y-
+      (
+        15+
+        i*10
+      )*
+      s;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      baseX,
+      baseY
+    );
+
+    ctx.lineTo(
+      baseX+
+      Math.sin(
+        time+
+        i
+      )*
+      5,
+      baseY-
+      12*s
+    );
+
+    ctx.lineTo(
+      baseX-
+      side*5,
+      baseY-
+      23*s
+    );
+
+    ctx.stroke();
+  }
+
+  /* Low aura at feet */
+
+  ctx.globalAlpha=
+    .20;
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    player.x,
+    player.y-2,
+    (
+      23+
+      level*.9
+    )*
+    s,
+    (
+      6+
+      level*.2
+    )*
+    s,
+    0,
+    0,
+    Math.PI*2
+  );
+
+  ctx.stroke();
+
+  /* Royal Blue core */
+
+  if(level===10){
+
+    ctx.strokeStyle=
+      color.core;
+
+    ctx.globalAlpha=
+      .28;
+
+    ctx.lineWidth=
+      1;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      player.x-10*s,
+      player.y-78*s
+    );
+
+    ctx.lineTo(
+      player.x-4*s,
+      player.y-63*s
+    );
+
+    ctx.lineTo(
+      player.x-12*s,
+      player.y-50*s
+    );
+
+    ctx.stroke();
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      player.x+13*s,
+      player.y-70*s
+    );
+
+    ctx.lineTo(
+      player.x+6*s,
+      player.y-55*s
+    );
+
+    ctx.lineTo(
+      player.x+12*s,
+      player.y-42*s
+    );
+
+    ctx.stroke();
+  }
+
+  ctx.restore();
 }
 
-const level=
-player.electricLevel;
-
-const color=
-col(
-level
-);
-
-const scale=
-depth(
-player.y
-);
-
-const strength=
-.6+
-level*
-.07;
-
-ctx.save();
-
-ctx.strokeStyle=
-color.main;
-
-ctx.shadowColor=
-color.glow;
-
-ctx.shadowBlur=
-5+
-level*
-1.3;
-
-ctx.lineWidth=
-level>=9
-?
-2.2
-:
-1.4;
-
-const bolts=
-2+
-Math.floor(
-level/
-3
-);
-
-for(
-let i=0;
-i<bolts;
-i++
-){
-
-const x=
-player.x+
-rnd(
--20,
-20
-)*
-scale;
-
-const y=
-player.y-
-rnd(
-28,
-88
-)*
-scale;
-
-ctx.beginPath();
-
-ctx.moveTo(
-x,
-y
-);
-
-for(
-let j=1;
-j<=3;
-j++
-){
-
-ctx.lineTo(
-x+
-rnd(
--7,
-7
-)*
-scale,
-y+
-j*
-10*
-scale+
-rnd(
--3,
-3
-)
-);
-
-}
-
-ctx.stroke();
-
-}
-
-if(
-Math.random()<
-.18*
-strength
-){
-
-ctx.fillStyle=
-level>=9
-?
-"#fff"
-:
-color.main;
-
-ctx.fillRect(
-player.x+
-rnd(
--25,
-25
-),
-player.y-
-rnd(
-25,
-80
-),
-2,
-2
-);
-
-}
-
-ctx.restore();
-
-}
+/* =====================================================
+PLAYER DRAW
+===================================================== */
 
 function drawPlayer(){
 
-shadow(
-player,
-1.08
-);
+  if(
+    respawning&&
+    respawnTimer>25
+  ){
+    return;
+  }
 
-if(
-player.inv>
-0 &&
-Math.floor(
-player.inv/
-4
-)%
-2
-){
+  shadow(
+    player,
+    1.08
+  );
 
-ctx.globalAlpha=
-.45;
+  if(
+    player.inv>0&&
+    Math.floor(
+      player.inv/4
+    )%2
+  ){
 
+    ctx.globalAlpha=
+      .45;
+  }
+
+  drawAtlas(
+    img.chosen,
+    player,
+    animBase,
+    1.18
+  );
+
+  ctx.globalAlpha=
+    1;
+
+  drawPlayerAura();
 }
 
-drawAtlas(
-img.chosen,
-player,
-animBase,
-1.18
-);
-
-ctx.globalAlpha=
-1;
-
-aura();
-
-}
+/* =====================================================
+ENEMY DRAW
+===================================================== */
 
 function drawEnemy(
 enemy
 ){
 
-let size=
-enemy.boss
-?
-1.35
-:
-enemy.elite
-?
-1.08
-:
-1;
+  let size=
+    enemy.boss
+      ? 1.30
+      :
+      enemy.elite
+        ? 1.08
+        : 1;
 
-if(
-enemy.name===
-"MARDI GRAS"
-){
+  if(
+    enemy.name===
+    "MARDI GRAS"
+  ){
+    size=1.42;
+  }
 
-size=1.42;
+  if(
+    enemy.name===
+    "ROUXGAROUX"
+  ){
+    size=1.45;
+  }
 
-}
+  shadow(
+    enemy,
+    size
+  );
 
-if(
-enemy.name===
-"ROUXGAROUX"
-){
+  if(
+    enemy.hit>0
+  ){
 
-size=1.48;
+    ctx.globalAlpha=
+      .62;
+  }
 
-}
+  if(
+    enemy.boss&&
+    enemy.name==="MARDI GRAS"
+  ){
 
-shadow(
-enemy,
-size
-);
+    drawBossAtlas(
+      img.mardi,
+      enemy,
+      size
+    );
 
-if(
-enemy.hit>
-0
-){
+  }else if(
+    enemy.boss&&
+    enemy.name==="ROUXGAROUX"
+  ){
 
-ctx.globalAlpha=
-.6;
+    /*
+      Rougaroux uses the same 8-column / 9-row
+      atlas layout as Mardi Gras.
 
-}
+      This prevents the old "treadmill image"
+      problem caused by treating the entire
+      sprite sheet as one frame.
+    */
 
-if(
-enemy.name===
-"MARDI GRAS"
-){
+    drawBossAtlas(
+      img.roux,
+      enemy,
+      size
+    );
 
-if(
-img.mardi.complete &&
-img.mardi.naturalWidth
-){
+  }else if(
+    enemy.boss&&
+    enemy.name==="KOOSHMA"
+  ){
 
-drawBossAtlas(
-img.mardi,
-enemy,
-size
-);
+    /* Temporary fallback until Kooshma sprite is added */
 
-}else{
+    drawAtlas(
+      img.voodoo,
+      enemy,
+      animBase,
+      size
+    );
 
-drawAtlas(
-img.voodoo,
-enemy,
-animBase,
-size
-);
+  }else{
 
-}
+    drawAtlas(
+      img.voodoo,
+      enemy,
+      animBase,
+      size
+    );
+  }
 
-}
+  ctx.globalAlpha=
+    1;
 
-else if(
-enemy.name===
-"ROUXGAROUX"
-){
+  if(
+    !enemy.boss&&
+    !enemy.entering
+  ){
 
-/*
-IMPORTANT:
-Even if the Roux PNG does not load, Rouxgaroux will
-fall back to Voodoo rather than becoming shadow-only.
-*/
+    const s=
+      depth(
+        enemy.y
+      );
 
-if(
-img.roux.complete &&
-img.roux.naturalWidth
-){
+    const width=
+      48*s;
 
-drawBossAtlas(
-img.roux,
-enemy,
-size
-);
+    const y=
+      enemy.y-
+      112*s;
 
-}else{
+    ctx.fillStyle=
+      "#17171b";
 
-drawAtlas(
-img.voodoo,
-enemy,
-animBase,
-size
-);
+    ctx.fillRect(
+      enemy.x-width/2,
+      y,
+      width,
+      5
+    );
 
-}
+    ctx.fillStyle=
+      enemy.elite
+        ? "#a546db"
+        : "#da3041";
 
-}
-
-else{
-
-drawAtlas(
-img.voodoo,
-enemy,
-animBase,
-size
-);
-
-}
-
-ctx.globalAlpha=
-1;
-
-if(
-!enemy.boss &&
-!enemy.entering
-){
-
-const scale=
-depth(
-enemy.y
-);
-
-const width=
-48*
-scale;
-
-const y=
-enemy.y-
-112*
-scale;
-
-ctx.fillStyle=
-"#17171b";
-
-ctx.fillRect(
-enemy.x-
-width/
-2,
-y,
-width,
-5
-);
-
-ctx.fillStyle=
-enemy.elite
-?
-"#a546db"
-:
-"#da3041";
-
-ctx.fillRect(
-enemy.x-
-width/
-2,
-y,
-width*
-(
-enemy.hp/
-enemy.maxHp
-),
-5
-);
-
-}
-
-}
-
-function drawPickups(){
-
-ctx.textAlign=
-"center";
-
-pickups.forEach(
-pickup=>{
-
-const data=
-pickupData[
-pickup.type
-];
-
-const scale=
-depth(
-pickup.y
-);
-
-const y=
-pickup.y-
-18-
-Math.sin(
-pickup.bob
-)*
-5;
-
-ctx.font=
-`bold ${
-26*
-scale
-}px Arial`;
-
-ctx.fillText(
-data.emoji,
-pickup.x,
-y
-);
-
-}
-);
-
+    ctx.fillRect(
+      enemy.x-width/2,
+      y,
+      width*
+      Math.max(
+        0,
+        enemy.hp/
+        enemy.maxHp
+      ),
+      5
+    );
+  }
 }
 
 /* =====================================================
-EFFECT DRAW
+PICKUP DRAW
+===================================================== */
+
+function drawPickups(){
+
+  ctx.textAlign=
+    "center";
+
+  pickups.forEach(
+    pickup=>{
+
+      const data=
+        pickupTypes[
+          pickup.type
+        ];
+
+      const s=
+        depth(
+          pickup.y
+        );
+
+      const bob=
+        Math.sin(
+          pickup.bob
+        )*5;
+
+      const y=
+        pickup.y-
+        18-
+        bob;
+
+      ctx.save();
+
+      ctx.shadowColor=
+        data.color;
+
+      ctx.shadowBlur=
+        14;
+
+      ctx.font=
+        `bold ${26*s}px Arial`;
+
+      ctx.fillStyle=
+        "#fff";
+
+      ctx.fillText(
+        data.emoji,
+        pickup.x,
+        y
+      );
+
+      ctx.shadowBlur=
+        0;
+
+      ctx.font=
+        `bold ${8*s}px Arial`;
+
+      ctx.fillText(
+        data.name,
+        pickup.x,
+        y+
+        17*s
+      );
+
+      ctx.restore();
+    }
+  );
+}
+
+/* =====================================================
+EFFECT DRAWING
 ===================================================== */
 
 function drawEffects(){
 
-effects.forEach(
-item=>{
+  effects.forEach(
+    e=>{
 
-const ratio=
-item.life/
-item.maxLife;
+      const ratio=
+        e.life/
+        (
+          e.maxLife||1
+        );
 
-const progress=
-1-
-ratio;
+      const progress=
+        1-ratio;
 
-const color=
-col(
-item.level||
-1
-);
+      const level=
+        e.level||1;
 
-ctx.save();
+      const c=
+        col(level);
 
-ctx.globalAlpha=
-Math.max(
-0,
-ratio
-);
+      ctx.save();
 
-ctx.strokeStyle=
-color.main;
+      ctx.globalAlpha=
+        Math.max(
+          0,
+          ratio
+        );
 
-ctx.shadowColor=
-color.glow;
+      if(
+        e.type==="hit"||
+        e.type==="electricHit"
+      ){
 
-ctx.shadowBlur=
-10+
-(
-item.level||
-1
-)*
-2;
+        ctx.fillStyle=
+          e.type==="electricHit"
+            ? c.main
+            : "#ff554d";
 
-ctx.lineWidth=
-2+
-(
-item.level||
-1
-)*
-.3;
+        ctx.shadowColor=
+          e.type==="electricHit"
+            ? c.glow
+            : "#ff1717";
 
-if(
-[
-"burst",
-"shockwave",
-"field",
-"storm",
-"bossRing",
-"mud"
-].includes(
-item.type
-)
-){
+        ctx.shadowBlur=
+          8;
 
-const radius=
-(
-item.radius||
-80
-)*
-(
-item.type===
-"field" ||
-item.type===
-"storm"
-?
-1
-:
-.35+
-progress*
-.75
-);
+        ctx.fillRect(
+          e.x-5,
+          e.y-5,
+          10,
+          10
+        );
+      }
 
-ctx.beginPath();
+      else if(
+        e.type==="slash"
+      ){
 
-ctx.ellipse(
-item.x,
-item.y,
-radius,
-radius*
-.32,
-0,
-0,
-Math.PI*
-2
-);
+        ctx.strokeStyle=
+          "#eaf7ff";
 
-ctx.stroke();
+        ctx.shadowColor=
+          "#5aaeff";
 
-if(
-item.type===
-"storm"
-){
+        ctx.shadowBlur=
+          7;
 
-for(
-let i=0;
-i<3;
-i++
-){
+        ctx.lineWidth=
+          3;
 
-ctx.beginPath();
+        ctx.beginPath();
 
-ctx.moveTo(
-item.x+
-rnd(
--radius,
-radius
-),
-item.y-
-rnd(
-30,
-120
-)
-);
+        ctx.arc(
+          e.x,
+          e.y,
+          40+
+          progress*8,
+          -.95,
+          .9
+        );
 
-ctx.lineTo(
-item.x+
-rnd(
--radius,
-radius
-),
-item.y
-);
+        ctx.stroke();
+      }
 
-ctx.stroke();
+      else if(
+        e.type==="heavy"
+      ){
 
-}
+        ctx.strokeStyle=
+          "#72ddff";
 
-}
+        ctx.shadowColor=
+          "#1eafff";
 
-}
+        ctx.shadowBlur=
+          12;
 
-else if(
-[
-"slash",
-"voltRush",
-"electricCross",
-"twinThunder",
-"royalWave",
-"judgmentCross"
-].includes(
-item.type
-)
-){
+        ctx.lineWidth=
+          5;
 
-const radius=
-item.radius||
-75;
+        ctx.beginPath();
 
-ctx.beginPath();
+        ctx.arc(
+          e.x,
+          e.y,
+          50+
+          progress*14,
+          -1.05,
+          .9
+        );
 
-ctx.arc(
-item.x,
-item.y,
-radius,
--.9,
-.9
-);
+        ctx.stroke();
+      }
 
-ctx.stroke();
+      else if(
+        e.type==="burst"
+      ){
 
-if(
-item.type.includes(
-"Cross"
-) ||
-item.type===
-"electricCross"
-){
+        const radius=
+          (
+            e.radius||
+            150
+          )*
+          progress;
 
-ctx.beginPath();
+        ctx.strokeStyle=
+          c.main;
 
-ctx.moveTo(
-item.x-
-radius*
-.5,
-item.y-
-radius*
-.5
-);
+        ctx.shadowColor=
+          c.glow;
 
-ctx.lineTo(
-item.x+
-radius*
-.5,
-item.y+
-radius*
-.5
-);
+        ctx.shadowBlur=
+          10+
+          level*1.2;
 
-ctx.moveTo(
-item.x+
-radius*
-.5,
-item.y-
-radius*
-.5
-);
+        ctx.lineWidth=
+          2+
+          level*.25;
 
-ctx.lineTo(
-item.x-
-radius*
-.5,
-item.y+
-radius*
-.5
-);
+        ctx.beginPath();
 
-ctx.stroke();
+        ctx.ellipse(
+          e.x,
+          e.y,
+          radius,
+          radius*.45,
+          0,
+          0,
+          Math.PI*2
+        );
 
-}
+        ctx.stroke();
+      }
 
-}
+      else if(
+        e.type==="dash"
+      ){
 
-else if(
-item.type===
-"dash"
-){
+        ctx.strokeStyle=
+          c.main;
 
-ctx.beginPath();
+        ctx.shadowColor=
+          c.glow;
 
-ctx.moveTo(
-item.x-
-item.facing*
-85,
-item.y-
-35
-);
+        ctx.shadowBlur=
+          10+
+          level;
 
-ctx.lineTo(
-item.x+
-item.facing*
-20,
-item.y-
-35
-);
+        ctx.lineWidth=
+          3+
+          level*.3;
 
-ctx.stroke();
+        ctx.beginPath();
 
-}
+        ctx.moveTo(
+          e.x-
+          e.facing*
+          (
+            45+
+            level*8
+          ),
+          e.y
+        );
 
-else if(
-[
-"teleport",
-"sky",
-"arcHit",
-"electricHit",
-"hit"
-].includes(
-item.type
-)
-){
+        ctx.lineTo(
+          e.x+
+          e.facing*18,
+          e.y
+        );
 
-if(
-item.type===
-"sky"
-){
+        ctx.stroke();
+      }
 
-ctx.lineWidth=
-6;
+      else if(
+        e.type==="dashWave"
+      ){
 
-ctx.beginPath();
+        ctx.strokeStyle=
+          c.main;
 
-ctx.moveTo(
-item.x,
-0
-);
+        ctx.shadowColor=
+          c.glow;
 
-ctx.lineTo(
-item.x+
-rnd(
--10,
-10
-),
-item.y
-);
+        ctx.shadowBlur=
+          18;
 
-ctx.stroke();
+        ctx.lineWidth=
+          4;
 
-}else{
+        ctx.beginPath();
 
-ctx.fillStyle=
-item.type===
-"hit"
-?
-"#ff5548"
-:
-color.main;
+        ctx.ellipse(
+          e.x,
+          e.y,
+          (
+            e.radius||95
+          )*
+          progress,
+          (
+            e.radius||95
+          )*
+          .35*
+          progress,
+          0,
+          0,
+          Math.PI*2
+        );
 
-ctx.fillRect(
-item.x-
-5,
-item.y-
-5,
-10,
-10
-);
+        ctx.stroke();
+      }
 
-}
+      else if(
+        e.type==="teleport"
+      ){
 
-}
+        ctx.strokeStyle=
+          c.main;
 
-ctx.restore();
+        ctx.shadowColor=
+          c.glow;
 
-}
-);
+        ctx.shadowBlur=
+          22;
 
+        ctx.lineWidth=
+          3;
+
+        ctx.beginPath();
+
+        ctx.arc(
+          e.x,
+          e.y,
+          8+
+          progress*42,
+          0,
+          Math.PI*2
+        );
+
+        ctx.stroke();
+      }
+
+      else if(
+        e.type==="swordWave"
+      ){
+
+        ctx.strokeStyle=
+          c.main;
+
+        ctx.shadowColor=
+          c.glow;
+
+        ctx.shadowBlur=
+          14+
+          level;
+
+        ctx.lineWidth=
+          3+
+          level*.35;
+
+        const r=
+          (
+            e.radius||90
+          )*
+          (
+            .75+
+            progress*.3
+          );
+
+        ctx.beginPath();
+
+        ctx.arc(
+          e.x+
+          (
+            e.facing||1
+          )*
+          20,
+          e.y,
+          r,
+          -.95,
+          .78
+        );
+
+        ctx.stroke();
+      }
+
+      else if(
+        e.type==="cross"
+      ){
+
+        const size=
+          (
+            e.radius||60
+          )*
+          (
+            .72+
+            progress*.34
+          );
+
+        ctx.strokeStyle=
+          c.main;
+
+        ctx.shadowColor=
+          c.glow;
+
+        ctx.shadowBlur=
+          15+
+          level;
+
+        ctx.lineWidth=
+          3+
+          level*.35;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+          e.x-size,
+          e.y-size
+        );
+
+        ctx.lineTo(
+          e.x+size,
+          e.y+size
+        );
+
+        ctx.moveTo(
+          e.x+size,
+          e.y-size
+        );
+
+        ctx.lineTo(
+          e.x-size,
+          e.y+size
+        );
+
+        ctx.stroke();
+      }
+
+      else if(
+        e.type==="crossRing"
+      ){
+
+        const r=
+          (
+            e.radius||110
+          )*
+          progress;
+
+        ctx.strokeStyle=
+          c.main;
+
+        ctx.shadowColor=
+          c.glow;
+
+        ctx.shadowBlur=
+          18;
+
+        ctx.lineWidth=
+          3;
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+          e.x,
+          e.y,
+          r,
+          r*.42,
+          0,
+          0,
+          Math.PI*2
+        );
+
+        ctx.stroke();
+      }
+
+      else if(
+        e.type==="twin"
+      ){
+
+        const r=
+          (
+            e.radius||90
+          )*
+          (
+            .75+
+            progress*.25
+          );
+
+        ctx.strokeStyle=
+          c.main;
+
+        ctx.shadowColor=
+          c.glow;
+
+        ctx.shadowBlur=
+          16+
+          level;
+
+        ctx.lineWidth=
+          4+
+          level*.3;
+
+        ctx.beginPath();
+
+        ctx.arc(
+          e.x,
+          e.y,
+          r,
+          Math.PI*.15,
+          Math.PI*1.12
+        );
+
+        ctx.stroke();
+
+        ctx.beginPath();
+
+        ctx.arc(
+          e.x,
+          e.y,
+          r*.82,
+          Math.PI*1.04,
+          Math.PI*1.92
+        );
+
+        ctx.stroke();
+      }
+
+      else if(
+        e.type==="shockFloor"
+      ){
+
+        ctx.strokeStyle=
+          c.main;
+
+        ctx.shadowColor=
+          c.glow;
+
+        ctx.shadowBlur=
+          20;
+
+        ctx.lineWidth=
+          4;
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+          e.x,
+          e.y,
+          (
+            e.radius||135
+          )*
+          progress,
+          (
+            e.radius||135
+          )*
+          .28*
+          progress,
+          0,
+          0,
+          Math.PI*2
+        );
+
+        ctx.stroke();
+      }
+
+      else if(
+        e.type==="field"
+      ){
+
+        const pulse=
+          .92+
+          Math.sin(
+            performance.now()*
+            .012
+          )*.06;
+
+        ctx.strokeStyle=
+          c.main;
+
+        ctx.shadowColor=
+          c.glow;
+
+        ctx.shadowBlur=
+          14;
+
+        ctx.globalAlpha=
+          ratio*.36;
+
+        ctx.lineWidth=
+          2;
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+          e.x,
+          e.y,
+          (
+            e.radius||125
+          )*
+          pulse,
+          (
+            e.radius||125
+          )*
+          .32*
+          pulse,
+          0,
+          0,
+          Math.PI*2
+        );
+
+        ctx.stroke();
+      }
+
+      else if(
+        e.type==="storm"
+      ){
+
+        ctx.strokeStyle=
+          c.main;
+
+        ctx.shadowColor=
+          c.glow;
+
+        ctx.shadowBlur=
+          14;
+
+        ctx.globalAlpha=
+          ratio*.25;
+
+        ctx.lineWidth=
+          2;
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+          e.x,
+          e.y,
+          e.radius||170,
+          (
+            e.radius||170
+          )*.34,
+          0,
+          0,
+          Math.PI*2
+        );
+
+        ctx.stroke();
+      }
+
+      else if(
+        e.type==="lightningStrike"
+      ){
+
+        ctx.strokeStyle=
+          c.core;
+
+        ctx.shadowColor=
+          c.glow;
+
+        ctx.shadowBlur=
+          22;
+
+        ctx.lineWidth=
+          5;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+          e.x+
+          rnd(
+            -8,
+            8
+          ),
+          0
+        );
+
+        ctx.lineTo(
+          e.x-
+          10,
+          e.y*.35
+        );
+
+        ctx.lineTo(
+          e.x+12,
+          e.y*.68
+        );
+
+        ctx.lineTo(
+          e.x,
+          e.y
+        );
+
+        ctx.stroke();
+      }
+
+      else if(
+        e.type==="confetti"
+      ){
+
+        ctx.translate(
+          e.x,
+          e.y
+        );
+
+        ctx.rotate(
+          e.angle||0
+        );
+
+        ctx.fillStyle=
+          e.color;
+
+        ctx.fillRect(
+          -e.size/2,
+          -e.size,
+          e.size,
+          e.size*2
+        );
+      }
+
+      else if(
+        e.type==="mardiRing"
+      ){
+
+        ctx.strokeStyle=
+          "#8c42d1";
+
+        ctx.shadowColor=
+          "#e1b84b";
+
+        ctx.shadowBlur=
+          15;
+
+        ctx.lineWidth=
+          4;
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+          e.x,
+          e.y,
+          (
+            e.radius||120
+          )*
+          progress,
+          (
+            e.radius||120
+          )*
+          .35*
+          progress,
+          0,
+          0,
+          Math.PI*2
+        );
+
+        ctx.stroke();
+      }
+
+      else if(
+        e.type==="rouxCharge"
+      ){
+
+        ctx.strokeStyle=
+          "#74c95c";
+
+        ctx.shadowColor=
+          "#416b34";
+
+        ctx.shadowBlur=
+          18;
+
+        ctx.lineWidth=
+          5;
+
+        ctx.beginPath();
+
+        ctx.arc(
+          e.x,
+          e.y,
+          20+
+          progress*45,
+          0,
+          Math.PI*2
+        );
+
+        ctx.stroke();
+      }
+
+      else if(
+        e.type==="swampImpact"
+      ){
+
+        ctx.strokeStyle=
+          "#6da551";
+
+        ctx.shadowColor=
+          "#335126";
+
+        ctx.shadowBlur=
+          14;
+
+        ctx.lineWidth=
+          5;
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+          e.x,
+          e.y,
+          (
+            e.radius||100
+          )*
+          progress,
+          (
+            e.radius||100
+          )*
+          .28*
+          progress,
+          0,
+          0,
+          Math.PI*2
+        );
+
+        ctx.stroke();
+      }
+
+      else if(
+        e.type==="terror"
+      ){
+
+        ctx.strokeStyle=
+          "#9a54ff";
+
+        ctx.shadowColor=
+          "#5018b7";
+
+        ctx.shadowBlur=
+          18;
+
+        ctx.lineWidth=
+          3;
+
+        ctx.beginPath();
+
+        ctx.arc(
+          e.x,
+          e.y,
+          (
+            e.radius||105
+          )*
+          progress,
+          0,
+          Math.PI*2
+        );
+
+        ctx.stroke();
+      }
+
+      else if(
+        e.type==="bossDeath"
+      ){
+
+        ctx.strokeStyle=
+          c.main;
+
+        ctx.shadowColor=
+          c.glow;
+
+        ctx.shadowBlur=
+          24;
+
+        ctx.lineWidth=
+          6;
+
+        ctx.beginPath();
+
+        ctx.arc(
+          e.x,
+          e.y,
+          18+
+          progress*90,
+          0,
+          Math.PI*2
+        );
+
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+  );
 }
 
 /* =====================================================
 BOSS HUD
 ===================================================== */
 
-function bossHud(){
+function getBosses(){
 
-const bosses=
-enemies.filter(
-enemy=>
-enemy.boss &&
-!enemy.dead
-);
-
-$("bossHud").style.display=
-bosses.length
-?
-"block"
-:
-"none";
-
-for(
-let i=0;
-i<3;
-i++
-){
-
-const row=
-$(
-"bossRow"+
-(
-i+
-1
-)
-);
-
-const enemy=
-bosses[
-i
-];
-
-row.style.display=
-enemy
-?
-"block"
-:
-"none";
-
-if(
-enemy
-){
-
-$(
-"bossName"+
-(
-i+
-1
-)
-).textContent=
-enemy.name+
-" — TIER "+
-enemy.tier;
-
-$(
-"bossBar"+
-(
-i+
-1
-)
-).style.width=
-Math.max(
-0,
-enemy.hp/
-enemy.maxHp*
-100
-)+
-"%";
-
+  return enemies.filter(
+    enemy=>
+    enemy.boss&&
+    !enemy.dead
+  );
 }
 
-}
+function updateBossHud(){
 
-positionBossHud();
+  const bosses=
+    getBosses();
 
+  const hud=
+    $("bossHud");
+
+  if(
+    bosses.length===0
+  ){
+
+    hud.style.display=
+      "none";
+
+    return;
+  }
+
+  hud.style.display=
+    "block";
+
+  for(
+    let i=1;
+    i<=3;
+    i++
+  ){
+
+    const row=
+      $(
+        "bossRow"+
+        i
+      );
+
+    const boss=
+      bosses[
+        i-1
+      ];
+
+    if(!boss){
+
+      row.style.display=
+        "none";
+
+      continue;
+    }
+
+    row.style.display=
+      "block";
+
+    $(
+      "bossName"+
+      i
+    ).textContent=
+      boss.name+
+      " — TIER "+
+      boss.tier;
+
+    $(
+      "bossBar"+
+      i
+    ).style.width=
+      Math.max(
+        0,
+        boss.hp/
+        boss.maxHp*
+        100
+      )+
+      "%";
+  }
 }
 
 /* =====================================================
 HUD
 ===================================================== */
 
-function hud(){
+function updateHud(){
 
-$("hpText").textContent=
-Math.max(
-0,
-Math.ceil(
-player.hp
-)
-)+
-" / "+
-player.maxHp;
+  $("hpText").textContent=
+    Math.max(
+      0,
+      Math.ceil(
+        player.hp
+      )
+    )+
+    " / "+
+    player.maxHp;
 
-$("energyText").textContent=
-Math.floor(
-player.energy
-)+
-" / 100";
+  $("energyText").textContent=
+    Math.floor(
+      player.energy
+    )+
+    " / "+
+    player.maxEnergy;
 
-$("hpFill").style.width=
-Math.max(
-0,
-player.hp/
-player.maxHp*
-100
-)+
-"%";
+  $("hpFill").style.width=
+    Math.max(
+      0,
+      player.hp/
+      player.maxHp*
+      100
+    )+
+    "%";
 
-$("energyFill").style.width=
-player.energy+
-"%";
+  $("energyFill").style.width=
+    (
+      player.energy/
+      player.maxEnergy*
+      100
+    )+
+    "%";
 
-$("waveText").textContent=
-wave;
+  $("waveText").textContent=
+    wave;
 
-$("voltageText").textContent=
-voltage.toLocaleString();
+  $("voltageText").textContent=
+    voltage.toLocaleString();
 
-$("scoreText").textContent=
-score.toLocaleString();
+  $("scoreText").textContent=
+    score.toLocaleString();
 
-$("comboText").textContent=
-combo;
+  $("comboText").textContent=
+    combo;
 
-$("livesDisplay").textContent=
-Array(
-Math.max(
-0,
-lives
-)
-)
-.fill(
-"♥"
-)
-.join(
-" "
-);
+  $("livesDisplay").textContent=
+    Array(
+      Math.max(
+        0,
+        lives
+      )
+    )
+    .fill("♥")
+    .join(" ");
 
-const danger=
-player.hp>
-0 &&
-player.hp/
-player.maxHp<
-.4;
+  const danger=
+    player.hp>0&&
+    player.hp/
+    player.maxHp<
+    .40;
 
-$("dangerText")
-.classList.toggle(
-"active",
-danger
-);
+  $("dangerText")
+    .classList.toggle(
+      "active",
+      danger
+    );
 
-$("hpBarOuter")
-.classList.toggle(
-"danger",
-danger
-);
+  $("hpBarOuter")
+    .classList.toggle(
+      "danger",
+      danger
+    );
 
-bossHud();
-
+  updateBossHud();
 }
 
 /* =====================================================
-LOOP
+UPDATE
 ===================================================== */
 
 function update(){
 
-if(
-paused ||
-gameOver
-){
+  if(
+    gameOver||
+    paused
+  ){
+    return;
+  }
 
-return;
+  if(
+    cameraShake>0
+  ){
 
+    cameraShake--;
+
+    cameraStrength*=
+      .88;
+
+  }else{
+
+    cameraStrength=
+      0;
+  }
+
+  if(
+    comboSequenceTimer>0
+  ){
+
+    comboSequenceTimer--;
+
+  }else{
+
+    comboSequence=[];
+  }
+
+  if(
+    comboTimer>0
+  ){
+
+    comboTimer--;
+
+  }else{
+
+    combo=0;
+  }
+
+  updateRespawn();
+
+  if(!respawning){
+
+    updatePlayer();
+  }
+
+  updateEnemies();
+
+  updatePickups();
+
+  updateEffects();
+
+  if(
+    messageTimer>0
+  ){
+
+    messageTimer--;
+
+  }else{
+
+    $("message").style.opacity=
+      0;
+  }
+
+  if(
+    pickupTimer>0
+  ){
+
+    pickupTimer--;
+
+  }else{
+
+    $("pickupMessage").style.opacity=
+      0;
+  }
 }
 
-if(
-shake>
-0
-){
-
-shake--;
-
-shakePower*=
-.88;
-
-}else{
-
-shakePower=0;
-
-}
-
-if(
-comboSeqTimer>
-0
-){
-
-comboSeqTimer--;
-
-}else{
-
-comboSeq=[];
-
-}
-
-updatePlayer();
-
-updateEnemies();
-
-updatePickups();
-
-updateEffects();
-
-if(
-comboTimer>
-0
-){
-
-comboTimer--;
-
-}else{
-
-combo=0;
-
-}
-
-if(
-messageTimer>
-0
-){
-
-messageTimer--;
-
-}else{
-
-$("message").style.opacity=
-0;
-
-}
-
-if(
-pickupTimer>
-0
-){
-
-pickupTimer--;
-
-}else{
-
-$("pickupMessage").style.opacity=
-0;
-
-}
-
-}
+/* =====================================================
+DRAW
+===================================================== */
 
 function draw(){
 
-ctx.save();
+  ctx.save();
 
-if(
-shakePower>
-0
-){
+  if(
+    cameraStrength>0
+  ){
 
-ctx.translate(
-rnd(
--shakePower,
-shakePower
-),
-rnd(
--shakePower*
-.5,
-shakePower*
-.5
-)
-);
+    ctx.translate(
+      rnd(
+        -cameraStrength,
+        cameraStrength
+      ),
+      rnd(
+        -cameraStrength*.55,
+        cameraStrength*.55
+      )
+    );
+  }
 
+  drawStage();
+
+  const actors=[
+    ...enemies.map(
+      enemy=>({
+        y:enemy.y,
+        draw:
+          ()=>drawEnemy(
+            enemy
+          )
+      })
+    ),
+    {
+      y:player.y,
+      draw:drawPlayer
+    }
+  ];
+
+  actors.sort(
+    (a,b)=>
+    a.y-b.y
+  );
+
+  actors.forEach(
+    actor=>{
+      actor.draw();
+    }
+  );
+
+  drawPickups();
+
+  drawEffects();
+
+  ctx.restore();
+
+  updateHud();
 }
 
-stage();
+/* =====================================================
+GAME LOOP
+===================================================== */
 
-const actors=[
+let lastFrame=
+  performance.now();
 
-...enemies.map(
-enemy=>({
+let accumulator=0;
 
-y:enemy.y,
+const STEP=
+  1000/60;
 
-draw:
-()=>drawEnemy(
-enemy
-)
+function gameLoop(now){
 
-})
-),
+  const delta=
+    Math.min(
+      50,
+      now-lastFrame
+    );
 
-{
+  lastFrame=
+    now;
 
-y:player.y,
+  accumulator+=
+    delta;
 
-draw:
-drawPlayer
+  let updates=0;
 
-}
+  while(
+    accumulator>=STEP&&
+    updates<3
+  ){
 
-];
+    update();
 
-actors.sort(
-(a,b)=>
-a.y-
-b.y
-);
+    accumulator-=
+      STEP;
 
-actors.forEach(
-actor=>
-actor.draw()
-);
+    updates++;
+  }
 
-drawPickups();
+  /*
+    If the phone falls badly behind,
+    throw away old accumulated frames.
+    This prevents the "slow-motion / lag
+    spiral" from the previous build.
+  */
 
-drawEffects();
+  if(
+    accumulator>
+    STEP*3
+  ){
 
-ctx.restore();
+    accumulator=0;
+  }
 
-hud();
+  draw();
 
-}
-
-function loop(){
-
-update();
-
-draw();
-
-requestAnimationFrame(
-loop
-);
-
+  requestAnimationFrame(
+    gameLoop
+  );
 }
 
 /* =====================================================
@@ -8222,24 +8674,24 @@ START
 ===================================================== */
 
 player.x=
-W*
-.5;
+  W*.5;
 
 player.y=
-H*
-.72;
+  H*.72;
 
-constrain(
-player
-);
+constrain(player);
+
+positionBossHud();
 
 spawnWave();
 
 msg(
-"⚡ CHOSEN: POWER SURGE ⚡"
+  "⚡ CHOSEN: POWER SURGE ⚡"
 );
 
-loop();
+requestAnimationFrame(
+  gameLoop
+);
 
 })();
 </script>
