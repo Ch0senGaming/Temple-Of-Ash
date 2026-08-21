@@ -1,46 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 
 <meta
   name="viewport"
-  content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover"
-/>
+  content="
+    width=device-width,
+    initial-scale=1,
+    maximum-scale=1,
+    minimum-scale=1,
+    user-scalable=no,
+    viewport-fit=cover
+  "
+>
 
 <meta
   name="apple-mobile-web-app-capable"
   content="yes"
-/>
+>
 
 <meta
   name="apple-mobile-web-app-status-bar-style"
   content="black-translucent"
-/>
+>
 
-<title>CHOSEN: POWER SURGE</title>
+<title>
+  CHOSEN: POWER SURGE
+</title>
 
 <style>
+
+/* =========================================================
+GLOBAL
+========================================================= */
+
 *{
   box-sizing:border-box;
+
   -webkit-user-select:none;
   user-select:none;
+
   -webkit-touch-callout:none;
-  -webkit-tap-highlight-color:transparent;
+
+  -webkit-tap-highlight-color:
+    transparent;
 }
 
 html,
 body{
   margin:0;
+
   width:100%;
   height:100%;
-  overflow:hidden;
+
   position:fixed;
+
   inset:0;
+
+  overflow:hidden;
+
   background:#02040a;
+
   color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
   touch-action:none;
+
   overscroll-behavior:none;
 }
 
@@ -49,184 +80,178 @@ input{
   font:inherit;
 }
 
+button{
+  -webkit-appearance:none;
+  appearance:none;
+}
+
 canvas{
   position:fixed;
+
   inset:0;
+
   width:100vw;
   height:100dvh;
+
   display:block;
+
   image-rendering:pixelated;
+
   touch-action:none;
 }
 
-/* =====================================================
+/* =========================================================
 TITLE SCREEN
-===================================================== */
+========================================================= */
 
 #titleScreen{
   position:fixed;
+
   inset:0;
-  z-index:200;
+
+  z-index:100;
+
   display:flex;
+
   justify-content:center;
   align-items:center;
-  overflow:hidden;
-  background:
-    radial-gradient(
-      circle at 50% 42%,
-      #071426,
-      #010306 72%
-    );
-}
-
-#titleFrame{
-  position:relative;
-
-  width:min(
-    100vw,
-    calc(100dvh * 1.25)
-  );
-
-  aspect-ratio:5 / 4;
-
-  max-height:100dvh;
 
   overflow:hidden;
 
-  background:#02040a;
+  background:#000;
 
-  box-shadow:
-    0 0 70px rgba(30,125,255,.18);
+  touch-action:manipulation;
 }
 
 #titleArtwork{
   position:absolute;
+
   inset:0;
 
   width:100%;
   height:100%;
 
-  object-fit:contain;
+  object-fit:cover;
+
+  object-position:center center;
 
   pointer-events:none;
 }
 
-#titleStartButton{
+#titleShade{
   position:absolute;
 
-  left:7.2%;
-  top:53.1%;
+  inset:0;
 
-  width:38.5%;
-  height:13.6%;
-
-  border:0;
-  border-radius:14px;
+  pointer-events:none;
 
   background:
-    rgba(30,120,255,.01);
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,.02),
+      rgba(0,0,0,.01) 55%,
+      rgba(0,0,0,.12)
+    );
+}
 
-  box-shadow:
-    0 0 0 rgba(50,160,255,0);
+/*
+  This is intentionally transparent.
+
+  The artwork already contains the
+  START GAME graphic.
+
+  The button provides the real
+  interactive hitbox without placing
+  another button over the artwork.
+*/
+
+#startGameButton{
+  position:absolute;
+
+  left:10%;
+  right:10%;
+
+  top:50%;
+  bottom:18%;
+
+  border:0;
+
+  background:
+    rgba(0,0,0,0);
+
+  color:transparent;
 
   cursor:pointer;
 
   touch-action:manipulation;
-
-  transition:
-    box-shadow .16s,
-    background .16s,
-    transform .10s;
 }
 
-#titleStartButton:active{
+#titleLoading{
+  position:absolute;
+
+  left:50%;
+
+  bottom:
+    max(
+      22px,
+      calc(
+        env(safe-area-inset-bottom)
+        +
+        10px
+      )
+    );
+
+  transform:
+    translateX(-50%);
+
+  padding:
+    8px
+    13px;
+
+  border-radius:
+    999px;
+
   background:
-    rgba(35,145,255,.09);
+    rgba(0,0,0,.48);
 
-  box-shadow:
-    0 0 25px rgba(45,160,255,.78),
-    inset 0 0 22px rgba(45,160,255,.16);
+  color:
+    rgba(255,255,255,.82);
 
-  transform:scale(.985);
-}
+  font-size:
+    10px;
 
-#titleStartButton::after{
-  content:"";
+  font-weight:
+    800;
 
-  position:absolute;
-  inset:4%;
-
-  border-radius:12px;
-
-  border:
-    1px solid
-    rgba(70,185,255,0);
-
-  animation:
-    titlePulse
-    2.1s
-    infinite;
-}
-
-@keyframes titlePulse{
-
-  0%,
-  100%{
-    border-color:
-      rgba(70,185,255,.05);
-
-    box-shadow:
-      0 0 6px
-      rgba(50,150,255,.05);
-  }
-
-  50%{
-    border-color:
-      rgba(70,185,255,.28);
-
-    box-shadow:
-      0 0 20px
-      rgba(50,150,255,.20);
-  }
-
-}
-
-#titleFade{
-  position:absolute;
-  inset:0;
+  letter-spacing:
+    1.4px;
 
   pointer-events:none;
-
-  background:#000;
 
   opacity:0;
 
   transition:
-    opacity .48s ease;
+    opacity .2s;
 }
 
-#titleScreen.starting #titleFade{
+#titleLoading.visible{
   opacity:1;
 }
 
-@media(max-aspect-ratio:1/1){
-
-  #titleFrame{
-    width:100vw;
-    height:auto;
-  }
-
-}
-
-/* =====================================================
+/* =========================================================
 HUD
-===================================================== */
+========================================================= */
 
 #hud{
   position:fixed;
+
   inset:0;
+
   z-index:10;
+
   pointer-events:none;
+
+  visibility:hidden;
 }
 
 #topHud{
@@ -267,7 +292,9 @@ HUD
     5px 8px;
 
   box-shadow:
-    0 4px 14px
+    0
+    4px
+    14px
     rgba(0,0,0,.55);
 
   backdrop-filter:
@@ -286,8 +313,7 @@ HUD
   min-width:
     92px;
 
-  text-align:
-    center;
+  text-align:center;
 
   font-size:
     12px;
@@ -297,8 +323,7 @@ HUD
   min-width:
     90px;
 
-  text-align:
-    right;
+  text-align:right;
 
   font-size:
     11px;
@@ -332,8 +357,10 @@ HUD
     2px;
 
   text-shadow:
-    0 0 8px
-    rgba(255,65,65,.55);
+    0
+    0
+    8px
+    rgba(255,60,60,.55);
 }
 
 .statRow{
@@ -362,8 +389,7 @@ HUD
   margin-top:
     1px;
 
-  overflow:
-    hidden;
+  overflow:hidden;
 
   border-radius:
     12px;
@@ -395,9 +421,15 @@ HUD
     );
 }
 
+/* =========================================================
+DANGER MODE
+========================================================= */
+
 #dangerText{
-  display:
-    none;
+  display:none;
+
+  margin-left:
+    4px;
 
   color:
     #ff3636;
@@ -409,7 +441,9 @@ HUD
     1000;
 
   text-shadow:
-    0 0 8px
+    0
+    0
+    8px
     #ff1a1a;
 }
 
@@ -428,7 +462,9 @@ HUD
     #ff3434;
 
   box-shadow:
-    0 0 12px
+    0
+    0
+    12px
     #f22;
 
   animation:
@@ -439,21 +475,26 @@ HUD
 
 @keyframes dangerPulse{
 
+  0%,
+  100%{
+    opacity:1;
+  }
+
   50%{
-    opacity:
-      .58;
+    opacity:.58;
   }
 
 }
 
-/* =====================================================
+/* =========================================================
 MESSAGES
-===================================================== */
+========================================================= */
 
 #message{
   position:absolute;
 
   top:19%;
+
   left:50%;
 
   transform:
@@ -462,8 +503,7 @@ MESSAGES
   width:
     92%;
 
-  text-align:
-    center;
+  text-align:center;
 
   font-size:
     clamp(
@@ -479,17 +519,24 @@ MESSAGES
     italic;
 
   text-shadow:
-    0 4px 5px #000,
-    0 0 18px #34c8ff;
+    0
+    4px
+    5px
+    #000,
 
-  opacity:
-    0;
+    0
+    0
+    18px
+    #34c8ff;
+
+  opacity:0;
 }
 
 #pickupMessage{
   position:absolute;
 
   top:31%;
+
   left:50%;
 
   transform:
@@ -502,15 +549,17 @@ MESSAGES
     1000;
 
   text-shadow:
-    0 2px 5px #000;
+    0
+    2px
+    5px
+    #000;
 
-  opacity:
-    0;
+  opacity:0;
 }
 
-/* =====================================================
+/* =========================================================
 BOSS HUD
-===================================================== */
+========================================================= */
 
 #bossHud{
   position:absolute;
@@ -526,8 +575,7 @@ BOSS HUD
       610px
     );
 
-  display:
-    none;
+  display:none;
 }
 
 .bossRow{
@@ -548,7 +596,10 @@ BOSS HUD
     1.5px;
 
   text-shadow:
-    0 2px 4px #000;
+    0
+    2px
+    4px
+    #000;
 }
 
 .bossBarOuter{
@@ -558,8 +609,7 @@ BOSS HUD
   margin-top:
     2px;
 
-  overflow:
-    hidden;
+  overflow:hidden;
 
   border:
     1px solid
@@ -573,11 +623,8 @@ BOSS HUD
 }
 
 .bossBar{
-  width:
-    100%;
-
-  height:
-    100%;
+  width:100%;
+  height:100%;
 
   background:
     linear-gradient(
@@ -587,9 +634,9 @@ BOSS HUD
     );
 }
 
-/* =====================================================
+/* =========================================================
 TOP BUTTONS
-===================================================== */
+========================================================= */
 
 #pauseButton,
 #quickMuteButton{
@@ -602,7 +649,8 @@ TOP BUTTONS
       91px,
       calc(
         env(safe-area-inset-top)
-        + 84px
+        +
+        84px
       )
     );
 
@@ -622,8 +670,7 @@ TOP BUTTONS
   background:
     rgba(3,7,14,.83);
 
-  color:
-    #fff;
+  color:#fff;
 
   font-size:
     19px;
@@ -633,6 +680,8 @@ TOP BUTTONS
 
   touch-action:
     manipulation;
+
+  visibility:hidden;
 }
 
 #pauseButton{
@@ -649,7 +698,8 @@ TOP BUTTONS
       58px,
       calc(
         env(safe-area-inset-right)
-        + 50px
+        +
+        50px
       )
     );
 
@@ -665,9 +715,9 @@ TOP BUTTONS
     rgba(255,80,80,.5);
 }
 
-/* =====================================================
+/* =========================================================
 CONTROLS
-===================================================== */
+========================================================= */
 
 #controls{
   position:fixed;
@@ -676,8 +726,9 @@ CONTROLS
 
   z-index:20;
 
-  pointer-events:
-    none;
+  pointer-events:none;
+
+  visibility:hidden;
 }
 
 #joystick{
@@ -711,11 +762,16 @@ CONTROLS
   background:
     rgba(3,7,14,.58);
 
-  pointer-events:
-    auto;
+  box-shadow:
+    inset
+    0
+    0
+    25px
+    rgba(0,0,0,.65);
 
-  touch-action:
-    none;
+  pointer-events:auto;
+
+  touch-action:none;
 }
 
 #stick{
@@ -765,8 +821,7 @@ CONTROLS
   height:
     187px;
 
-  pointer-events:
-    auto;
+  pointer-events:auto;
 }
 
 .gameButton{
@@ -788,8 +843,7 @@ CONTROLS
   background:
     rgba(5,10,17,.88);
 
-  color:
-    #fff;
+  color:#fff;
 
   font-size:
     21px;
@@ -813,31 +867,49 @@ CONTROLS
 
 #lightBtn{
   left:0;
-  top:58px;
-  color:#62bcff;
+
+  top:
+    58px;
+
+  color:
+    #62bcff;
 }
 
 #heavyBtn{
-  left:65px;
+  left:
+    65px;
+
   top:0;
-  color:#ffd65c;
+
+  color:
+    #ffd65c;
 }
 
 #specialBtn{
-  left:65px;
-  top:115px;
-  color:#65e7ff;
+  left:
+    65px;
+
+  top:
+    115px;
+
+  color:
+    #65e7ff;
 }
 
 #dashBtn{
-  left:125px;
-  top:58px;
-  color:#ff6258;
+  left:
+    125px;
+
+  top:
+    58px;
+
+  color:
+    #ff6258;
 }
 
-/* =====================================================
+/* =========================================================
 OVERLAYS
-===================================================== */
+========================================================= */
 
 .overlay{
   position:fixed;
@@ -849,7 +921,6 @@ OVERLAYS
   display:none;
 
   justify-content:center;
-
   align-items:center;
 
   padding:16px;
@@ -896,31 +967,42 @@ OVERLAYS
 .title{
   text-align:center;
 
-  color:#70e4ff;
+  color:
+    #70e4ff;
 
-  font-size:24px;
+  font-size:
+    24px;
 
-  font-weight:1000;
+  font-weight:
+    1000;
 }
 
 .sub{
   text-align:center;
 
-  font-size:11px;
+  font-size:
+    11px;
 
-  opacity:.65;
+  opacity:
+    .65;
 
   margin:
-    4px 0 12px;
+    4px
+    0
+    12px;
 }
 
 .tabs{
   display:grid;
 
   grid-template-columns:
-    repeat(2,1fr);
+    repeat(
+      2,
+      1fr
+    );
 
-  gap:7px;
+  gap:
+    7px;
 
   margin-bottom:
     12px;
@@ -932,8 +1014,7 @@ OVERLAYS
   padding:
     11px;
 
-  border:
-    0;
+  border:0;
 
   border-radius:
     9px;
@@ -987,9 +1068,9 @@ OVERLAYS
     #671d26;
 }
 
-/* =====================================================
+/* =========================================================
 PAUSE CONTENT
-===================================================== */
+========================================================= */
 
 .moveCard,
 .audioRow{
@@ -1054,13 +1135,13 @@ PAUSE CONTENT
   display:grid;
 
   grid-template-columns:
-    1fr 80px;
+    1fr
+    80px;
 
   gap:
     9px;
 
-  align-items:
-    center;
+  align-items:center;
 
   margin-top:
     9px;
@@ -1070,9 +1151,9 @@ PAUSE CONTENT
   width:100%;
 }
 
-/* =====================================================
+/* =========================================================
 SHOP
-===================================================== */
+========================================================= */
 
 #shop{
   z-index:50;
@@ -1082,7 +1163,10 @@ SHOP
   display:grid;
 
   grid-template-columns:
-    repeat(2,1fr);
+    repeat(
+      2,
+      1fr
+    );
 
   gap:
     9px;
@@ -1092,8 +1176,7 @@ SHOP
   padding:
     11px;
 
-  text-align:
-    center;
+  text-align:center;
 
   border:
     1px solid
@@ -1138,13 +1221,16 @@ SHOP
 .currency{
   text-align:center;
 
-  color:#ffd95c;
+  color:
+    #ffd95c;
 
   font-weight:
     1000;
 
   margin:
-    8px 0 14px;
+    8px
+    0
+    14px;
 }
 
 .upgrade button:disabled{
@@ -1167,8 +1253,7 @@ SHOP
 }
 
 #continueButton{
-  width:
-    100%;
+  width:100%;
 
   margin-top:
     14px;
@@ -1176,8 +1261,7 @@ SHOP
   padding:
     12px;
 
-  border:
-    0;
+  border:0;
 
   border-radius:
     10px;
@@ -1185,20 +1269,18 @@ SHOP
   background:
     #167bd6;
 
-  color:
-    #fff;
+  color:#fff;
 
   font-weight:
     1000;
 }
 
-/* =====================================================
+/* =========================================================
 LEADERBOARD
-===================================================== */
+========================================================= */
 
 #leaderboardTable{
-  width:
-    100%;
+  width:100%;
 
   border-collapse:
     collapse;
@@ -1210,37 +1292,34 @@ LEADERBOARD
 #leaderboardTable th,
 #leaderboardTable td{
   padding:
-    8px 4px;
+    8px
+    4px;
 
   border-bottom:
     1px solid
     rgba(255,255,255,.08);
 
-  text-align:
-    right;
+  text-align:right;
 }
 
 #leaderboardTable th:first-child,
 #leaderboardTable td:first-child{
-  text-align:
-    center;
+  text-align:center;
 }
 
-/* =====================================================
+/* =========================================================
 GAME OVER
-===================================================== */
+========================================================= */
 
 #gameOver{
-  z-index:
-    60;
+  z-index:60;
 }
 
 .overTitle{
   margin-bottom:
     12px;
 
-  text-align:
-    center;
+  text-align:center;
 
   color:
     #ff4c4c;
@@ -1259,7 +1338,8 @@ GAME OVER
   display:grid;
 
   grid-template-columns:
-    1fr 1fr;
+    1fr
+    1fr;
 
   gap:
     8px;
@@ -1279,8 +1359,7 @@ GAME OVER
   background:
     #0c121a;
 
-  text-align:
-    center;
+  text-align:center;
 }
 
 .result small{
@@ -1323,11 +1402,139 @@ GAME OVER
     1.7;
 }
 
-/* =====================================================
-MOBILE
-===================================================== */
+/* =========================================================
+BOSS CINEMATIC
+========================================================= */
 
-@media(max-width:620px){
+#bossCinema{
+  position:fixed;
+
+  inset:0;
+
+  z-index:45;
+
+  display:none;
+
+  pointer-events:none;
+}
+
+#bossCinemaTop,
+#bossCinemaBottom{
+  position:absolute;
+
+  left:0;
+  right:0;
+
+  height:
+    min(
+      7vh,
+      52px
+    );
+
+  background:
+    rgba(0,0,0,.93);
+}
+
+#bossCinemaTop{
+  top:0;
+}
+
+#bossCinemaBottom{
+  bottom:0;
+}
+
+#bossCinemaName{
+  position:absolute;
+
+  left:50%;
+
+  top:30%;
+
+  transform:
+    translateX(-50%);
+
+  width:
+    92%;
+
+  text-align:center;
+
+  color:#fff;
+
+  font-size:
+    clamp(
+      25px,
+      7vw,
+      52px
+    );
+
+  font-weight:
+    1000;
+
+  letter-spacing:
+    2px;
+
+  text-shadow:
+    0
+    4px
+    5px
+    #000,
+
+    0
+    0
+    18px
+    #ff3131;
+
+  opacity:0;
+}
+
+#bossCinemaSub{
+  position:absolute;
+
+  left:50%;
+
+  top:
+    calc(
+      30%
+      +
+      58px
+    );
+
+  transform:
+    translateX(-50%);
+
+  width:
+    92%;
+
+  text-align:center;
+
+  font-size:
+    13px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    4px;
+
+  color:
+    rgba(255,255,255,.78);
+
+  text-shadow:
+    0
+    2px
+    5px
+    #000;
+
+  opacity:0;
+}
+
+/* =========================================================
+MOBILE
+========================================================= */
+
+@media(
+  max-width:620px
+){
 
   .shopGrid{
     grid-template-columns:
@@ -1343,10 +1550,43 @@ MOBILE
   }
 
 }
+
 </style>
+
 </head>
 
 <body>
+
+<!-- =======================================================
+TITLE SCREEN
+======================================================= -->
+
+<div id="titleScreen">
+
+  <img
+    id="titleArtwork"
+    src="assets/title-screen.PNG"
+    alt="Chosen Power Surge"
+  >
+
+  <div id="titleShade"></div>
+
+  <button
+    id="startGameButton"
+    aria-label="Start Game"
+  >
+    START GAME
+  </button>
+
+  <div id="titleLoading">
+    LOADING...
+  </div>
+
+</div>
+
+<!-- =======================================================
+GAME CANVAS
+======================================================= -->
 
 <canvas id="game"></canvas>
 
@@ -1357,33 +1597,9 @@ MOBILE
   loop
 ></audio>
 
-<!-- ===================================================
-TITLE SCREEN
-=================================================== -->
-
-<div id="titleScreen">
-
-  <div id="titleFrame">
-
-    <img
-      id="titleArtwork"
-      alt="Chosen Power Surge title screen"
-    >
-
-    <button
-      id="titleStartButton"
-      aria-label="Start Game"
-    ></button>
-
-    <div id="titleFade"></div>
-
-  </div>
-
-</div>
-
-<!-- ===================================================
+<!-- =======================================================
 HUD
-=================================================== -->
+======================================================= -->
 
 <div id="hud">
 
@@ -1408,6 +1624,7 @@ HUD
       <div class="statRow">
 
         <span>
+
           HP
 
           <span id="dangerText">
@@ -1463,10 +1680,13 @@ HUD
     >
 
       <b>
+
         WAVE
+
         <span id="waveText">
           1
         </span>
+
       </b>
 
       <br>
@@ -1481,6 +1701,7 @@ HUD
       <br>
 
       ⚡
+
       <span id="voltageText">
         0
       </span>
@@ -1585,6 +1806,10 @@ HUD
 
 </div>
 
+<!-- =======================================================
+TOP BUTTONS
+======================================================= -->
+
 <button
   id="quickMuteButton"
   aria-label="Mute all sound"
@@ -1592,13 +1817,16 @@ HUD
   🔊
 </button>
 
-<button id="pauseButton">
+<button
+  id="pauseButton"
+  aria-label="Pause"
+>
   Ⅱ
 </button>
 
-<!-- ===================================================
+<!-- =======================================================
 CONTROLS
-=================================================== -->
+======================================================= -->
 
 <div id="controls">
 
@@ -1614,41 +1842,77 @@ CONTROLS
       class="gameButton"
       id="lightBtn"
     >
+
       A
-      <small>SLASH</small>
+
+      <small>
+        SLASH
+      </small>
+
     </button>
 
     <button
       class="gameButton"
       id="heavyBtn"
     >
+
       H
-      <small>HEAVY</small>
+
+      <small>
+        HEAVY
+      </small>
+
     </button>
 
     <button
       class="gameButton"
       id="specialBtn"
     >
+
       S
-      <small>POWER</small>
+
+      <small>
+        POWER
+      </small>
+
     </button>
 
     <button
       class="gameButton"
       id="dashBtn"
     >
+
       ⚡
-      <small>DASH</small>
+
+      <small>
+        DASH
+      </small>
+
     </button>
 
   </div>
 
 </div>
 
-<!-- ===================================================
+<!-- =======================================================
+BOSS CINEMA
+======================================================= -->
+
+<div id="bossCinema">
+
+  <div id="bossCinemaTop"></div>
+
+  <div id="bossCinemaBottom"></div>
+
+  <div id="bossCinemaName"></div>
+
+  <div id="bossCinemaSub"></div>
+
+</div>
+
+<!-- =======================================================
 SHOP
-=================================================== -->
+======================================================= -->
 
 <div
   class="overlay"
@@ -1662,10 +1926,13 @@ SHOP
     </div>
 
     <div class="currency">
+
       VOLTAGE:
+
       <span id="shopVoltage">
         0
       </span>
+
     </div>
 
     <div class="shopGrid">
@@ -1677,14 +1944,18 @@ SHOP
         </b>
 
         <p>
-          Increase sword and combo damage.
+          Increase sword and
+          combo damage.
         </p>
 
         <div>
+
           LV
+
           <span id="powerLevel">
             1
           </span>
+
         </div>
 
         <button
@@ -1700,14 +1971,18 @@ SHOP
         </b>
 
         <p>
-          Faster attacks and shorter recovery.
+          Faster attacks and
+          shorter recovery.
         </p>
 
         <div>
+
           LV
+
           <span id="speedLevel">
             1
           </span>
+
         </div>
 
         <button
@@ -1723,12 +1998,14 @@ SHOP
         </b>
 
         <p>
-          Permanent maximum HP increase.
+          Permanent maximum
+          HP increase.
         </p>
 
         <div>
 
           HP
+
           <span id="vitalityHp">
             100
           </span>
@@ -1737,7 +2014,9 @@ SHOP
 
           <span id="vitalityLevel">
             0
-          </span>/5
+          </span>
+
+          /5
 
         </div>
 
@@ -1754,7 +2033,9 @@ SHOP
         </b>
 
         <p>
-          Area attack with Evolution powers at Levels 5 and 10.
+          Area attack with
+          Evolution powers
+          at Levels 5 and 10.
         </p>
 
         <div
@@ -1775,7 +2056,9 @@ SHOP
         </b>
 
         <p>
-          High-speed electric attack with Evolution powers.
+          High-speed electric
+          attack with Evolution
+          powers.
         </p>
 
         <div
@@ -1796,7 +2079,8 @@ SHOP
         </b>
 
         <p>
-          A → A → H electric sword rush.
+          A → A → H
+          electric sword rush.
         </p>
 
         <div
@@ -1817,7 +2101,9 @@ SHOP
         </b>
 
         <p>
-          A → H → A crossing blade finisher.
+          A → H → A
+          crossing blade
+          finisher.
         </p>
 
         <div
@@ -1838,7 +2124,9 @@ SHOP
         </b>
 
         <p>
-          H → A → H heavy electric finisher.
+          H → A → H
+          heavy electric
+          finisher.
         </p>
 
         <div
@@ -1862,9 +2150,9 @@ SHOP
 
 </div>
 
-<!-- ===================================================
-PAUSE
-=================================================== -->
+<!-- =======================================================
+PAUSE MENU
+======================================================= -->
 
 <div
   class="overlay"
@@ -1949,12 +2237,20 @@ PAUSE
       <div class="moveCard">
 
         <div class="moveTitle">
-          <span>SWORD SLASH</span>
-          <span>A</span>
+
+          <span>
+            SWORD SLASH
+          </span>
+
+          <span>
+            A
+          </span>
+
         </div>
 
         <p>
-          Fast sword strike used to begin and extend combos.
+          Fast sword strike used
+          to begin and extend combos.
         </p>
 
       </div>
@@ -1962,12 +2258,21 @@ PAUSE
       <div class="moveCard">
 
         <div class="moveTitle">
-          <span>HEAVY SLASH</span>
-          <span>H</span>
+
+          <span>
+            HEAVY SLASH
+          </span>
+
+          <span>
+            H
+          </span>
+
         </div>
 
         <p>
-          Slower electric attack with stronger damage and knockback.
+          Slower electric attack
+          with stronger damage and
+          knockback.
         </p>
 
       </div>
@@ -1975,12 +2280,20 @@ PAUSE
       <div class="moveCard">
 
         <div class="moveTitle">
-          <span>THUNDER BURST</span>
-          <span>S</span>
+
+          <span>
+            THUNDER BURST
+          </span>
+
+          <span>
+            S
+          </span>
+
         </div>
 
         <p>
-          Electric area attack centered around Chosen.
+          Electric area attack
+          centered around Chosen.
         </p>
 
       </div>
@@ -1988,12 +2301,21 @@ PAUSE
       <div class="moveCard">
 
         <div class="moveTitle">
-          <span>LIGHTNING DASH</span>
-          <span>⚡</span>
+
+          <span>
+            LIGHTNING DASH
+          </span>
+
+          <span>
+            ⚡
+          </span>
+
         </div>
 
         <p>
-          High-speed movement attack with temporary invulnerability.
+          High-speed movement
+          attack with temporary
+          invulnerability.
         </p>
 
       </div>
@@ -2001,8 +2323,15 @@ PAUSE
       <div class="moveCard">
 
         <div class="moveTitle">
-          <span>VOLT RUSH</span>
-          <span>A → A → H</span>
+
+          <span>
+            VOLT RUSH
+          </span>
+
+          <span>
+            A → A → H
+          </span>
+
         </div>
 
       </div>
@@ -2010,8 +2339,15 @@ PAUSE
       <div class="moveCard">
 
         <div class="moveTitle">
-          <span>ELECTRIC CROSS</span>
-          <span>A → H → A</span>
+
+          <span>
+            ELECTRIC CROSS
+          </span>
+
+          <span>
+            A → H → A
+          </span>
+
         </div>
 
       </div>
@@ -2019,8 +2355,15 @@ PAUSE
       <div class="moveCard">
 
         <div class="moveTitle">
-          <span>TWIN THUNDER</span>
-          <span>H → A → H</span>
+
+          <span>
+            TWIN THUNDER
+          </span>
+
+          <span>
+            H → A → H
+          </span>
+
         </div>
 
       </div>
@@ -2118,30 +2461,52 @@ PAUSE
         </div>
 
         <p>
+
           LV.1 — ELECTRIC BLUE
+
           <br>
+
           LV.2 — YELLOW
+
           <br>
+
           LV.3 — PINK
+
           <br>
+
           LV.4 — ORANGE
+
           <br>
+
           LV.5 — GREEN — EVOLUTION I
+
           <br>
+
           LV.6 — CYAN
+
           <br>
+
           LV.7 — RED
+
           <br>
+
           LV.8 — PURPLE
+
           <br>
+
           LV.9 — WHITE
+
           <br>
+
           LV.10 — ROYAL BLUE — EVOLUTION II
+
         </p>
 
         <p>
-          Level 10 replaces the Level 5 Evolution ability,
-          preventing both abilities from stacking.
+          Level 10 replaces the
+          Level 5 Evolution ability,
+          preventing both abilities
+          from stacking.
         </p>
 
       </div>
@@ -2155,14 +2520,16 @@ PAUSE
           </span>
 
           <span>
-            EVERY 50K
+            EVERY 50,000 PTS
           </span>
 
         </div>
 
         <p>
-          Chosen earns an additional life every time the score
-          crosses another 50,000-point milestone.
+          Chosen earns an additional
+          life every time the score
+          reaches another 50,000-point
+          milestone.
         </p>
 
       </div>
@@ -2182,8 +2549,10 @@ PAUSE
         </div>
 
         <p>
-          Double boss battles begin at Wave 50.
-          Triple boss battles begin at Wave 75.
+          Double boss battles begin
+          at Wave 50.
+          Triple boss battles begin
+          at Wave 75.
         </p>
 
       </div>
@@ -2194,9 +2563,9 @@ PAUSE
 
 </div>
 
-<!-- ===================================================
+<!-- =======================================================
 LEADERBOARD
-=================================================== -->
+======================================================= -->
 
 <div
   class="overlay"
@@ -2218,10 +2587,23 @@ LEADERBOARD
       <thead>
 
         <tr>
-          <th>#</th>
-          <th>SCORE</th>
-          <th>WAVE</th>
-          <th>KILLS</th>
+
+          <th>
+            #
+          </th>
+
+          <th>
+            SCORE
+          </th>
+
+          <th>
+            WAVE
+          </th>
+
+          <th>
+            KILLS
+          </th>
+
         </tr>
 
       </thead>
@@ -2242,9 +2624,9 @@ LEADERBOARD
 
 </div>
 
-<!-- ===================================================
+<!-- =======================================================
 GAME OVER
-=================================================== -->
+======================================================= -->
 
 <div
   class="overlay"
@@ -2312,6 +2694,7 @@ GAME OVER
     <div class="records">
 
       👑 BEST WAVE:
+
       <span id="bestWave">
         1
       </span>
@@ -2319,6 +2702,7 @@ GAME OVER
       <br>
 
       🏆 HIGH SCORE:
+
       <span id="highScore">
         0
       </span>
@@ -2344,11 +2728,12 @@ GAME OVER
 </div>
 
 <script>
+
 "use strict";
 
-/* =====================================================
+/* =========================================================
 MOBILE ZOOM PROTECTION
-===================================================== */
+========================================================= */
 
 document.addEventListener(
   "touchmove",
@@ -2448,9 +2833,9 @@ document.documentElement.style.touchAction=
 document.body.style.touchAction=
   "none";
 
-/* =====================================================
+/* =========================================================
 GAME
-===================================================== */
+========================================================= */
 
 (()=>{
 
@@ -2471,36 +2856,21 @@ const ctx=
 ctx.imageSmoothingEnabled=
   false;
 
-let W=0;
-let H=0;
-let DPR=1;
+/* =========================================================
+CANVAS SIZE
+========================================================= */
+
+let W=
+  0;
+
+let H=
+  0;
+
+let DPR=
+  1;
 
 let lastBossHudBottom=
   -1;
-
-/* =====================================================
-TITLE ART
-===================================================== */
-
-/*
-  This is the approved Chosen:
-  Power Surge title artwork embedded
-  directly inside index.html.
-
-  No separate title-screen image
-  needs to exist in /assets.
-*/
-
-const TITLE_ART_DATA=
-"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";
-
-$("titleArtwork").src=
-  "data:image/webp;base64,"+
-  TITLE_ART_DATA;
-
-/* =====================================================
-RESIZE
-===================================================== */
 
 function positionBossHud(){
 
@@ -2591,9 +2961,9 @@ window.addEventListener(
   resize
 );
 
-/* =====================================================
+/* =========================================================
 HELPERS
-===================================================== */
+========================================================= */
 
 const clamp=
 (value,min,max)=>
@@ -2609,19 +2979,28 @@ const rnd=
 (min,max)=>
 min+
 Math.random()*
-(max-min);
+(
+  max-
+  min
+);
 
 const dist=
 (a,b)=>
 Math.hypot(
-  a.x-b.x,
-  a.y-b.y
+  a.x-
+  b.x,
+
+  a.y-
+  b.y
 );
 
 const lerp=
 (a,b,t)=>
 a+
-(b-a)*
+(
+  b-
+  a
+)*
 t;
 
 function readNum(
@@ -2637,7 +3016,8 @@ fallback
       );
 
     if(
-      raw===null
+      raw===
+      null
     ){
       return fallback;
     }
@@ -2681,28 +3061,44 @@ value
 
 }
 
-/* =====================================================
-GAME STATE
-===================================================== */
+/* =========================================================
+MAIN STATE
+========================================================= */
 
 let gameStarted=
   false;
 
-let wave=1;
-let score=0;
-let voltage=0;
-let earned=0;
+let wave=
+  1;
 
-let combo=0;
-let comboTimer=0;
+let score=
+  0;
 
-let kills=0;
+let voltage=
+  0;
 
-let lives=3;
+let earned=
+  0;
+
+let combo=
+  0;
+
+let comboTimer=
+  0;
+
+let kills=
+  0;
+
+let lives=
+  3;
 
 /*
-  Every 50,000 points
-  awards another life.
+  +1 life at:
+  50k
+  100k
+  150k
+  200k
+  etc.
 */
 
 let nextExtraLifeScore=
@@ -2723,9 +3119,14 @@ let wavePending=
 let pending=
   0;
 
-let enemies=[];
-let pickups=[];
-let effects=[];
+let enemies=
+  [];
+
+let pickups=
+  [];
+
+let effects=
+  [];
 
 let messageTimer=
   0;
@@ -2739,7 +3140,8 @@ let cameraShake=
 let cameraStrength=
   0;
 
-let comboSequence=[];
+let comboSequence=
+  [];
 
 let comboSequenceTimer=
   0;
@@ -2749,28 +3151,6 @@ let respawning=
 
 let respawnTimer=
   0;
-
-/* =====================================================
-BOSS INTRO STATE
-===================================================== */
-
-let bossIntroActive=
-  false;
-
-let bossIntroTimer=
-  0;
-
-let bossIntroBosses=
-  [];
-
-let bossIntroTitle=
-  "";
-
-let bossIntroSubtitle=
-  "";
-
-const BOSS_INTRO_LENGTH=
-  125;
 
 let bestWave=
   readNum(
@@ -2784,9 +3164,81 @@ let highScore=
     0
   );
 
-/* =====================================================
+/* =========================================================
+BOSS INTRO STATE
+========================================================= */
+
+let bossIntroActive=
+  false;
+
+let bossIntroBoss=
+  null;
+
+let bossIntroTimer=
+  0;
+
+const BOSS_INTRO_LENGTH=
+  145;
+
+/* =========================================================
+SCORE + EXTRA LIVES
+========================================================= */
+
+function addScore(
+amount
+){
+
+  if(
+    !Number.isFinite(
+      amount
+    ) ||
+    amount<=0
+  ){
+    return;
+  }
+
+  score+=
+    Math.floor(
+      amount
+    );
+
+  while(
+    score>=
+    nextExtraLifeScore
+  ){
+
+    lives++;
+
+    msg(
+      "♥ EXTRA LIFE! "+
+      nextExtraLifeScore
+        .toLocaleString()+
+      " POINTS"
+    );
+
+    sfx(
+      "life"
+    );
+
+    effect(
+      "lifeBurst",
+      player.x,
+      player.y-
+      48,
+      1,
+      42
+    );
+
+    nextExtraLifeScore+=
+      50000;
+
+  }
+
+}
+
+/* =========================================================
 AUDIO
-===================================================== */
+========================================================= */
 
 const music=
   $("musicTrack");
@@ -2856,17 +3308,20 @@ function refreshAudio(){
     audioCtx
   ){
 
-    sfxGain.gain.setValueAtTime(
-      (
-        quickMuted ||
-        sfxMuted
-      )
-        ?
-        0
-        :
-        sfxVol,
-      audioCtx.currentTime
-    );
+    sfxGain
+      .gain
+      .setValueAtTime(
+        (
+          quickMuted ||
+          sfxMuted
+        )
+          ?
+          0
+          :
+          sfxVol,
+
+        audioCtx.currentTime
+      );
 
   }
 
@@ -2882,13 +3337,16 @@ function ensureAudio(){
       window.AudioContext ||
       window.webkitAudioContext;
 
-    if(AC){
+    if(
+      AC
+    ){
 
       audioCtx=
         new AC();
 
       sfxGain=
-        audioCtx.createGain();
+        audioCtx
+          .createGain();
 
       sfxGain.connect(
         audioCtx.destination
@@ -2934,10 +3392,17 @@ function ensureAudio(){
 }
 
 function tone(
-frequency=440,
-duration=.10,
-volume=.05,
-type="sine"
+frequency=
+  440,
+
+duration=
+  .10,
+
+volume=
+  .05,
+
+type=
+  "sine"
 ){
 
   if(
@@ -2950,10 +3415,12 @@ type="sine"
   }
 
   const oscillator=
-    audioCtx.createOscillator();
+    audioCtx
+      .createOscillator();
 
   const gain=
-    audioCtx.createGain();
+    audioCtx
+      .createGain();
 
   oscillator.type=
     type;
@@ -3003,7 +3470,8 @@ type="sine"
 
 function sfx(
 kind,
-level=1
+level=
+  1
 ){
 
   ensureAudio();
@@ -3022,7 +3490,7 @@ level=1
 
   }
 
-  if(
+  else if(
     kind===
     "heavy"
   ){
@@ -3036,7 +3504,7 @@ level=1
 
   }
 
-  if(
+  else if(
     kind===
     "zap"
   ){
@@ -3055,7 +3523,7 @@ level=1
 
   }
 
-  if(
+  else if(
     kind===
     "boss"
   ){
@@ -3072,18 +3540,18 @@ level=1
 
         tone(
           48,
-          .58,
-          .06,
-          "sine"
+          .38,
+          .08,
+          "square"
         );
 
       },
-      90
+      120
     );
 
   }
 
-  if(
+  else if(
     kind===
     "pickup"
   ){
@@ -3109,7 +3577,7 @@ level=1
 
   }
 
-  if(
+  else if(
     kind===
     "life"
   ){
@@ -3117,8 +3585,7 @@ level=1
     tone(
       520,
       .12,
-      .06,
-      "square"
+      .06
     );
 
     setTimeout(
@@ -3127,12 +3594,11 @@ level=1
         tone(
           760,
           .12,
-          .06,
-          "square"
+          .07
         );
 
       },
-      90
+      80
     );
 
     setTimeout(
@@ -3140,13 +3606,12 @@ level=1
 
         tone(
           1040,
-          .20,
-          .07,
-          "sine"
+          .16,
+          .08
         );
 
       },
-      180
+      160
     );
 
   }
@@ -3319,9 +3784,7 @@ $("musicMute").onclick=
 
     music.pause();
 
-  }
-
-  else if(
+  }else if(
     gameStarted &&
     !paused &&
     !gameOver
@@ -3383,9 +3846,7 @@ $("quickMuteButton").onclick=
 
     music.pause();
 
-  }
-
-  else if(
+  }else if(
     gameStarted &&
     !musicMuted &&
     !paused &&
@@ -3416,9 +3877,7 @@ document.addEventListener(
 
       music.pause();
 
-    }
-
-    else if(
+    }else if(
       gameStarted &&
       !paused &&
       !gameOver &&
@@ -3437,9 +3896,9 @@ document.addEventListener(
   }
 );
 
-/* =====================================================
+/* =========================================================
 ASSETS
-===================================================== */
+========================================================= */
 
 const img={
 
@@ -3474,7 +3933,7 @@ img.mardi.src=
 
 /*
   IMPORTANT:
-  Exact Rouxgaroux path requested.
+  User-uploaded filename.
 */
 
 img.roux.src=
@@ -3486,15 +3945,21 @@ const BASIC_W=
 const BASIC_H=
   128;
 
+/*
+  Both Mardi Gras and the rebuilt
+  Rouxgaroux atlas are read as
+  strict 8-column x 9-row grids.
+*/
+
 const BOSS_COLS=
   8;
 
 const BOSS_ROWS=
   9;
 
-/* =====================================================
+/* =========================================================
 ANIMATIONS
-===================================================== */
+========================================================= */
 
 const animBase={
 
@@ -3541,6 +4006,20 @@ const animBase={
   }
 
 };
+
+/*
+  Boss atlas rows:
+
+  0 idle
+  1 walk
+  2 attack
+  3 heavy
+  4 special
+  5 hit
+  6 knockback
+  7 defeat
+  8 entrance
+*/
 
 const bossAnim={
 
@@ -3609,9 +4088,9 @@ const bossAnim={
 
 };
 
-/* =====================================================
+/* =========================================================
 ABILITY COLORS
-===================================================== */
+========================================================= */
 
 const colors={
 
@@ -3701,9 +4180,9 @@ level
 
 }
 
-/* =====================================================
+/* =========================================================
 ROAD
-===================================================== */
+========================================================= */
 
 function roadTop(){
 
@@ -3747,8 +4226,10 @@ entity
   entity.x=
     clamp(
       entity.x,
-      W*.025,
-      W*.975
+      W*
+      .025,
+      W*
+      .975
     );
 
   entity.y=
@@ -3760,9 +4241,9 @@ entity
 
 }
 
-/* =====================================================
+/* =========================================================
 UPGRADES
-===================================================== */
+========================================================= */
 
 const upgrades={
 
@@ -3802,9 +4283,9 @@ const vitCost=[
   12000
 ];
 
-/* =====================================================
+/* =========================================================
 PLAYER
-===================================================== */
+========================================================= */
 
 const player={
 
@@ -3825,17 +4306,13 @@ const player={
   state:"idle",
 
   frame:0,
-
   ft:0,
 
   locked:0,
 
   lightCd:0,
-
   heavyCd:0,
-
   specialCd:0,
-
   dashCd:0,
 
   inv:0,
@@ -3849,15 +4326,11 @@ const player={
 const input={
 
   x:0,
-
   y:0,
 
   light:false,
-
   heavy:false,
-
   special:false,
-
   dash:false
 
 };
@@ -3874,9 +4347,9 @@ let specialHeld=
 let dashHeld=
   false;
 
-/* =====================================================
+/* =========================================================
 MESSAGES
-===================================================== */
+========================================================= */
 
 function msg(
 text
@@ -3909,8 +4382,11 @@ text
 }
 
 function camera(
-strength=3,
-frames=6
+strength=
+  3,
+
+frames=
+  6
 ){
 
   cameraStrength=
@@ -3927,9 +4403,118 @@ frames=6
 
 }
 
-/* =====================================================
-PAUSE MENU
-===================================================== */
+/* =========================================================
+TITLE SCREEN
+========================================================= */
+
+function showGameUI(){
+
+  $("hud").style.visibility=
+    "visible";
+
+  $("controls").style.visibility=
+    "visible";
+
+  $("pauseButton").style.visibility=
+    "visible";
+
+  $("quickMuteButton").style.visibility=
+    "visible";
+
+}
+
+function hideGameUI(){
+
+  $("hud").style.visibility=
+    "hidden";
+
+  $("controls").style.visibility=
+    "hidden";
+
+  $("pauseButton").style.visibility=
+    "hidden";
+
+  $("quickMuteButton").style.visibility=
+    "hidden";
+
+}
+
+function startGameFromTitle(){
+
+  if(
+    gameStarted
+  ){
+    return;
+  }
+
+  ensureAudio();
+
+  $("titleLoading")
+    .classList
+    .add(
+      "visible"
+    );
+
+  gameStarted=
+    true;
+
+  $("titleScreen").style.display=
+    "none";
+
+  $("titleLoading")
+    .classList
+    .remove(
+      "visible"
+    );
+
+  showGameUI();
+
+  resetRun();
+
+}
+
+$("startGameButton").onclick=
+  startGameFromTitle;
+
+$("titleScreen").addEventListener(
+  "pointerdown",
+  event=>{
+
+    event.preventDefault();
+
+    startGameFromTitle();
+
+  }
+);
+
+document.addEventListener(
+  "keydown",
+  event=>{
+
+    if(
+      !gameStarted &&
+      (
+        event.key===
+        "Enter" ||
+        event.key===
+        " "
+      )
+    ){
+
+      event.preventDefault();
+
+      startGameFromTitle();
+
+    }
+
+  }
+);
+
+hideGameUI();
+
+/* =========================================================
+PAUSE
+========================================================= */
 
 function setPage(
 id
@@ -3978,7 +4563,9 @@ id
       `[data-page="${id}"]`
     );
 
-  if(tab){
+  if(
+    tab
+  ){
 
     tab
       .classList
@@ -4024,6 +4611,12 @@ function openPause(){
 
 function closePause(){
 
+  if(
+    gameOver
+  ){
+    return;
+  }
+
   pauseOpen=
     false;
 
@@ -4062,9 +4655,7 @@ $("pauseButton").onclick=
 
     closePause();
 
-  }
-
-  else{
+  }else{
 
     openPause();
 
@@ -4078,7 +4669,11 @@ $("resumeButton").onclick=
 $("restartButton").onclick=
 ()=>{
 
-  closePause();
+  $("pauseMenu").style.display=
+    "none";
+
+  pauseOpen=
+    false;
 
   resetRun();
 
@@ -4103,9 +4698,9 @@ document
     }
   );
 
-/* =====================================================
-LOCAL LEADERBOARD
-===================================================== */
+/* =========================================================
+LEADERBOARD
+========================================================= */
 
 function getLeaderboard(){
 
@@ -4119,9 +4714,7 @@ function getLeaderboard(){
     if(
       !raw
     ){
-
       return [];
-
     }
 
     const data=
@@ -4137,9 +4730,7 @@ function getLeaderboard(){
       :
       [];
 
-  }
-
-  catch(error){
+  }catch(error){
 
     return [];
 
@@ -4168,9 +4759,11 @@ function saveRun(){
   board.sort(
     (a,b)=>
       b.score-
-      a.score ||
+      a.score
+      ||
       b.wave-
-      a.wave ||
+      a.wave
+      ||
       b.kills-
       a.kills
   );
@@ -4207,14 +4800,18 @@ function renderLeaderboard(){
   ){
 
     body.innerHTML=
-      `<tr>
+      `
+      <tr>
+
         <td
           colspan="4"
           style="text-align:center"
         >
           No completed runs yet.
         </td>
-      </tr>`;
+
+      </tr>
+      `;
 
     return;
 
@@ -4229,10 +4826,26 @@ function renderLeaderboard(){
         );
 
       row.innerHTML=
-        `<td>${index+1}</td>
-         <td>${Number(entry.score||0).toLocaleString()}</td>
-         <td>${entry.wave||1}</td>
-         <td>${entry.kills||0}</td>`;
+        `
+        <td>
+          ${index+1}
+        </td>
+
+        <td>
+          ${Number(
+            entry.score||
+            0
+          ).toLocaleString()}
+        </td>
+
+        <td>
+          ${entry.wave||1}
+        </td>
+
+        <td>
+          ${entry.kills||0}
+        </td>
+        `;
 
       body.appendChild(
         row
@@ -4268,9 +4881,9 @@ $("gameOverLeaderboard").onclick=
 $("closeLeaderboard").onclick=
   closeLeaderboard;
 
-/* =====================================================
+/* =========================================================
 JOYSTICK
-===================================================== */
+========================================================= */
 
 const joystick=
   $("joystick");
@@ -4283,17 +4896,35 @@ let joyPointer=
 
 function clearInput(){
 
-  input.x=0;
+  input.x=
+    0;
 
-  input.y=0;
+  input.y=
+    0;
 
-  input.light=false;
+  input.light=
+    false;
 
-  input.heavy=false;
+  input.heavy=
+    false;
 
-  input.special=false;
+  input.special=
+    false;
 
-  input.dash=false;
+  input.dash=
+    false;
+
+  lightHeld=
+    false;
+
+  heavyHeld=
+    false;
+
+  specialHeld=
+    false;
+
+  dashHeld=
+    false;
 
   stick.style.transform=
     "translate(-50%,-50%)";
@@ -4485,9 +5116,9 @@ joystick.addEventListener(
   releaseJoy
 );
 
-/* =====================================================
+/* =========================================================
 ACTION BUTTONS
-===================================================== */
+========================================================= */
 
 function bindButton(
 id,
@@ -4568,9 +5199,9 @@ bindButton(
   "dash"
 );
 
-/* =====================================================
+/* =========================================================
 ANIMATION
-===================================================== */
+========================================================= */
 
 function state(
 entity,
@@ -4630,9 +5261,7 @@ map
         entity.frame=
           0;
 
-      }
-
-      else{
+      }else{
 
         entity.frame=
           animation.frames-
@@ -4650,16 +5279,20 @@ function drawAtlas(
 image,
 entity,
 map,
-scale=1,
-cellWidth=BASIC_W,
-cellHeight=BASIC_H
+scale=
+  1,
+cellWidth=
+  BASIC_W,
+cellHeight=
+  BASIC_H
 ){
 
   if(
     !image.complete ||
-    !image.naturalWidth
+    !image.naturalWidth ||
+    !image.naturalHeight
   ){
-    return;
+    return false;
   }
 
   const animation=
@@ -4720,7 +5353,6 @@ cellHeight=BASIC_H
     cellHeight,
 
     cellWidth,
-
     cellHeight,
 
     -drawWidth/
@@ -4729,11 +5361,12 @@ cellHeight=BASIC_H
     -drawHeight,
 
     drawWidth,
-
     drawHeight
   );
 
   ctx.restore();
+
+  return true;
 
 }
 
@@ -4745,9 +5378,10 @@ scale
 
   if(
     !image.complete ||
-    !image.naturalWidth
+    !image.naturalWidth ||
+    !image.naturalHeight
   ){
-    return;
+    return false;
   }
 
   const cellWidth=
@@ -4758,7 +5392,7 @@ scale
     image.naturalHeight/
     BOSS_ROWS;
 
-  drawAtlas(
+  return drawAtlas(
     image,
     entity,
     bossAnim,
@@ -4769,9 +5403,9 @@ scale
 
 }
 
-/* =====================================================
-COMBAT
-===================================================== */
+/* =========================================================
+COMBAT HELPERS
+========================================================= */
 
 function atkMult(){
 
@@ -4811,7 +5445,8 @@ function nearestEnemy(){
 
       if(
         enemy.dead ||
-        enemy.entering
+        enemy.entering ||
+        enemy.dying
       ){
         return;
       }
@@ -4842,6 +5477,12 @@ function nearestEnemy(){
 
 }
 
+/*
+  Locks Chosen toward the enemy
+  while attacking so he does not
+  flip backwards during combat.
+*/
+
 function faceCombatTarget(){
 
   const enemy=
@@ -4871,9 +5512,12 @@ function effect(
 type,
 x,
 y,
-level=1,
-life=18,
-extra={}
+level=
+  1,
+life=
+  18,
+extra=
+  {}
 ){
 
   effects.push({
@@ -4881,7 +5525,6 @@ extra={}
     type,
 
     x,
-
     y,
 
     level,
@@ -4901,8 +5544,10 @@ function hitEnemies(
 range,
 damage,
 knockback,
-ability=null,
-vertical=.45
+ability=
+  null,
+vertical=
+  .45
 ){
 
   let hits=
@@ -4913,6 +5558,7 @@ vertical=.45
 
       if(
         enemy.dead ||
+        enemy.dying ||
         enemy.entering
       ){
         return;
@@ -4972,14 +5618,24 @@ vertical=.45
           enemy.boss
         ){
 
-          state(
-            enemy,
-            damage>=35
-              ?
+          if(
+            damage>=
+            35
+          ){
+
+            state(
+              enemy,
               "knockback"
-              :
+            );
+
+          }else{
+
+            state(
+              enemy,
               "hit"
-          );
+            );
+
+          }
 
         }
 
@@ -5009,7 +5665,8 @@ vertical=.45
         hits++;
 
         if(
-          enemy.hp<=0
+          enemy.hp<=
+          0
         ){
 
           kill(
@@ -5034,10 +5691,11 @@ vertical=.45
     comboTimer=
       110;
 
-    score+=
+    addScore(
       hits*
       combo*
-      5;
+      5
+    );
 
   }
 
@@ -5045,60 +5703,9 @@ vertical=.45
 
 }
 
-/* =====================================================
-EXTRA LIFE EVERY 50,000 POINTS
-===================================================== */
-
-function checkExtraLifeReward(){
-
-  while(
-    score>=
-    nextExtraLifeScore
-  ){
-
-    const milestone=
-      nextExtraLifeScore;
-
-    lives++;
-
-    nextExtraLifeScore+=
-      50000;
-
-    msg(
-      "❤️ EXTRA LIFE! — "+
-      milestone.toLocaleString()+
-      " POINTS"
-    );
-
-    sfx(
-      "life"
-    );
-
-    effect(
-      "lifeBurst",
-      player.x,
-      player.y-
-      45,
-      10,
-      45,
-      {
-        radius:
-          95
-      }
-    );
-
-    camera(
-      4,
-      9
-    );
-
-  }
-
-}
-
-/* =====================================================
-EVOLUTIONS
-===================================================== */
+/* =========================================================
+ABILITY EVOLUTIONS
+========================================================= */
 
 function evolutionLevel(
 abilityKey
@@ -5113,18 +5720,14 @@ abilityKey
     level>=
     10
   ){
-
     return 10;
-
   }
 
   if(
     level>=
     5
   ){
-
     return 5;
-
   }
 
   return 0;
@@ -5161,7 +5764,7 @@ function triggerThunderEvolution(){
 
   }
 
-  if(
+  else if(
     evolution===
     10
   ){
@@ -5220,7 +5823,7 @@ function triggerDashEvolution(){
 
   }
 
-  if(
+  else if(
     evolution===
     10
   ){
@@ -5230,6 +5833,7 @@ function triggerDashEvolution(){
         .filter(
           enemy=>
             !enemy.dead &&
+            !enemy.dying &&
             !enemy.entering
         )
         .sort(
@@ -5256,7 +5860,8 @@ function triggerDashEvolution(){
 
             if(
               gameOver ||
-              enemy.dead
+              enemy.dead ||
+              enemy.dying
             ){
               return;
             }
@@ -5266,8 +5871,10 @@ function triggerDashEvolution(){
                 enemy.x-
                 player.facing*
                 42,
-                W*.025,
-                W*.975
+                W*
+                .025,
+                W*
+                .975
               );
 
             player.y=
@@ -5305,7 +5912,8 @@ function triggerDashEvolution(){
                 28;
 
             if(
-              enemy.hp<=0
+              enemy.hp<=
+              0
             ){
 
               kill(
@@ -5359,14 +5967,16 @@ function triggerVoltEvolution(){
 
   }
 
-  if(
+  else if(
     evolution===
     10
   ){
 
     for(
-      let i=0;
-      i<3;
+      let i=
+        0;
+      i<
+      3;
       i++
     ){
 
@@ -5438,7 +6048,7 @@ function triggerCrossEvolution(){
 
   }
 
-  if(
+  else if(
     evolution===
     10
   ){
@@ -5494,7 +6104,7 @@ function triggerTwinEvolution(){
 
   }
 
-  if(
+  else if(
     evolution===
     10
   ){
@@ -5519,9 +6129,9 @@ function triggerTwinEvolution(){
 
 }
 
-/* =====================================================
+/* =========================================================
 COMBOS
-===================================================== */
+========================================================= */
 
 function registerCombo(
 letter
@@ -5761,9 +6371,9 @@ letter
 
 }
 
-/* =====================================================
+/* =========================================================
 PLAYER UPDATE
-===================================================== */
+========================================================= */
 
 function updatePlayer(){
 
@@ -5815,9 +6425,7 @@ function updatePlayer(){
     targetY*=
       .18;
 
-  }
-
-  else if(
+  }else if(
     Math.abs(
       ix
     )>
@@ -5883,49 +6491,63 @@ function updatePlayer(){
     player.locked>
     0
   ){
+
     player.locked--;
+
   }
 
   if(
     player.lightCd>
     0
   ){
+
     player.lightCd--;
+
   }
 
   if(
     player.heavyCd>
     0
   ){
+
     player.heavyCd--;
+
   }
 
   if(
     player.specialCd>
     0
   ){
+
     player.specialCd--;
+
   }
 
   if(
     player.dashCd>
     0
   ){
+
     player.dashCd--;
+
   }
 
   if(
     player.inv>
     0
   ){
+
     player.inv--;
+
   }
 
   if(
     player.electric>
     0
   ){
+
     player.electric--;
+
   }
 
   player.energy=
@@ -5956,7 +6578,9 @@ function updatePlayer(){
 
   }
 
-  /* LIGHT */
+  /* -------------------------
+  LIGHT
+  ------------------------- */
 
   if(
     input.light &&
@@ -6010,8 +6634,8 @@ function updatePlayer(){
       ()=>{
 
         if(
-          gameStarted &&
-          !gameOver
+          !gameOver &&
+          gameStarted
         ){
 
           hitEnemies(
@@ -6041,7 +6665,9 @@ function updatePlayer(){
 
   }
 
-  /* HEAVY */
+  /* -------------------------
+  HEAVY
+  ------------------------- */
 
   if(
     input.heavy &&
@@ -6068,7 +6694,7 @@ function updatePlayer(){
       );
 
     player.electric=
-      20;
+      24;
 
     player.electricLevel=
       1;
@@ -6101,8 +6727,8 @@ function updatePlayer(){
       ()=>{
 
         if(
-          gameStarted &&
-          !gameOver
+          !gameOver &&
+          gameStarted
         ){
 
           const hits=
@@ -6144,7 +6770,9 @@ function updatePlayer(){
 
   }
 
-  /* THUNDER BURST */
+  /* -------------------------
+  THUNDER BURST
+  ------------------------- */
 
   if(
     input.special &&
@@ -6225,8 +6853,8 @@ function updatePlayer(){
       ()=>{
 
         if(
-          gameStarted &&
-          !gameOver
+          !gameOver &&
+          gameStarted
         ){
 
           const hits=
@@ -6283,7 +6911,9 @@ function updatePlayer(){
 
   }
 
-  /* DASH */
+  /* -------------------------
+  DASH
+  ------------------------- */
 
   if(
     input.dash &&
@@ -6426,12 +7056,13 @@ function updatePlayer(){
 
 }
 
-/* =====================================================
+/* =========================================================
 ENEMIES
-===================================================== */
+========================================================= */
 
 function makeVoodoo(
-elite=false
+elite=
+  false
 ){
 
   const side=
@@ -6469,11 +7100,9 @@ elite=false
     entering:true,
 
     x,
-
     y,
 
     vx:0,
-
     vy:0,
 
     hp:
@@ -6513,20 +7142,19 @@ elite=false
         75
       ),
 
-    specialCd:
-      0,
+    specialCd:0,
 
-    stun:
-      0,
+    stun:0,
 
-    hit:
-      0,
+    hit:0,
 
-    locked:
-      0,
+    locked:0,
 
-    dead:
-      false,
+    dead:false,
+
+    dying:false,
+
+    deathTimer:0,
 
     facing:
       side<
@@ -6539,11 +7167,9 @@ elite=false
     state:
       "walk",
 
-    frame:
-      0,
+    frame:0,
 
-    ft:
-      0
+    ft:0
 
   };
 
@@ -6557,8 +7183,10 @@ const bossNames=[
 
 function makeBoss(
 name,
-multi=false,
-side=1
+multi=
+  false,
+side=
+  1
 ){
 
   const tier=
@@ -6673,26 +7301,10 @@ side=1
 
     entering:true,
 
-    introSide:
-      side,
-
-    introTargetX:
-      W*
-      (
-        side<
-        0
-          ?
-          .30
-          :
-          .72
-      ),
-
     x,
-
     y,
 
     vx:0,
-
     vy:0,
 
     hp,
@@ -6710,17 +7322,17 @@ side=1
     specialCd:
       120,
 
-    stun:
-      0,
+    stun:0,
 
-    hit:
-      0,
+    hit:0,
 
-    locked:
-      0,
+    locked:0,
 
-    dead:
-      false,
+    dead:false,
+
+    dying:false,
+
+    deathTimer:0,
 
     facing:
       side<
@@ -6733,19 +7345,17 @@ side=1
     state:
       "walk",
 
-    frame:
-      0,
+    frame:0,
 
-    ft:
-      0
+    ft:0
 
   };
 
 }
 
-/* =====================================================
-BOSS INTRO
-===================================================== */
+/* =========================================================
+BOSS CINEMATIC
+========================================================= */
 
 function bossSubtitle(
 name
@@ -6774,7 +7384,7 @@ name
     "KOOSHMA"
   ){
 
-    return "THE NIGHT TERROR";
+    return "THE NIGHTMARE";
 
   }
 
@@ -6783,12 +7393,11 @@ name
 }
 
 function startBossIntro(
-bosses
+boss
 ){
 
   if(
-    !bosses ||
-    !bosses.length
+    !boss
   ){
     return;
   }
@@ -6796,11 +7405,14 @@ bosses
   bossIntroActive=
     true;
 
+  bossIntroBoss=
+    boss;
+
   bossIntroTimer=
     BOSS_INTRO_LENGTH;
 
-  bossIntroBosses=
-    bosses.slice();
+  paused=
+    false;
 
   clearInput();
 
@@ -6813,7 +7425,7 @@ bosses
   player.x=
     clamp(
       W*
-      .50,
+      .29,
       W*
       .025,
       W*
@@ -6823,154 +7435,85 @@ bosses
   player.y=
     clamp(
       H*
-      .73,
+      .72,
       roadTop(),
       roadBottom()
     );
+
+  player.facing=
+    1;
 
   state(
     player,
     "idle"
   );
 
+  boss.entering=
+    true;
+
+  boss.x=
+    W+
+    120;
+
+  boss.y=
+    clamp(
+      H*
+      .70,
+      roadTop()+
+      20,
+      roadBottom()-
+      20
+    );
+
+  boss.vx=
+    0;
+
+  boss.vy=
+    0;
+
+  boss.facing=
+    -1;
+
   if(
-    bosses.length===
-    1
+    boss.name===
+    "MARDI GRAS" ||
+    boss.name===
+    "ROUXGAROUX"
   ){
 
-    bossIntroTitle=
-      bosses[
-        0
-      ].name;
+    state(
+      boss,
+      "entrance"
+    );
 
-    bossIntroSubtitle=
-      bossSubtitle(
-        bosses[
-          0
-        ].name
-      );
+  }else{
 
-  }
-
-  else if(
-    bosses.length===
-    2
-  ){
-
-    bossIntroTitle=
-      "DOUBLE BOSS";
-
-    bossIntroSubtitle=
-      bosses
-        .map(
-          boss=>
-            boss.name
-        )
-        .join(
-          "  •  "
-        );
+    state(
+      boss,
+      "walk"
+    );
 
   }
 
-  else{
+  $("bossCinema").style.display=
+    "block";
 
-    bossIntroTitle=
-      "TRIPLE BOSS";
+  $("bossCinemaName").textContent=
+    boss.name;
 
-    bossIntroSubtitle=
-      bosses
-        .map(
-          boss=>
-            boss.name
-        )
-        .join(
-          "  •  "
-        );
+  $("bossCinemaSub").textContent=
+    bossSubtitle(
+      boss.name
+    );
 
-  }
+  $("bossCinemaName").style.opacity=
+    0;
 
-  bosses.forEach(
-    (boss,index)=>{
-
-      boss.entering=
-        true;
-
-      boss.vx=
-        0;
-
-      boss.vy=
-        0;
-
-      if(
-        bosses.length===
-        1
-      ){
-
-        boss.introTargetX=
-          W*
-          .72;
-
-      }
-
-      else if(
-        bosses.length===
-        2
-      ){
-
-        boss.introTargetX=
-          index===
-          0
-            ?
-            W*
-            .29
-            :
-            W*
-            .71;
-
-      }
-
-      else{
-
-        boss.introTargetX=
-          [
-            W*.23,
-            W*.50,
-            W*.77
-          ][
-            index
-          ];
-
-      }
-
-      boss.y=
-        clamp(
-          H*
-          (
-            .67+
-            index*
-            .025
-          ),
-          roadTop()+
-          25,
-          roadBottom()-
-          25
-        );
-
-      state(
-        boss,
-        "entrance"
-      );
-
-    }
-  );
+  $("bossCinemaSub").style.opacity=
+    0;
 
   sfx(
     "boss"
-  );
-
-  camera(
-    3,
-    8
   );
 
 }
@@ -6978,61 +7521,143 @@ bosses
 function updateBossIntro(){
 
   if(
-    !bossIntroActive
+    !bossIntroActive ||
+    !bossIntroBoss
   ){
     return;
   }
 
+  const boss=
+    bossIntroBoss;
+
   bossIntroTimer--;
 
-  bossIntroBosses.forEach(
-    boss=>{
-
-      if(
-        !boss ||
-        boss.dead
-      ){
-        return;
-      }
-
-      boss.x=
-        lerp(
-          boss.x,
-          boss.introTargetX,
-          .055
-        );
-
-      boss.facing=
-        Math.sign(
-          player.x-
-          boss.x
-        ) ||
-        boss.facing;
-
-      state(
-        boss,
-        "entrance"
-      );
-
-      anim(
-        boss,
-        bossAnim
-      );
-
-    }
-  );
+  const elapsed=
+    BOSS_INTRO_LENGTH-
+    bossIntroTimer;
 
   if(
-    bossIntroTimer===
-    72
+    elapsed<
+    70
   ){
 
+    const targetX=
+      W*
+      .72;
+
+    boss.x=
+      lerp(
+        boss.x,
+        targetX,
+        .055
+      );
+
+  }
+
+  if(
+    elapsed===
+    35
+  ){
+
+    $("bossCinemaName").style.opacity=
+      1;
+
+    $("bossCinemaSub").style.opacity=
+      1;
+
     camera(
-      5,
-      9
+      3,
+      8
     );
 
   }
+
+  if(
+    elapsed===
+    70
+  ){
+
+    if(
+      boss.name===
+      "ROUXGAROUX"
+    ){
+
+      effect(
+        "rouxRoar",
+        boss.x,
+        boss.y-
+        52,
+        1,
+        34
+      );
+
+      msg(
+        "🐺 ROUXGAROUX!"
+      );
+
+      camera(
+        6,
+        12
+      );
+
+    }
+
+    else if(
+      boss.name===
+      "MARDI GRAS"
+    ){
+
+      effect(
+        "mardiRing",
+        boss.x,
+        boss.y-
+        40,
+        1,
+        35,
+        {
+          radius:
+            115
+        }
+      );
+
+      msg(
+        "🎭 MARDI GRAS!"
+      );
+
+    }
+
+    else{
+
+      effect(
+        "terror",
+        boss.x,
+        boss.y-
+        45,
+        8,
+        32,
+        {
+          radius:
+            100
+        }
+      );
+
+      msg(
+        "👁 KOOSHMA!"
+      );
+
+    }
+
+  }
+
+  anim(
+    boss,
+    boss.name===
+    "KOOSHMA"
+      ?
+      animBase
+      :
+      bossAnim
+  );
 
   if(
     bossIntroTimer<=
@@ -7042,45 +7667,53 @@ function updateBossIntro(){
     bossIntroActive=
       false;
 
-    bossIntroBosses.forEach(
-      boss=>{
+    bossIntroBoss=
+      null;
 
-        if(
-          !boss ||
-          boss.dead
-        ){
-          return;
-        }
+    boss.entering=
+      false;
 
-        boss.entering=
-          false;
+    boss.x=
+      clamp(
+        boss.x,
+        W*
+        .025,
+        W*
+        .975
+      );
 
-        constrain(
-          boss
-        );
+    boss.y=
+      clamp(
+        boss.y,
+        roadTop(),
+        roadBottom()
+      );
 
-        boss.attackCd=
-          Math.max(
-            boss.attackCd,
-            40
-          );
+    boss.attackCd=
+      Math.max(
+        boss.attackCd,
+        48
+      );
 
-        boss.specialCd=
-          Math.max(
-            boss.specialCd,
-            90
-          );
+    boss.specialCd=
+      Math.max(
+        boss.specialCd,
+        85
+      );
 
-        state(
-          boss,
-          "idle"
-        );
-
-      }
+    state(
+      boss,
+      "idle"
     );
 
-    bossIntroBosses=
-      [];
+    $("bossCinema").style.display=
+      "none";
+
+    $("bossCinemaName").style.opacity=
+      0;
+
+    $("bossCinemaSub").style.opacity=
+      0;
 
     clearInput();
 
@@ -7088,9 +7721,9 @@ function updateBossIntro(){
 
 }
 
-/* =====================================================
+/* =========================================================
 BOSS SPAWNING
-===================================================== */
+========================================================= */
 
 function isBossWave(){
 
@@ -7119,6 +7752,11 @@ function spawnBossWave(){
       primaryIndex
     ];
 
+  /*
+    WAVE 75+
+    TRIPLE BOSSES
+  */
+
   if(
     wave>=
     75
@@ -7146,36 +7784,28 @@ function spawnBossWave(){
 
     ];
 
-    const bosses=[
-
+    enemies.push(
       makeBoss(
-        names[
-          0
-        ],
-        true,
-        -1
-      ),
-
-      makeBoss(
-        names[
-          1
-        ],
-        true,
-        1
-      ),
-
-      makeBoss(
-        names[
-          2
-        ],
+        names[0],
         true,
         -1
       )
-
-    ];
+    );
 
     enemies.push(
-      ...bosses
+      makeBoss(
+        names[1],
+        true,
+        1
+      )
+    );
+
+    enemies.push(
+      makeBoss(
+        names[2],
+        true,
+        -1
+      )
     );
 
     $("enemyText").textContent=
@@ -7185,13 +7815,18 @@ function spawnBossWave(){
       "☠ TRIPLE BOSS WAVE ☠"
     );
 
-    startBossIntro(
-      bosses
+    sfx(
+      "boss"
     );
 
     return;
 
   }
+
+  /*
+    WAVE 50+
+    DOUBLE BOSSES
+  */
 
   if(
     wave>=
@@ -7223,26 +7858,25 @@ function spawnBossWave(){
 
     }
 
-    const bosses=[
+    const second=
+      bossNames[
+        secondIndex
+      ];
 
+    enemies.push(
       makeBoss(
         first,
         true,
         -1
-      ),
+      )
+    );
 
+    enemies.push(
       makeBoss(
-        bossNames[
-          secondIndex
-        ],
+        second,
         true,
         1
       )
-
-    ];
-
-    enemies.push(
-      ...bosses
     );
 
     $("enemyText").textContent=
@@ -7252,13 +7886,17 @@ function spawnBossWave(){
       "⚠ DOUBLE BOSS WAVE ⚠"
     );
 
-    startBossIntro(
-      bosses
+    sfx(
+      "boss"
     );
 
     return;
 
   }
+
+  /*
+    SINGLE BOSS
+  */
 
   const boss=
     makeBoss(
@@ -7275,12 +7913,14 @@ function spawnBossWave(){
     "BOSS WAVE";
 
   startBossIntro(
-    [
-      boss
-    ]
+    boss
   );
 
 }
+
+/* =========================================================
+WAVE SPAWNING
+========================================================= */
 
 function spawnWave(){
 
@@ -7289,6 +7929,15 @@ function spawnWave(){
 
   pending=
     0;
+
+  bossIntroActive=
+    false;
+
+  bossIntroBoss=
+    null;
+
+  $("bossCinema").style.display=
+    "none";
 
   if(
     isBossWave()
@@ -7317,8 +7966,10 @@ function spawnWave(){
     count;
 
   for(
-    let i=0;
-    i<count;
+    let i=
+      0;
+    i<
+    count;
     i++
   ){
 
@@ -7334,7 +7985,8 @@ function spawnWave(){
 
         enemies.push(
           makeVoodoo(
-            wave>=4 &&
+            wave>=
+            4 &&
             i%
             5===
             0
@@ -7356,13 +8008,14 @@ function spawnWave(){
 
 }
 
-/* =====================================================
+/* =========================================================
 PLAYER DAMAGE / LIVES
-===================================================== */
+========================================================= */
 
 function damagePlayer(
 amount,
-source=null
+source=
+  null
 ){
 
   if(
@@ -7569,9 +8222,9 @@ function updateRespawn(){
 
 }
 
-/* =====================================================
+/* =========================================================
 BOSS SPECIALS
-===================================================== */
+========================================================= */
 
 function bossSpecial(
 enemy,
@@ -7586,14 +8239,14 @@ distanceToPlayer
     enemy.stun>
     0 ||
     enemy.entering ||
-    bossIntroActive
+    enemy.dying
   ){
-
     return false;
-
   }
 
-  /* MARDI GRAS */
+  /* -------------------------
+  MARDI GRAS
+  ------------------------- */
 
   if(
     enemy.name===
@@ -7629,8 +8282,10 @@ distanceToPlayer
     );
 
     for(
-      let i=0;
-      i<22;
+      let i=
+        0;
+      i<
+      22;
       i++
     ){
 
@@ -7711,7 +8366,8 @@ distanceToPlayer
 
         if(
           gameOver ||
-          enemy.dead
+          enemy.dead ||
+          enemy.dying
         ){
           return;
         }
@@ -7740,7 +8396,9 @@ distanceToPlayer
 
   }
 
-  /* ROUXGAROUX */
+  /* -------------------------
+  ROUXGAROUX
+  ------------------------- */
 
   if(
     enemy.name===
@@ -7751,7 +8409,7 @@ distanceToPlayer
       108;
 
     enemy.locked=
-      30;
+      34;
 
     state(
       enemy,
@@ -7774,7 +8432,7 @@ distanceToPlayer
       enemy.y-
       45,
       1,
-      20
+      24
     );
 
     setTimeout(
@@ -7782,10 +8440,21 @@ distanceToPlayer
 
         if(
           gameOver ||
-          enemy.dead
+          enemy.dead ||
+          enemy.dying
         ){
           return;
         }
+
+        /*
+          Heavy frame during
+          impact portion.
+        */
+
+        state(
+          enemy,
+          "heavy"
+        );
 
         enemy.x=
           clamp(
@@ -7794,8 +8463,10 @@ distanceToPlayer
               -25,
               25
             ),
-            W*.025,
-            W*.975
+            W*
+            .025,
+            W*
+            .975
           );
 
         enemy.y=
@@ -7815,11 +8486,6 @@ distanceToPlayer
             enemy.x
           ) ||
           enemy.facing;
-
-        state(
-          enemy,
-          "heavy"
-        );
 
         effect(
           "swampImpact",
@@ -7862,7 +8528,9 @@ distanceToPlayer
 
   }
 
-  /* KOOSHMA */
+  /* -------------------------
+  KOOSHMA
+  ------------------------- */
 
   if(
     enemy.name===
@@ -7889,7 +8557,7 @@ distanceToPlayer
       player.x,
       player.y-
       40,
-      1,
+      8,
       34,
       {
         radius:
@@ -7902,7 +8570,8 @@ distanceToPlayer
 
         if(
           gameOver ||
-          enemy.dead
+          enemy.dead ||
+          enemy.dying
         ){
           return;
         }
@@ -7914,8 +8583,10 @@ distanceToPlayer
               -95,
               95
             ),
-            W*.025,
-            W*.975
+            W*
+            .025,
+            W*
+            .975
           );
 
         enemy.y=
@@ -7973,9 +8644,9 @@ distanceToPlayer
 
 }
 
-/* =====================================================
+/* =========================================================
 ENEMY AI
-===================================================== */
+========================================================= */
 
 function updateEnemies(){
 
@@ -7989,41 +8660,105 @@ function updateEnemies(){
       }
 
       if(
+        enemy.dying
+      ){
+
+        enemy.deathTimer--;
+
+        enemy.vx*=
+          .82;
+
+        enemy.vy*=
+          .82;
+
+        anim(
+          enemy,
+          enemy.boss
+            &&
+          enemy.name!==
+          "KOOSHMA"
+            ?
+            bossAnim
+            :
+            animBase
+        );
+
+        if(
+          enemy.deathTimer<=
+          0
+        ){
+
+          enemy.dead=
+            true;
+
+        }
+
+        return;
+
+      }
+
+      if(
         enemy.attackCd>
         0
       ){
+
         enemy.attackCd--;
+
       }
 
       if(
         enemy.specialCd>
         0
       ){
+
         enemy.specialCd--;
+
       }
 
       if(
         enemy.stun>
         0
       ){
+
         enemy.stun--;
+
       }
 
       if(
         enemy.hit>
         0
       ){
+
         enemy.hit--;
+
       }
 
       if(
         enemy.locked>
         0
       ){
+
         enemy.locked--;
+
       }
 
-      /* ENTERING */
+      /* -------------------------
+      BOSS INTRO
+      ------------------------- */
+
+      if(
+        bossIntroActive &&
+        enemy===
+        bossIntroBoss
+      ){
+
+        return;
+
+      }
+
+      /* -------------------------
+      ENTERING
+      ------------------------- */
 
       if(
         enemy.entering
@@ -8051,9 +8786,11 @@ function updateEnemies(){
         enemy.vx=
           lerp(
             enemy.vx,
+
             direction*
             enemy.speed*
             1.45,
+
             .13
           );
 
@@ -8084,6 +8821,9 @@ function updateEnemies(){
         anim(
           enemy,
           enemy.boss
+            &&
+          enemy.name!==
+          "KOOSHMA"
             ?
             bossAnim
             :
@@ -8093,6 +8833,10 @@ function updateEnemies(){
         return;
 
       }
+
+      /* -------------------------
+      WAIT DURING RESPAWN
+      ------------------------- */
 
       if(
         respawning
@@ -8112,6 +8856,9 @@ function updateEnemies(){
         anim(
           enemy,
           enemy.boss
+            &&
+          enemy.name!==
+          "KOOSHMA"
             ?
             bossAnim
             :
@@ -8121,6 +8868,10 @@ function updateEnemies(){
         return;
 
       }
+
+      /* -------------------------
+      STUN
+      ------------------------- */
 
       if(
         enemy.stun>
@@ -8143,20 +8894,37 @@ function updateEnemies(){
           enemy
         );
 
-        state(
-          enemy,
+        if(
           enemy.boss &&
-          enemy.hit>
-          0
-            ?
-            "hit"
-            :
+          enemy.name!==
+          "KOOSHMA"
+        ){
+
+          state(
+            enemy,
+            enemy.hit>
+            0
+              ?
+              "hit"
+              :
+              "idle"
+          );
+
+        }else{
+
+          state(
+            enemy,
             "idle"
-        );
+          );
+
+        }
 
         anim(
           enemy,
           enemy.boss
+            &&
+          enemy.name!==
+          "KOOSHMA"
             ?
             bossAnim
             :
@@ -8166,6 +8934,10 @@ function updateEnemies(){
         return;
 
       }
+
+      /* -------------------------
+      LOCKED ATTACK
+      ------------------------- */
 
       if(
         enemy.locked>
@@ -8181,6 +8953,9 @@ function updateEnemies(){
         anim(
           enemy,
           enemy.boss
+            &&
+          enemy.name!==
+          "KOOSHMA"
             ?
             bossAnim
             :
@@ -8210,6 +8985,10 @@ function updateEnemies(){
           dx
         ) ||
         enemy.facing;
+
+      /* -------------------------
+      BOSS SPECIAL
+      ------------------------- */
 
       if(
         enemy.boss &&
@@ -8285,6 +9064,10 @@ function updateEnemies(){
           .10
         );
 
+      /* -------------------------
+      CLOSE ATTACK
+      ------------------------- */
+
       if(
         Math.abs(
           dx
@@ -8325,9 +9108,7 @@ function updateEnemies(){
           enemy
         );
 
-      }
-
-      else{
+      }else{
 
         state(
           enemy,
@@ -8357,6 +9138,9 @@ function updateEnemies(){
       anim(
         enemy,
         enemy.boss
+          &&
+        enemy.name!==
+        "KOOSHMA"
           ?
           bossAnim
           :
@@ -8395,7 +9179,8 @@ function updateEnemies(){
         ()=>{
 
           if(
-            !gameOver
+            !gameOver &&
+            gameStarted
           ){
 
             openShop();
@@ -8406,15 +9191,14 @@ function updateEnemies(){
         600
       );
 
-    }
-
-    else{
+    }else{
 
       setTimeout(
         ()=>{
 
           if(
-            gameOver
+            gameOver ||
+            !gameStarted
           ){
             return;
           }
@@ -8436,9 +9220,9 @@ function updateEnemies(){
 
 }
 
-/* =====================================================
+/* =========================================================
 PICKUPS
-===================================================== */
+========================================================= */
 
 const pickupTypes={
 
@@ -8551,36 +9335,28 @@ function dropMultiplier(){
     wave<=
     30
   ){
-
     return 1;
-
   }
 
   if(
     wave<=
     40
   ){
-
     return .72;
-
   }
 
   if(
     wave<=
     50
   ){
-
     return .52;
-
   }
 
   if(
     wave<=
     60
   ){
-
     return .38;
-
   }
 
   return .27;
@@ -8681,9 +9457,7 @@ enemy
 
     }
 
-  }
-
-  else{
+  }else{
 
     if(
       roll<
@@ -8800,6 +9574,7 @@ function updatePickups(){
 
       if(
         !respawning &&
+        !bossIntroActive &&
         dist(
           player,
           pickup
@@ -8845,8 +9620,9 @@ function updatePickups(){
           data.score
         ){
 
-          score+=
-            data.score;
+          addScore(
+            data.score
+          );
 
           voltage+=
             data.voltage;
@@ -8884,23 +9660,67 @@ function updatePickups(){
 
 }
 
-/* =====================================================
+/* =========================================================
 KILLS
-===================================================== */
+========================================================= */
 
 function kill(
 enemy,
-ability=null
+ability=
+  null
 ){
 
   if(
-    enemy.dead
+    enemy.dead ||
+    enemy.dying
   ){
     return;
   }
 
-  enemy.dead=
-    true;
+  /*
+    Bosses with real atlases
+    play defeat animation.
+  */
+
+  if(
+    enemy.boss &&
+    (
+      enemy.name===
+      "MARDI GRAS" ||
+      enemy.name===
+      "ROUXGAROUX"
+    )
+  ){
+
+    enemy.dying=
+      true;
+
+    enemy.deathTimer=
+      58;
+
+    enemy.vx=
+      0;
+
+    enemy.vy=
+      0;
+
+    enemy.stun=
+      0;
+
+    enemy.locked=
+      0;
+
+    state(
+      enemy,
+      "defeat"
+    );
+
+  }else{
+
+    enemy.dead=
+      true;
+
+  }
 
   kills++;
 
@@ -8944,9 +9764,10 @@ ability=null
     earned+=
       reward;
 
-    score+=
+    addScore(
       reward*
-      2;
+      2
+    );
 
     msg(
       enemy.name+
@@ -8958,6 +9779,7 @@ ability=null
       enemy.x,
       enemy.y-
       45,
+
       ability
         ?
         upgrades[
@@ -8966,6 +9788,7 @@ ability=null
         1
         :
         1,
+
       30
     );
 
@@ -8974,9 +9797,7 @@ ability=null
       12
     );
 
-  }
-
-  else{
+  }else{
 
     const reward=
       enemy.elite
@@ -8991,20 +9812,21 @@ ability=null
     earned+=
       reward;
 
-    score+=
+    addScore(
       enemy.elite
         ?
         220
         :
-        100;
+        100
+    );
 
   }
 
 }
 
-/* =====================================================
+/* =========================================================
 EFFECT UPDATE
-===================================================== */
+========================================================= */
 
 function updateEffects(){
 
@@ -9053,6 +9875,7 @@ function updateEffects(){
 
             if(
               enemy.dead ||
+              enemy.dying ||
               enemy.entering
             ){
               return;
@@ -9062,6 +9885,7 @@ function updateEffects(){
               Math.hypot(
                 enemy.x-
                 e.x,
+
                 enemy.y-
                 e.y
               )<
@@ -9078,6 +9902,7 @@ function updateEffects(){
               enemy.stun=
                 Math.max(
                   enemy.stun,
+
                   enemy.boss
                     ?
                     6
@@ -9125,6 +9950,7 @@ function updateEffects(){
           enemies.filter(
             enemy=>
               !enemy.dead &&
+              !enemy.dying &&
               !enemy.entering
           );
 
@@ -9189,9 +10015,9 @@ function updateEffects(){
 
 }
 
-/* =====================================================
+/* =========================================================
 SHOP
-===================================================== */
+========================================================= */
 
 function shouldShop(
 completedWave
@@ -9226,9 +10052,7 @@ type
     220*
     Math.pow(
       1.42,
-      upgrades[
-        type
-      ]-
+      upgrades[type]-
       1
     )
   );
@@ -9265,13 +10089,16 @@ level
     "";
 
   for(
-    let i=1;
-    i<=10;
+    let i=
+      1;
+    i<=
+    10;
     i++
   ){
 
     text+=
-      i<=level
+      i<=
+      level
         ?
         "●"
         :
@@ -9300,10 +10127,12 @@ disabled
     parent
   ){
 
-    parent.classList.toggle(
-      "unavailable",
-      disabled
-    );
+    parent
+      .classList
+      .toggle(
+        "unavailable",
+        disabled
+      );
 
   }
 
@@ -9454,6 +10283,7 @@ function updateShop(){
       "power",
       "powerButton"
     ],
+
     [
       "speed",
       "speedButton"
@@ -9617,6 +10447,7 @@ function buyVitality(){
   player.hp=
     Math.min(
       player.maxHp,
+
       player.hp+
       (
         nextHp-
@@ -9775,6 +10606,7 @@ $("continueButton").onclick=
   player.hp=
     Math.min(
       player.maxHp,
+
       player.hp+
       player.maxHp*
       .25
@@ -9802,9 +10634,9 @@ $("continueButton").onclick=
 
 };
 
-/* =====================================================
+/* =========================================================
 GAME OVER
-===================================================== */
+========================================================= */
 
 function endGame(){
 
@@ -9826,9 +10658,15 @@ function endGame(){
   bossIntroActive=
     false;
 
+  bossIntroBoss=
+    null;
+
   clearInput();
 
   $("pauseMenu").style.display=
+    "none";
+
+  $("bossCinema").style.display=
     "none";
 
   saveRun();
@@ -9903,14 +10741,11 @@ $("playAgainButton").onclick=
 
 };
 
-/* =====================================================
+/* =========================================================
 RESET RUN
-===================================================== */
+========================================================= */
 
 function resetRun(){
-
-  gameStarted=
-    true;
 
   gameOver=
     false;
@@ -9920,15 +10755,6 @@ function resetRun(){
 
   pauseOpen=
     false;
-
-  bossIntroActive=
-    false;
-
-  bossIntroTimer=
-    0;
-
-  bossIntroBosses=
-    [];
 
   wavePending=
     false;
@@ -9994,6 +10820,15 @@ function resetRun(){
     false;
 
   respawnTimer=
+    0;
+
+  bossIntroActive=
+    false;
+
+  bossIntroBoss=
+    null;
+
+  bossIntroTimer=
     0;
 
   upgrades.power=
@@ -10088,6 +10923,18 @@ function resetRun(){
     player
   );
 
+  $("shop").style.display=
+    "none";
+
+  $("pauseMenu").style.display=
+    "none";
+
+  $("leaderboard").style.display=
+    "none";
+
+  $("bossCinema").style.display=
+    "none";
+
   try{
 
     music.currentTime=
@@ -10118,69 +10965,9 @@ function resetRun(){
 
 }
 
-/* =====================================================
-TITLE SCREEN START
-===================================================== */
-
-function startGameFromTitle(){
-
-  if(
-    gameStarted
-  ){
-    return;
-  }
-
-  ensureAudio();
-
-  $("titleScreen")
-    .classList
-    .add(
-      "starting"
-    );
-
-  setTimeout(
-    ()=>{
-
-      $("titleScreen").style.display=
-        "none";
-
-      resetRun();
-
-    },
-    470
-  );
-
-}
-
-$("titleStartButton").onclick=
-  startGameFromTitle;
-
-document.addEventListener(
-  "keydown",
-  event=>{
-
-    if(
-      !gameStarted &&
-      (
-        event.key===
-        "Enter" ||
-        event.code===
-        "Space"
-      )
-    ){
-
-      event.preventDefault();
-
-      startGameFromTitle();
-
-    }
-
-  }
-);
-
-/* =====================================================
+/* =========================================================
 STAGE
-===================================================== */
+========================================================= */
 
 function drawStage(){
 
@@ -10211,12 +10998,16 @@ function drawStage(){
 
     ctx.drawImage(
       img.stage,
+
       0,
       0,
+
       iw,
       sourceHeight,
+
       0,
       0,
+
       W,
       H*
       .50
@@ -10224,7 +11015,9 @@ function drawStage(){
 
   }
 
-  /* SIDEWALK */
+  /* -------------------------
+  SIDEWALK
+  ------------------------- */
 
   const sidewalkTop=
     H*
@@ -10269,9 +11062,12 @@ function drawStage(){
     1;
 
   for(
-    let x=0;
-    x<W;
-    x+=48
+    let x=
+      0;
+    x<
+    W;
+    x+=
+    48
   ){
 
     ctx.beginPath();
@@ -10291,7 +11087,9 @@ function drawStage(){
 
   }
 
-  /* CURB */
+  /* -------------------------
+  CURB
+  ------------------------- */
 
   ctx.fillStyle=
     "#696064";
@@ -10314,7 +11112,9 @@ function drawStage(){
     5
   );
 
-  /* STREET */
+  /* -------------------------
+  STREET
+  ------------------------- */
 
   const street=
     ctx.createLinearGradient(
@@ -10351,7 +11151,9 @@ function drawStage(){
     roadTop()
   );
 
-  /* STREET TEXTURE */
+  /* -------------------------
+  STREET TEXTURE
+  ------------------------- */
 
   ctx.strokeStyle=
     "rgba(180,170,165,.06)";
@@ -10366,8 +11168,10 @@ function drawStage(){
     let y=
       roadTop()+
       16;
-    y<H;
-    y+=24
+    y<
+    H;
+    y+=
+    24
   ){
 
     ctx.beginPath();
@@ -10496,7 +11300,10 @@ function drawStage(){
     58
   );
 
-  /* LIGHT RAIN */
+  /*
+    LIGHT RAIN
+    Reduced for mobile performance.
+  */
 
   const now=
     performance.now();
@@ -10508,8 +11315,10 @@ function drawStage(){
     1;
 
   for(
-    let i=0;
-    i<22;
+    let i=
+      0;
+    i<
+    22;
     i++
   ){
 
@@ -10677,13 +11486,14 @@ h
 
 }
 
-/* =====================================================
+/* =========================================================
 SHADOW
-===================================================== */
+========================================================= */
 
 function shadow(
 entity,
-size=1
+size=
+  1
 ){
 
   const s=
@@ -10700,11 +11510,14 @@ size=1
     entity.x,
     entity.y+
     2,
+
     27*
     s*
     size,
+
     8*
     s,
+
     0,
     0,
     Math.PI*
@@ -10715,50 +11528,31 @@ size=1
 
 }
 
-/* =====================================================
-CRACKLING ELECTRIC AURA
-===================================================== */
+/* =========================================================
+CRACKLING PLAYER AURA
+========================================================= */
 
-function drawAuraBolt(
-x1,
-y1,
-x2,
-y2,
+function drawJaggedBolt(
+startX,
+startY,
+endX,
+endY,
 segments,
-jitter,
-color,
-glow,
-width,
-alpha
+jitter
 ){
-
-  ctx.save();
-
-  ctx.strokeStyle=
-    color;
-
-  ctx.shadowColor=
-    glow;
-
-  ctx.shadowBlur=
-    8;
-
-  ctx.lineWidth=
-    width;
-
-  ctx.globalAlpha=
-    alpha;
 
   ctx.beginPath();
 
   ctx.moveTo(
-    x1,
-    y1
+    startX,
+    startY
   );
 
   for(
-    let i=1;
-    i<segments;
+    let i=
+      1;
+    i<
+    segments;
     i++
   ){
 
@@ -10768,8 +11562,8 @@ alpha
 
     const x=
       lerp(
-        x1,
-        x2,
+        startX,
+        endX,
         t
       )+
       rnd(
@@ -10779,8 +11573,8 @@ alpha
 
     const y=
       lerp(
-        y1,
-        y2,
+        startY,
+        endY,
         t
       )+
       rnd(
@@ -10796,13 +11590,11 @@ alpha
   }
 
   ctx.lineTo(
-    x2,
-    y2
+    endX,
+    endY
   );
 
   ctx.stroke();
-
-  ctx.restore();
 
 }
 
@@ -10828,38 +11620,55 @@ function drawPlayerAura(){
       player.y
     );
 
-  const power=
-    clamp(
-      level/
-      10,
-      .15,
-      1
-    );
+  ctx.save();
+
+  ctx.strokeStyle=
+    color.main;
+
+  ctx.shadowColor=
+    color.glow;
+
+  ctx.shadowBlur=
+    12+
+    level*
+    1.2;
+
+  ctx.lineWidth=
+    1.3+
+    level*
+    .10;
+
+  ctx.globalAlpha=
+    .74;
+
+  /*
+    Main crackling bolts
+    around Chosen.
+  */
 
   const boltCount=
-    level>=10
+    level>=
+    10
       ?
       8
       :
-      level>=8
+      level>=
+      7
         ?
         7
         :
-        level>=5
+        level>=
+        4
           ?
           6
           :
-          4;
-
-  /*
-    This replaces the old simple
-    circles/lines with jagged,
-    SSJ2-inspired crackling bolts.
-  */
+          5;
 
   for(
-    let i=0;
-    i<boltCount;
+    let i=
+      0;
+    i<
+    boltCount;
     i++
   ){
 
@@ -10872,16 +11681,11 @@ function drawPlayerAura(){
         :
         1;
 
-    const upper=
-      i%
-      3===
-      0;
-
     const startX=
       player.x+
       side*
       rnd(
-        7,
+        5,
         18
       )*
       s;
@@ -10889,16 +11693,8 @@ function drawPlayerAura(){
     const startY=
       player.y-
       rnd(
-        upper
-          ?
-          48
-          :
-          18,
-        upper
-          ?
-          78
-          :
-          58
+        20,
+        68
       )*
       s;
 
@@ -10906,152 +11702,243 @@ function drawPlayerAura(){
       player.x+
       side*
       rnd(
-        25,
-        42+
+        24,
+        45+
         level*
-        1.4
+        1.5
       )*
       s;
 
     const endY=
-      player.y-
+      startY+
       rnd(
-        7,
-        72
+        -22,
+        28
       )*
       s;
 
-    drawAuraBolt(
+    drawJaggedBolt(
       startX,
       startY,
       endX,
       endY,
       4+
       Math.floor(
-        power*
-        2
+        level/
+        3
       ),
-      4+
-      power*
-      4,
-      color.main,
-      color.glow,
-      1+
-      power*
-      .55,
-      .45+
-      power*
-      .18
+      5+
+      level*
+      .25
     );
-
-    if(
-      level>=
-      9 &&
-      i%
-      2===
-      0
-    ){
-
-      drawAuraBolt(
-        startX+
-        rnd(
-          -2,
-          2
-        ),
-        startY,
-        endX,
-        endY,
-        4,
-        3,
-        color.core,
-        color.glow,
-        .8,
-        .52
-      );
-
-    }
 
   }
 
   /*
-    Subtle electric glow around
-    the feet — not a giant circle.
+    Bright short sparks close
+    to his body.
   */
 
-  ctx.save();
+  ctx.strokeStyle=
+    color.core;
 
-  const glow=
-    ctx.createRadialGradient(
-      player.x,
-      player.y,
-      2,
-      player.x,
-      player.y,
-      (
-        32+
+  ctx.shadowBlur=
+    18+
+    level;
+
+  ctx.globalAlpha=
+    .85;
+
+  for(
+    let i=
+      0;
+    i<
+    3+
+    Math.floor(
+      level/
+      3
+    );
+    i++
+  ){
+
+    const x1=
+      player.x+
+      rnd(
+        -17,
+        17
+      )*
+      s;
+
+    const y1=
+      player.y-
+      rnd(
+        18,
+        72
+      )*
+      s;
+
+    drawJaggedBolt(
+      x1,
+      y1,
+
+      x1+
+      rnd(
+        -14,
+        14
+      )*
+      s,
+
+      y1+
+      rnd(
+        -17,
+        17
+      )*
+      s,
+
+      3,
+      3.5
+    );
+
+  }
+
+  /*
+    Ground crackle.
+  */
+
+  ctx.strokeStyle=
+    color.main;
+
+  ctx.shadowBlur=
+    10;
+
+  ctx.globalAlpha=
+    .42;
+
+  for(
+    let i=
+      0;
+    i<
+    3;
+    i++
+  ){
+
+    const x1=
+      player.x+
+      rnd(
+        -18,
+        18
+      )*
+      s;
+
+    const y1=
+      player.y-
+      rnd(
+        0,
+        4
+      );
+
+    const x2=
+      player.x+
+      rnd(
+        -42-
+        level*
+        1.5,
+        42+
         level*
         1.5
       )*
-      s
+      s;
+
+    const y2=
+      player.y+
+      rnd(
+        -3,
+        4
+      );
+
+    drawJaggedBolt(
+      x1,
+      y1,
+      x2,
+      y2,
+      4,
+      3
     );
 
-  glow.addColorStop(
-    0,
-    color.main+
-    "55"
-  );
+  }
 
-  glow.addColorStop(
-    .45,
-    color.glow+
-    "22"
-  );
+  /*
+    Royal Blue gets an
+    additional white-blue core.
+  */
 
-  glow.addColorStop(
-    1,
-    color.glow+
-    "00"
-  );
+  if(
+    level===
+    10
+  ){
 
-  ctx.fillStyle=
-    glow;
+    ctx.strokeStyle=
+      "#ffffff";
 
-  ctx.globalAlpha=
-    .45;
+    ctx.shadowColor=
+      "#286dff";
 
-  ctx.beginPath();
+    ctx.shadowBlur=
+      24;
 
-  ctx.ellipse(
-    player.x,
-    player.y-
-    1,
-    (
-      32+
-      level*
-      1.5
-    )*
-    s,
-    (
-      9+
-      level*
-      .25
-    )*
-    s,
-    0,
-    0,
-    Math.PI*
-    2
-  );
+    ctx.lineWidth=
+      1.5;
 
-  ctx.fill();
+    ctx.globalAlpha=
+      .78;
+
+    drawJaggedBolt(
+      player.x-
+      8*
+      s,
+      player.y-
+      80*
+      s,
+
+      player.x+
+      5*
+      s,
+      player.y-
+      40*
+      s,
+
+      5,
+      4
+    );
+
+    drawJaggedBolt(
+      player.x+
+      11*
+      s,
+      player.y-
+      72*
+      s,
+
+      player.x-
+      7*
+      s,
+      player.y-
+      28*
+      s,
+
+      5,
+      4
+    );
+
+  }
 
   ctx.restore();
 
 }
 
-/* =====================================================
+/* =========================================================
 PLAYER DRAW
-===================================================== */
+========================================================= */
 
 function drawPlayer(){
 
@@ -11097,9 +11984,9 @@ function drawPlayer(){
 
 }
 
-/* =====================================================
+/* =========================================================
 ENEMY DRAW
-===================================================== */
+========================================================= */
 
 function drawEnemy(
 enemy
@@ -11157,11 +12044,25 @@ enemy
     "MARDI GRAS"
   ){
 
-    drawBossAtlas(
-      img.mardi,
-      enemy,
-      size
-    );
+    const drawn=
+      drawBossAtlas(
+        img.mardi,
+        enemy,
+        size
+      );
+
+    if(
+      !drawn
+    ){
+
+      drawAtlas(
+        img.voodoo,
+        enemy,
+        animBase,
+        size
+      );
+
+    }
 
   }
 
@@ -11171,26 +12072,30 @@ enemy
     "ROUXGAROUX"
   ){
 
-    if(
-      img.roux.complete &&
-      img.roux.naturalWidth
-    ){
+    /*
+      NEW ROUXGAROUX ATLAS
 
+      assets/rouxgaroux_atlas.PNG
+
+      8 columns
+      9 rows
+    */
+
+    const drawn=
       drawBossAtlas(
         img.roux,
         enemy,
         size
       );
 
-    }
+    /*
+      Fallback prevents
+      invisible boss.
+    */
 
-    else{
-
-      /*
-        Fallback prevents an
-        invisible boss if the
-        asset fails to load.
-      */
+    if(
+      !drawn
+    ){
 
       drawAtlas(
         img.voodoo,
@@ -11205,6 +12110,11 @@ enemy
   }
 
   else{
+
+    /*
+      KOOSHMA TEMPORARILY
+      uses the Voodoo atlas.
+    */
 
     drawAtlas(
       img.voodoo,
@@ -11260,13 +12170,16 @@ enemy
       enemy.x-
       width/
       2,
+
       y,
+
       width*
       Math.max(
         0,
         enemy.hp/
         enemy.maxHp
       ),
+
       5
     );
 
@@ -11274,9 +12187,9 @@ enemy
 
 }
 
-/* =====================================================
+/* =========================================================
 PICKUP DRAW
-===================================================== */
+========================================================= */
 
 function drawPickups(){
 
@@ -11348,9 +12261,9 @@ function drawPickups(){
 
 }
 
-/* =====================================================
+/* =========================================================
 EFFECT DRAW
-===================================================== */
+========================================================= */
 
 function drawEffects(){
 
@@ -11384,6 +12297,10 @@ function drawEffects(){
           0,
           ratio
         );
+
+      /* -------------------------
+      HIT
+      ------------------------- */
 
       if(
         e.type===
@@ -11422,6 +12339,10 @@ function drawEffects(){
 
       }
 
+      /* -------------------------
+      SLASH
+      ------------------------- */
+
       else if(
         e.type===
         "slash"
@@ -11455,6 +12376,10 @@ function drawEffects(){
 
       }
 
+      /* -------------------------
+      HEAVY
+      ------------------------- */
+
       else if(
         e.type===
         "heavy"
@@ -11487,6 +12412,10 @@ function drawEffects(){
         ctx.stroke();
 
       }
+
+      /* -------------------------
+      BURST
+      ------------------------- */
 
       else if(
         e.type===
@@ -11532,7 +12461,70 @@ function drawEffects(){
 
         ctx.stroke();
 
+        /*
+          Crackling radial bolts.
+        */
+
+        const boltCount=
+          Math.min(
+            10,
+            3+
+            level
+          );
+
+        ctx.lineWidth=
+          1.5+
+          level*
+          .12;
+
+        for(
+          let i=
+            0;
+          i<
+          boltCount;
+          i++
+        ){
+
+          const angle=
+            Math.PI*
+            2*
+            i/
+            boltCount;
+
+          const rx=
+            Math.cos(
+              angle
+            )*
+            radius;
+
+          const ry=
+            Math.sin(
+              angle
+            )*
+            radius*
+            .45;
+
+          drawJaggedBolt(
+            e.x,
+            e.y,
+
+            e.x+
+            rx,
+
+            e.y+
+            ry,
+
+            5,
+            6
+          );
+
+        }
+
       }
+
+      /* -------------------------
+      DASH
+      ------------------------- */
 
       else if(
         e.type===
@@ -11554,9 +12546,7 @@ function drawEffects(){
           level*
           .3;
 
-        ctx.beginPath();
-
-        ctx.moveTo(
+        drawJaggedBolt(
           e.x-
           e.facing*
           (
@@ -11564,19 +12554,26 @@ function drawEffects(){
             level*
             8
           ),
-          e.y
-        );
 
-        ctx.lineTo(
+          e.y,
+
           e.x+
           e.facing*
           18,
-          e.y
+
+          e.y,
+
+          7,
+          5+
+          level*
+          .25
         );
 
-        ctx.stroke();
-
       }
+
+      /* -------------------------
+      DASH WAVE
+      ------------------------- */
 
       else if(
         e.type===
@@ -11600,17 +12597,20 @@ function drawEffects(){
         ctx.ellipse(
           e.x,
           e.y,
+
           (
             e.radius ||
             95
           )*
           progress,
+
           (
             e.radius ||
             95
           )*
           .35*
           progress,
+
           0,
           0,
           Math.PI*
@@ -11620,6 +12620,10 @@ function drawEffects(){
         ctx.stroke();
 
       }
+
+      /* -------------------------
+      TELEPORT
+      ------------------------- */
 
       else if(
         e.type===
@@ -11654,6 +12658,10 @@ function drawEffects(){
         ctx.stroke();
 
       }
+
+      /* -------------------------
+      SWORD WAVE
+      ------------------------- */
 
       else if(
         e.type===
@@ -11695,8 +12703,11 @@ function drawEffects(){
             1
           )*
           20,
+
           e.y,
+
           r,
+
           -.95,
           .78
         );
@@ -11704,6 +12715,10 @@ function drawEffects(){
         ctx.stroke();
 
       }
+
+      /* -------------------------
+      CROSS
+      ------------------------- */
 
       else if(
         e.type===
@@ -11770,6 +12785,10 @@ function drawEffects(){
 
       }
 
+      /* -------------------------
+      CROSS RING
+      ------------------------- */
+
       else if(
         e.type===
         "crossRing"
@@ -11811,6 +12830,10 @@ function drawEffects(){
         ctx.stroke();
 
       }
+
+      /* -------------------------
+      TWIN
+      ------------------------- */
 
       else if(
         e.type===
@@ -11874,6 +12897,10 @@ function drawEffects(){
 
       }
 
+      /* -------------------------
+      SHOCK FLOOR
+      ------------------------- */
+
       else if(
         e.type===
         "shockFloor"
@@ -11896,17 +12923,20 @@ function drawEffects(){
         ctx.ellipse(
           e.x,
           e.y,
+
           (
             e.radius ||
             135
           )*
           progress,
+
           (
             e.radius ||
             135
           )*
           .28*
           progress,
+
           0,
           0,
           Math.PI*
@@ -11916,6 +12946,10 @@ function drawEffects(){
         ctx.stroke();
 
       }
+
+      /* -------------------------
+      STATIC FIELD
+      ------------------------- */
 
       else if(
         e.type===
@@ -11951,17 +12985,20 @@ function drawEffects(){
         ctx.ellipse(
           e.x,
           e.y,
+
           (
             e.radius ||
             125
           )*
           pulse,
+
           (
             e.radius ||
             125
           )*
           .32*
           pulse,
+
           0,
           0,
           Math.PI*
@@ -11971,6 +13008,10 @@ function drawEffects(){
         ctx.stroke();
 
       }
+
+      /* -------------------------
+      STORM
+      ------------------------- */
 
       else if(
         e.type===
@@ -11998,13 +13039,16 @@ function drawEffects(){
         ctx.ellipse(
           e.x,
           e.y,
+
           e.radius ||
           170,
+
           (
             e.radius ||
             170
           )*
           .34,
+
           0,
           0,
           Math.PI*
@@ -12014,6 +13058,10 @@ function drawEffects(){
         ctx.stroke();
 
       }
+
+      /* -------------------------
+      LIGHTNING STRIKE
+      ------------------------- */
 
       else if(
         e.type===
@@ -12032,39 +13080,26 @@ function drawEffects(){
         ctx.lineWidth=
           5;
 
-        ctx.beginPath();
-
-        ctx.moveTo(
+        drawJaggedBolt(
           e.x+
           rnd(
             -8,
             8
           ),
-          0
-        );
+          0,
 
-        ctx.lineTo(
-          e.x-
-          10,
-          e.y*
-          .35
-        );
-
-        ctx.lineTo(
-          e.x+
-          12,
-          e.y*
-          .68
-        );
-
-        ctx.lineTo(
           e.x,
-          e.y
-        );
+          e.y,
 
-        ctx.stroke();
+          8,
+          12
+        );
 
       }
+
+      /* -------------------------
+      CONFETTI
+      ------------------------- */
 
       else if(
         e.type===
@@ -12095,6 +13130,10 @@ function drawEffects(){
 
       }
 
+      /* -------------------------
+      MARDI RING
+      ------------------------- */
+
       else if(
         e.type===
         "mardiRing"
@@ -12117,17 +13156,20 @@ function drawEffects(){
         ctx.ellipse(
           e.x,
           e.y,
+
           (
             e.radius ||
             120
           )*
           progress,
+
           (
             e.radius ||
             120
           )*
           .35*
           progress,
+
           0,
           0,
           Math.PI*
@@ -12138,16 +13180,20 @@ function drawEffects(){
 
       }
 
+      /* -------------------------
+      ROUX CHARGE
+      ------------------------- */
+
       else if(
         e.type===
         "rouxCharge"
       ){
 
         ctx.strokeStyle=
-          "#74c95c";
+          "#c0382b";
 
         ctx.shadowColor=
-          "#416b34";
+          "#6b1712";
 
         ctx.shadowBlur=
           18;
@@ -12172,6 +13218,59 @@ function drawEffects(){
 
       }
 
+      /* -------------------------
+      ROUX ROAR
+      ------------------------- */
+
+      else if(
+        e.type===
+        "rouxRoar"
+      ){
+
+        ctx.strokeStyle=
+          "#e34532";
+
+        ctx.shadowColor=
+          "#8e1c12";
+
+        ctx.shadowBlur=
+          20;
+
+        ctx.lineWidth=
+          5;
+
+        for(
+          let i=
+            0;
+          i<
+          3;
+          i++
+        ){
+
+          ctx.beginPath();
+
+          ctx.arc(
+            e.x,
+            e.y,
+            25+
+            i*
+            20+
+            progress*
+            45,
+            -.7,
+            .7
+          );
+
+          ctx.stroke();
+
+        }
+
+      }
+
+      /* -------------------------
+      SWAMP IMPACT
+      ------------------------- */
+
       else if(
         e.type===
         "swampImpact"
@@ -12194,17 +13293,20 @@ function drawEffects(){
         ctx.ellipse(
           e.x,
           e.y,
+
           (
             e.radius ||
             100
           )*
           progress,
+
           (
             e.radius ||
             100
           )*
           .28*
           progress,
+
           0,
           0,
           Math.PI*
@@ -12214,6 +13316,10 @@ function drawEffects(){
         ctx.stroke();
 
       }
+
+      /* -------------------------
+      TERROR
+      ------------------------- */
 
       else if(
         e.type===
@@ -12237,11 +13343,13 @@ function drawEffects(){
         ctx.arc(
           e.x,
           e.y,
+
           (
             e.radius ||
             105
           )*
           progress,
+
           0,
           Math.PI*
           2
@@ -12250,6 +13358,10 @@ function drawEffects(){
         ctx.stroke();
 
       }
+
+      /* -------------------------
+      BOSS DEATH
+      ------------------------- */
 
       else if(
         e.type===
@@ -12285,36 +13397,38 @@ function drawEffects(){
 
       }
 
+      /* -------------------------
+      EXTRA LIFE
+      ------------------------- */
+
       else if(
         e.type===
         "lifeBurst"
       ){
 
-        const r=
-          (
-            e.radius ||
-            95
-          )*
-          progress;
-
         ctx.strokeStyle=
-          "#ff5f72";
+          "#ff5f78";
 
         ctx.shadowColor=
-          "#ff203e";
+          "#ff183f";
 
         ctx.shadowBlur=
           24;
 
         ctx.lineWidth=
-          4;
+          5;
+
+        const radius=
+          15+
+          progress*
+          70;
 
         ctx.beginPath();
 
         ctx.arc(
           e.x,
           e.y,
-          r,
+          radius,
           0,
           Math.PI*
           2
@@ -12328,20 +13442,18 @@ function drawEffects(){
         ctx.fillStyle=
           "#ffffff";
 
-        ctx.shadowColor=
-          "#ff3553";
-
-        ctx.shadowBlur=
-          18;
-
         ctx.font=
-          `bold ${24+progress*14}px Arial`;
+          `bold ${
+            22+
+            progress*
+            12
+          }px Arial`;
 
         ctx.textAlign=
           "center";
 
         ctx.fillText(
-          "♥",
+          "♥ +1",
           e.x,
           e.y+
           7
@@ -12356,177 +13468,9 @@ function drawEffects(){
 
 }
 
-/* =====================================================
-BOSS INTRO OVERLAY
-===================================================== */
-
-function drawBossIntroOverlay(){
-
-  if(
-    !bossIntroActive
-  ){
-    return;
-  }
-
-  const progress=
-    1-
-    bossIntroTimer/
-    BOSS_INTRO_LENGTH;
-
-  ctx.save();
-
-  const barHeight=
-    Math.min(
-      54,
-      H*
-      .06
-    );
-
-  ctx.fillStyle=
-    "rgba(0,0,0,.88)";
-
-  ctx.fillRect(
-    0,
-    0,
-    W,
-    barHeight
-  );
-
-  ctx.fillRect(
-    0,
-    H-
-    barHeight,
-    W,
-    barHeight
-  );
-
-  const alpha=
-    clamp(
-      (
-        progress-
-        .16
-      )/
-      .22,
-      0,
-      1
-    )*
-    clamp(
-      bossIntroTimer/
-      22,
-      0,
-      1
-    );
-
-  ctx.globalAlpha=
-    alpha;
-
-  ctx.textAlign=
-    "center";
-
-  let titleColor=
-    "#ff4c4c";
-
-  let glowColor=
-    "#ff2222";
-
-  if(
-    bossIntroTitle===
-    "MARDI GRAS"
-  ){
-
-    titleColor=
-      "#f5c842";
-
-    glowColor=
-      "#7b39c8";
-
-  }
-
-  else if(
-    bossIntroTitle===
-    "ROUXGAROUX"
-  ){
-
-    titleColor=
-      "#d9d1c4";
-
-    glowColor=
-      "#8b2f24";
-
-  }
-
-  else if(
-    bossIntroTitle===
-    "KOOSHMA"
-  ){
-
-    titleColor=
-      "#b776ff";
-
-    glowColor=
-      "#561ab5";
-
-  }
-
-  ctx.fillStyle=
-    titleColor;
-
-  ctx.shadowColor=
-    glowColor;
-
-  ctx.shadowBlur=
-    22;
-
-  ctx.font=
-    `900 ${Math.max(
-      25,
-      Math.min(
-        44,
-        W*
-        .085
-      )
-    )}px Arial`;
-
-  ctx.fillText(
-    bossIntroTitle,
-    W*
-    .5,
-    H*
-    .34
-  );
-
-  ctx.fillStyle=
-    "#ffffff";
-
-  ctx.shadowBlur=
-    8;
-
-  ctx.font=
-    `900 ${Math.max(
-      10,
-      Math.min(
-        15,
-        W*
-        .03
-      )
-    )}px Arial`;
-
-  ctx.fillText(
-    bossIntroSubtitle,
-    W*
-    .5,
-    H*
-    .34+
-    27
-  );
-
-  ctx.restore();
-
-}
-
-/* =====================================================
+/* =========================================================
 BOSS HUD
-===================================================== */
+========================================================= */
 
 function getBosses(){
 
@@ -12565,8 +13509,10 @@ function updateBossHud(){
     "block";
 
   for(
-    let i=1;
-    i<=3;
+    let i=
+      1;
+    i<=
+    3;
     i++
   ){
 
@@ -12620,9 +13566,9 @@ function updateBossHud(){
 
 }
 
-/* =====================================================
+/* =========================================================
 HUD
-===================================================== */
+========================================================= */
 
 function updateHud(){
 
@@ -12711,9 +13657,9 @@ function updateHud(){
 
 }
 
-/* =====================================================
+/* =========================================================
 UPDATE
-===================================================== */
+========================================================= */
 
 function update(){
 
@@ -12724,6 +13670,57 @@ function update(){
   ){
     return;
   }
+
+  if(
+    cameraShake>
+    0
+  ){
+
+    cameraShake--;
+
+    cameraStrength*=
+      .88;
+
+  }else{
+
+    cameraStrength=
+      0;
+
+  }
+
+  if(
+    comboSequenceTimer>
+    0
+  ){
+
+    comboSequenceTimer--;
+
+  }else{
+
+    comboSequence=
+      [];
+
+  }
+
+  if(
+    comboTimer>
+    0
+  ){
+
+    comboTimer--;
+
+  }else{
+
+    combo=
+      0;
+
+  }
+
+  /*
+    Boss intro freezes combat
+    but keeps cinematic animation
+    and effects moving.
+  */
 
   if(
     bossIntroActive
@@ -12740,9 +13737,7 @@ function update(){
 
       messageTimer--;
 
-    }
-
-    else{
+    }else{
 
       $("message").style.opacity=
         0;
@@ -12750,57 +13745,6 @@ function update(){
     }
 
     return;
-
-  }
-
-  if(
-    cameraShake>
-    0
-  ){
-
-    cameraShake--;
-
-    cameraStrength*=
-      .88;
-
-  }
-
-  else{
-
-    cameraStrength=
-      0;
-
-  }
-
-  if(
-    comboSequenceTimer>
-    0
-  ){
-
-    comboSequenceTimer--;
-
-  }
-
-  else{
-
-    comboSequence=
-      [];
-
-  }
-
-  if(
-    comboTimer>
-    0
-  ){
-
-    comboTimer--;
-
-  }
-
-  else{
-
-    combo=
-      0;
 
   }
 
@@ -12820,14 +13764,6 @@ function update(){
 
   updateEffects();
 
-  /*
-    One centralized check means
-    ANY score source can trigger
-    the next 50K life reward.
-  */
-
-  checkExtraLifeReward();
-
   if(
     messageTimer>
     0
@@ -12835,9 +13771,7 @@ function update(){
 
     messageTimer--;
 
-  }
-
-  else{
+  }else{
 
     $("message").style.opacity=
       0;
@@ -12851,9 +13785,7 @@ function update(){
 
     pickupTimer--;
 
-  }
-
-  else{
+  }else{
 
     $("pickupMessage").style.opacity=
       0;
@@ -12862,9 +13794,9 @@ function update(){
 
 }
 
-/* =====================================================
+/* =========================================================
 DRAW
-===================================================== */
+========================================================= */
 
 function draw(){
 
@@ -12880,6 +13812,7 @@ function draw(){
         -cameraStrength,
         cameraStrength
       ),
+
       rnd(
         -cameraStrength*
         .55,
@@ -12892,63 +13825,73 @@ function draw(){
 
   drawStage();
 
-  const actors=[
+  if(
+    gameStarted
+  ){
 
-    ...enemies.map(
-      enemy=>({
+    const actors=[
+
+      ...enemies.map(
+        enemy=>({
+
+          y:
+            enemy.y,
+
+          draw:
+            ()=>drawEnemy(
+              enemy
+            )
+
+        })
+      ),
+
+      {
 
         y:
-          enemy.y,
+          player.y,
 
         draw:
-          ()=>drawEnemy(
-            enemy
-          )
+          drawPlayer
 
-      })
-    ),
+      }
 
-    {
+    ];
 
-      y:
-        player.y,
+    actors.sort(
+      (a,b)=>
+        a.y-
+        b.y
+    );
 
-      draw:
-        drawPlayer
+    actors.forEach(
+      actor=>{
 
-    }
+        actor.draw();
 
-  ];
+      }
+    );
 
-  actors.sort(
-    (a,b)=>
-      a.y-
-      b.y
-  );
+    drawPickups();
 
-  actors.forEach(
-    actor=>{
+    drawEffects();
 
-      actor.draw();
-
-    }
-  );
-
-  drawPickups();
-
-  drawEffects();
+  }
 
   ctx.restore();
 
-  drawBossIntroOverlay();
+  if(
+    gameStarted
+  ){
 
-  updateHud();
+    updateHud();
+
+  }
 
 }
 
-/* =====================================================
-GAME LOOP
-===================================================== */
+/* =========================================================
+FIXED-STEP GAME LOOP
+========================================================= */
 
 let lastFrame=
   performance.now();
@@ -13015,9 +13958,9 @@ now
 
 }
 
-/* =====================================================
-INITIALIZE BEFORE TITLE SCREEN
-===================================================== */
+/* =========================================================
+INITIALIZE
+========================================================= */
 
 player.x=
   W*
@@ -13036,12 +13979,10 @@ positionBossHud();
 /*
   IMPORTANT:
 
-  We DO NOT call spawnWave()
-  here anymore.
+  We intentionally DO NOT call
+  spawnWave() here.
 
-  The title screen loads first.
-
-  Wave 1 begins only after
+  The first wave begins only after
   START GAME is pressed.
 */
 
@@ -13050,6 +13991,7 @@ requestAnimationFrame(
 );
 
 })();
+
 </script>
 
 </body>
